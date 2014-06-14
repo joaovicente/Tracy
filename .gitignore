@@ -1,6 +1,8 @@
 *.class
 
-# Mobile Tools for Java (J2ME)
+# Target file
+target/
+
 .mtj.tmp/
 
 # Package Files #
