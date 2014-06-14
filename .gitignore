@@ -1,9 +1,11 @@
+# Generated files
 *.class
-
-# Target file
 target/
 
-.mtj.tmp/
+#Eclipse
+.classpath
+.project
+.settings/
 
 # Package Files #
 *.jar
