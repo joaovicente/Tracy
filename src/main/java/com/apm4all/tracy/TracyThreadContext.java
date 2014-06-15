@@ -1,5 +1,7 @@
 package com.apm4all.tracy;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
@@ -7,6 +9,7 @@ import java.util.Random;
 
 public class TracyThreadContext {
 	private static Random r = new Random();
+	private static String hostname = null;
 	private String taskId;
 	private String parentOptId;
 	private Stack<TracyEvent> stack;
@@ -18,10 +21,21 @@ public class TracyThreadContext {
 	
 	public TracyThreadContext(String taskId, String parentOptId) {
 		super();
+		resolveHostname();
 		this.taskId = taskId;
 		this.parentOptId = parentOptId;
 		stack = new Stack<TracyEvent>();
 		poppedList = new ArrayList<TracyEvent>();
+	}
+
+	static void resolveHostname() {
+		try {
+			if (hostname == null) {
+				hostname = InetAddress.getLocalHost().getHostName();
+			}
+		} catch (UnknownHostException e) {
+			hostname = "unknown";
+		}
 	}
 
 	private int randomNumber(int upperLimit)	{
@@ -55,6 +69,7 @@ public class TracyThreadContext {
 		String optId = generateRandomOptId();
 		// Create new TracyEvent
 		TracyEvent event = new TracyEvent(this.taskId, label, eventParentOptId, optId, msec);
+		event.addAnnotation("Host", hostname);
 		stack.add(event);
 	}
 
