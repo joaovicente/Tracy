@@ -2,7 +2,9 @@ package com.apm4all.tracy;
 
 import static org.junit.Assert.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Test;
 
@@ -63,5 +65,22 @@ public class TracyTest {
 		assertEquals(TASK_ID, l11Event.getTaskId());
 		assertEquals(l1Event.getOptId(), l11Event.getParentOptId());
 		assertEquals(L11_LABEL_NAME, l11Event.getLabel());
+	}
+
+	@Test
+	public void testGetEventsAsMap_withAnnotations() throws InterruptedException {
+		Tracy.setContext(TASK_ID, PARENT_OPT_ID);
+		Tracy.before(L1_LABEL_NAME);
+		Tracy.annotate("sizeOut", "10", "sizeIn", "2000");
+		Thread.sleep(100);
+		Tracy.after(L1_LABEL_NAME);
+		List<Map<String, String>> events = Tracy.getEventsAsMaps();
+		assertEquals(1, events.size());
+		Map<String, String> map = events.get(0);
+		assertEquals(TASK_ID, map.get("taskId"));
+		assertEquals(PARENT_OPT_ID, map.get("parentOptId"));
+		assertEquals(L1_LABEL_NAME, map.get("label"));
+		assertEquals("10", map.get("sizeOut"));
+		assertEquals("2000", map.get("sizeIn"));
 	}
 }

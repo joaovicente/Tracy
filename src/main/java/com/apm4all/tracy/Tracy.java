@@ -1,6 +1,8 @@
 package com.apm4all.tracy;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class Tracy {
 	static final String TRACY_DEFAULT_TASK_ID = "NA";
@@ -46,4 +48,19 @@ public class Tracy {
 		TracyThreadContext ctx = threadContext.get();
 		return ctx.getPoppedList();
 	}
+	
+	public static List<Map<String, String>> getEventsAsMaps() {
+		List<Map<String, String>> list = new ArrayList<Map<String, String>>();
+		TracyThreadContext ctx = threadContext.get();
+		for (TracyEvent event : ctx.getPoppedList())	{
+			list.add(event.toMap());
+		}
+		return list;
+	}
+	
+	public static void annotate(String... args) {
+		TracyThreadContext ctx = threadContext.get();
+		ctx.annotate(args);
+	}
+
 }

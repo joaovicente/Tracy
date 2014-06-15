@@ -10,6 +10,7 @@ public class TracyEvent {
 	String optId;
 	long msecBefore;
 	long msecAfter;
+	long msecElapsed;
 	Map<String, String> annotations;
 	
 	public TracyEvent(String taskId, String label, String parentOptId ,String optId, long msec) {
@@ -23,18 +24,34 @@ public class TracyEvent {
 	
 	public String toString()	{
 		StringBuilder sb = new StringBuilder();
-		sb.append("taskId=" + "\"" + this.taskId + "\"" 
-			+ ", parentOptId=" + "\"" + this.parentOptId + "\"" 
-			+ ", label=" + "\"" + this.label + "\"" 
-			+ ", optId=" + "\"" + this.optId + "\"" 
-			+ ", msecBefore=" + "\"" + this.msecBefore + "\"" 
-			+ ", msecAfter=" + "\"" + this.msecAfter + "\"");
+		sb.append("taskId=" + "\"" + taskId + "\"" 
+			+ ", parentOptId=" + "\"" + parentOptId + "\"" 
+			+ ", label=" + "\"" + label + "\"" 
+			+ ", optId=" + "\"" + optId + "\"" 
+			+ ", msecBefore=" + "\"" + msecBefore + "\"" 
+			+ ", msecAfter=" + "\"" + msecAfter + "\""
+			+ ", msecElapsed=" + "\"" + msecElapsed + "\"");
 		for (String key : annotations.keySet())	{
 			sb.append(", " + key + "=" + "\"" + annotations.get(key) + "\"");
 		}
 		return sb.toString();
 	}
 
+	public Map<String, String> toMap() {
+		Map<String, String> map = new HashMap<String, String>(10);
+		map.put("taskId", taskId);
+		map.put("parentOptId", parentOptId);
+		map.put("label", label);
+		map.put("optId", optId);
+		map.put("msecBefore", Long.toString(msecBefore));
+		map.put("msecAfter", Long.toString(msecAfter));
+		map.put("msecElapsed", Long.toString(msecElapsed));
+		for (String key : annotations.keySet())	{
+			map.put(key, annotations.get(key));
+		}
+		return map;
+	}
+	
 	public void addAnnotation(String key, String value)	{
 		annotations.put(key, value);
 	}
@@ -65,6 +82,7 @@ public class TracyEvent {
 
 	public void setMsecAfter(long msecAfter) {
 		this.msecAfter = msecAfter;
+		this.msecElapsed = msecAfter - msecBefore;
 	}
 
 	public String getLabel() {
@@ -98,4 +116,5 @@ public class TracyEvent {
 	public void setTaskId(String taskId) {
 		this.taskId = taskId;
 	}
+
 }

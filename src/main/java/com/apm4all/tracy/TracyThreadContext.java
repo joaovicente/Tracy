@@ -14,10 +14,7 @@ public class TracyThreadContext {
 	private String parentOptId;
 	private Stack<TracyEvent> stack;
 	private List<TracyEvent> poppedList;
-	//TODO: Capture hostname
-	//TODO: Component name would be useful to gather (1 for the whole context)
 	//TODO: Consider mechanism to relay TaskId and parentOptId to child worker threads as well as getting worker thread events back to main thread 
-	//TODO: Implement annotation mechanism
 	
 	public TracyThreadContext(String taskId, String parentOptId) {
 		super();
@@ -85,5 +82,9 @@ public class TracyThreadContext {
 
 	public void setPoppedList(List<TracyEvent> poppedList) {
 		this.poppedList = poppedList;
+	}
+	
+	public void annotate(String... args) {
+		stack.peek().addAnnotations(args);
 	}
 }
