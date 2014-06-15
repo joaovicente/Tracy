@@ -44,16 +44,33 @@ public class TracyThreadContext {
 
 	public void push(String label) {
 		long msec = System.currentTimeMillis();
-		// Generate random optId (unique per taskid event set)
+		String eventParentOptId;
+		// Event parent OptId will be lower stack event,
+		if (stack.size() > 0)	{
+			 eventParentOptId = stack.peek().getOptId();
+		}
+		else	{
+			// or context parent in case this is first stack level
+			eventParentOptId = this.parentOptId;
+		}
+		// Generate random optId (must be unique per taskid event set)
 		String optId = generateRandomOptId();
 		// Create new TracyEvent
-		TracyEvent event = new TracyEvent(label, optId, msec);
+		TracyEvent event = new TracyEvent(this.taskId, label, eventParentOptId, optId, msec);
 		stack.add(event);
 	}
 
 	public void pop() {
-		stack.peek();
-		// TODO Auto-generated method stub
-		
+		TracyEvent event = stack.pop();
+		event.setMsecAfter(System.currentTimeMillis());
+		poppedList.add(event);
+	}
+
+	public List<TracyEvent> getPoppedList() {
+		return poppedList;
+	}
+
+	public void setPoppedList(List<TracyEvent> poppedList) {
+		this.poppedList = poppedList;
 	}
 }

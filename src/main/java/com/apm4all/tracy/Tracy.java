@@ -37,7 +37,7 @@ public class Tracy {
 		ctx.pop();
 	}
 	public static List<TracyEvent> getEvents() {
-		// TODO Auto-generated method stub
-		return null;
+		TracyThreadContext ctx = threadContext.get();
+		return ctx.getPoppedList();
 	}
 }

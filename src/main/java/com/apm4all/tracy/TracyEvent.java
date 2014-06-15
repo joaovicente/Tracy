@@ -1,17 +1,30 @@
 package com.apm4all.tracy;
 
 public class TracyEvent {
-	long msecBefore;
-	long msecAfter;
+	String taskId;
+	String parentOptId;
 	String label;
 	String optId;
+	long msecBefore;
+	long msecAfter;
 	
-	public TracyEvent(String label, String optId, long msec) {
+	public TracyEvent(String taskId, String label, String parentOptId ,String optId, long msec) {
+		this.taskId = taskId;
+		this.parentOptId = parentOptId;
 		this.label = label;
 		this.optId = optId;
 		this.msecBefore = msec;
 	}
-
+	
+	public String toString()	{
+		return "taskId=" + "\"" + this.taskId + "\"" 
+			+ ", parentOptId=" + "\"" + this.parentOptId + "\"" 
+			+ ", label=" + "\"" + this.label + "\"" 
+			+ ", optId=" + "\"" + this.optId + "\"" 
+			+ ", msecBefore=" + "\"" + this.msecBefore + "\"" 
+			+ ", msecAfter=" + "\"" + this.msecAfter + "\"";
+	}
+	
 	public long getMsecBefore() {
 		return msecBefore;
 	}
@@ -19,7 +32,7 @@ public class TracyEvent {
 	public void setMsecBefore(long msecBefore) {
 		this.msecBefore = msecBefore;
 	}
-
+	
 	public long getMsecAfter() {
 		return msecAfter;
 	}
@@ -42,5 +55,21 @@ public class TracyEvent {
 
 	public void setOptId(String optId) {
 		this.optId = optId;
+	}
+
+	public String getParentOptId() {
+		return parentOptId;
+	}
+
+	public void setParentOptId(String parentOptId) {
+		this.parentOptId = parentOptId;
+	}
+
+	public String getTaskId() {
+		return taskId;
+	}
+
+	public void setTaskId(String taskId) {
+		this.taskId = taskId;
 	}
 }
