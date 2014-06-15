@@ -1,8 +1,6 @@
 package com.apm4all.tracy;
 
 import static org.junit.Assert.*;
-
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -13,8 +11,10 @@ public class TracyTest {
 	static final String PARENT_OPT_ID = "1234";
 	static final String L1_LABEL_NAME = "L1 Operation";
 	static final String L11_LABEL_NAME = "L11 Operation";
-	
 
+	//TODO: Test 2nd trace on same thread (thread pool scenario)
+	//TODO: Add performance tests to measure tracing performance
+	
 	@Test
 	public void testSetContext_empty() {
 		Tracy.setContext();

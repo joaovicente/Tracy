@@ -14,7 +14,8 @@ public class TracyThreadContext {
 	private String parentOptId;
 	private Stack<TracyEvent> stack;
 	private List<TracyEvent> poppedList;
-	//TODO: Consider mechanism to relay TaskId and parentOptId to child worker threads as well as getting worker thread events back to main thread 
+	//TODO: Devise mechanism to relay TaskId and parentOptId to child worker threads as well as getting worker thread events back to main thread 
+	//TODO: Develop TracyEvent log reporter 
 	
 	public TracyThreadContext(String taskId, String parentOptId) {
 		super();
