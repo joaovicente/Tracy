@@ -1,5 +1,7 @@
 package com.apm4all.tracy;
 
+import java.util.List;
+
 public class Tracy {
 	static final String TRACY_DEFAULT_TASK_ID = "NA";
 	static final String TRACY_DEFAULT_PARENT_OPT_ID = "NA";
@@ -25,5 +27,17 @@ public class Tracy {
 	public static String getParentOptId() {
 		TracyThreadContext ctx = threadContext.get();
 		return ctx.getParentOptId();
+	}
+	public static void before(String label) {
+		TracyThreadContext ctx = threadContext.get();
+		ctx.push(label);
+	}
+	public static void after(String label) {
+		TracyThreadContext ctx = threadContext.get();
+		ctx.pop();
+	}
+	public static List<TracyEvent> getEvents() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
