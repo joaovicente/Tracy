@@ -11,12 +11,10 @@ public class TracyThreadContext {
 	private String parentOptId;
 	private Stack<TracyEvent> stack;
 	private List<TracyEvent> poppedList;
-	//TODO: Stack of TracyEvent(s)
-	//TODO: List of popped TracyEvent(s)
 	//TODO: Capture hostname
-	//TODO: Operation name to be captured as label of Tracy.Before() and TracyAfter
 	//TODO: Component name would be useful to gather (1 for the whole context)
 	//TODO: Consider mechanism to relay TaskId and parentOptId to child worker threads as well as getting worker thread events back to main thread 
+	//TODO: Implement annotation mechanism
 	
 	public TracyThreadContext(String taskId, String parentOptId) {
 		super();

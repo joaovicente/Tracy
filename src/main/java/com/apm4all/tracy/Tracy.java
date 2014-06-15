@@ -11,6 +11,7 @@ public class Tracy {
 	public static void setContext(String taskId, String parentOptId) {
 		threadContext.set(new TracyThreadContext(taskId, parentOptId));
 	}
+	
 	 /**
      * Setting context in this manner is highly discouraged.<br>
      * taskId is fundamental to correlate Tracy events.<br>
@@ -20,22 +21,27 @@ public class Tracy {
 		setContext(TRACY_DEFAULT_TASK_ID, TRACY_DEFAULT_PARENT_OPT_ID);
 		
 	}
+	
 	public static String getTaskId() {
 		TracyThreadContext ctx = threadContext.get();
 		return ctx.getTaskId();
 	}
+	
 	public static String getParentOptId() {
 		TracyThreadContext ctx = threadContext.get();
 		return ctx.getParentOptId();
 	}
+	
 	public static void before(String label) {
 		TracyThreadContext ctx = threadContext.get();
 		ctx.push(label);
 	}
+	
 	public static void after(String label) {
 		TracyThreadContext ctx = threadContext.get();
 		ctx.pop();
 	}
+	
 	public static List<TracyEvent> getEvents() {
 		TracyThreadContext ctx = threadContext.get();
 		return ctx.getPoppedList();
