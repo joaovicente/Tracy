@@ -57,7 +57,7 @@ public class TracyThreadContext {
 	}
 	
 	private String generateRandomOptId()	{
-		return Integer.toString(randomNumber(100));
+		return Integer.toHexString(randomNumber(0xFFFF));
 	}
 
 	public String getTaskId() {
