@@ -101,6 +101,14 @@ public class TracyEvent {
 		this.msecElapsed = msecAfter - msecBefore;
 	}
 
+	public long getMsecElapsed() {
+		return msecElapsed;
+	}
+
+	public void setMsecElapsed(long msecElapsed) {
+		this.msecElapsed = msecElapsed;
+	}
+
 	public String getLabel() {
 		return label;
 	}

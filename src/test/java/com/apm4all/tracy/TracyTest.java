@@ -24,7 +24,7 @@ import org.junit.Test;
 
 public class TracyTest {
 	static final String TASK_ID = "TID-ab1234-x";
-	static final String PARENT_OPT_ID = "1234";
+	static final String PARENT_OPT_ID = "AAAA";
 	static final String L1_LABEL_NAME = "L1 Operation";
 	static final String L11_LABEL_NAME = "L11 Operation";
 
@@ -47,9 +47,11 @@ public class TracyTest {
 	
 	@Test
 	public void testGetEvents() throws InterruptedException {
+		final int MSEC_OPERATION_TIME = 1000;
+		final int MSEC_SLEEP_JITTER = 100;
 		Tracy.setContext(TASK_ID, PARENT_OPT_ID);
 		Tracy.before(L1_LABEL_NAME);
-		Thread.sleep(100);
+		Thread.sleep(MSEC_OPERATION_TIME);
 		Tracy.after(L1_LABEL_NAME);
 		List<TracyEvent> events = Tracy.getEvents();
 		assertEquals(1, events.size());
@@ -57,6 +59,10 @@ public class TracyTest {
 		assertEquals(TASK_ID, event.getTaskId());
 		assertEquals(PARENT_OPT_ID, event.getParentOptId());
 		assertEquals(L1_LABEL_NAME, event.getLabel());
+		assertTrue(event.getMsecAfter() > event.getMsecBefore() + MSEC_OPERATION_TIME - MSEC_SLEEP_JITTER);
+		assertTrue(event.getMsecAfter() < event.getMsecBefore() + MSEC_OPERATION_TIME + MSEC_SLEEP_JITTER);
+		assertTrue(event.getMsecElapsed() > event.getMsecAfter()  - event.getMsecBefore() - MSEC_SLEEP_JITTER);
+		assertTrue(event.getMsecElapsed() < event.getMsecAfter()  - event.getMsecBefore() + MSEC_SLEEP_JITTER);
 	}
 	
 	@Test

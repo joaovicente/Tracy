@@ -55,9 +55,10 @@ public class TracyThreadContext {
 	private int randomNumber(int upperLimit)	{
 		return r.nextInt(upperLimit);
 	}
-	
+
+	//TODO: OptId must be unique within all taskId TracyEvents. Must use a better mechanism to avoid collisions. (e.g. using IP address, threadId, milliseconds as input)
 	private String generateRandomOptId()	{
-		return Integer.toHexString(randomNumber(0xFFFF));
+		return Integer.toHexString(randomNumber(0xFFFF)).toUpperCase();
 	}
 
 	public String getTaskId() {
@@ -83,7 +84,7 @@ public class TracyThreadContext {
 		String optId = generateRandomOptId();
 		// Create new TracyEvent
 		TracyEvent event = new TracyEvent(this.taskId, label, eventParentOptId, optId, msec);
-		event.addAnnotation("Host", hostname);
+		event.addAnnotation("host", hostname);
 		stack.add(event);
 	}
 
