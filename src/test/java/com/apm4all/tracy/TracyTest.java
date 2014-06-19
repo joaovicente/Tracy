@@ -29,7 +29,6 @@ public class TracyTest {
 	static final String L11_LABEL_NAME = "L11 Operation";
 
 	//TODO: Test 2nd trace on same thread (thread pool scenario)
-	//TODO: Add performance tests to measure tracing performance
 	
 	@Test
 	public void testSetContext_empty() {
