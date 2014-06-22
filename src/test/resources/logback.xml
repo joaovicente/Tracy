@@ -1,9 +1,8 @@
+<!-- This configuration file is used to measure Tracy latency when logging to file -->
+<!-- see TracyTestPerf for tests including logging -->
 <configuration>
   <timestamp key="byMinute" datePattern="yyyyMMdd'T'HHmm"/>
   <appender name="FILE" class="ch.qos.logback.core.FileAppender">
-    <!-- encoders are assigned the type
-         ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
-<!--     <file>tracy.log</file> -->
      <file>logs/tracy-${byMinute}.log</file>
     <append>true</append>
     <encoder>
