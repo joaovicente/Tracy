@@ -1,12 +1,17 @@
 package com.apm4all.tracy;
 import java.util.List;
+
 import org.databene.contiperf.*;
 import org.databene.contiperf.junit.ContiPerfRule;
 import org.junit.Rule;
 import org.junit.Test;
+import org.slf4j.LoggerFactory;
+
+import ch.qos.logback.classic.Logger;
 
 @PerfTest(threads=1, duration=5000, rampUp = 100)
 public class TracyTestPerf {
+	private static final Logger logger = (Logger) LoggerFactory.getLogger(TracyTestPerf.class);
 	static final String TASK_ID = "TID-ab1234-x";
 	static final String PARENT_OPT_ID = "AAAA";
 	static final String L1_LABEL_NAME = "L1 Operation";
@@ -32,8 +37,9 @@ public class TracyTestPerf {
 		Tracy.after("L1");
 		List<TracyEvent> events = Tracy.getEvents();
 		//TODO: Test impact of logging using a logging framework 
-//		for (TracyEvent event : events)	{
+		for (TracyEvent event : events)	{
+            logger.info(event.toString());
 //			System.out.println(event.toString());
-//		}
+		}
 	}
 }
