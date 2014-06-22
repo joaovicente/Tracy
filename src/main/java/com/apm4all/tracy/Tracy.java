@@ -47,8 +47,7 @@ public class Tracy {
      * optId is fundamental to place the parent node in the Tracy DAG    
      */	
 	public static void setContext() {
-		setContext(TRACY_DEFAULT_TASK_ID, TRACY_DEFAULT_PARENT_OPT_ID);
-		
+		setContext(TracyThreadContext.generateRandomTaskId(), TracyThreadContext.generateRandomOptId());
 	}
 	
 	 /**

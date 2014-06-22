@@ -52,13 +52,17 @@ public class TracyThreadContext {
 		}
 	}
 
-	private int randomNumber(int upperLimit)	{
+	static int randomNumber(int upperLimit)	{
 		return r.nextInt(upperLimit);
 	}
 
 	//TODO: OptId must be unique within all taskId TracyEvents. Must use a better mechanism to avoid collisions. (e.g. using IP address, threadId, milliseconds as input)
-	private String generateRandomOptId()	{
+	static String generateRandomOptId()	{
 		return Integer.toHexString(randomNumber(0xFFFF)).toUpperCase();
+	}
+	
+	static String generateRandomTaskId()	{
+		return Integer.toHexString(randomNumber(0x7FFFFFFF)).toUpperCase();
 	}
 
 	public String getTaskId() {

@@ -40,15 +40,15 @@ public class TracyEvent {
 	
 	public String toString()	{
 		StringBuilder sb = new StringBuilder();
-		sb.append("taskId=" + "\"" + taskId + "\"" 
-			+ ", parentOptId=" + "\"" + parentOptId + "\"" 
-			+ ", label=" + "\"" + label + "\"" 
-			+ ", optId=" + "\"" + optId + "\"" 
-			+ ", msecBefore=" + "\"" + msecBefore + "\"" 
-			+ ", msecAfter=" + "\"" + msecAfter + "\""
-			+ ", msecElapsed=" + "\"" + msecElapsed + "\"");
+		sb.append("\"taskId\"=" + "\"" + taskId + "\"" 
+			+ ", \"parentOptId\"=" + "\"" + parentOptId + "\"" 
+			+ ", \"label\"=" + "\"" + label + "\"" 
+			+ ", \"optId\"=" + "\"" + optId + "\"" 
+			+ ", \"msecBefore\"=" + "\"" + msecBefore + "\"" 
+			+ ", \"msecAfter\"=" + "\"" + msecAfter + "\""
+			+ ", \"msecElapsed\"=" + "\"" + msecElapsed + "\"");
 		for (String key : annotations.keySet())	{
-			sb.append(", " + key + "=" + "\"" + annotations.get(key) + "\"");
+			sb.append(", \"" + key + "\"=" + "\"" + annotations.get(key) + "\"");
 		}
 		return sb.toString();
 	}

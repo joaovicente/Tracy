@@ -5,7 +5,7 @@ import org.databene.contiperf.junit.ContiPerfRule;
 import org.junit.Rule;
 import org.junit.Test;
 
-@PerfTest(threads=10, duration=3000, rampUp = 100)
+@PerfTest(threads=1, duration=5000, rampUp = 100)
 public class TracyTestPerf {
 	static final String TASK_ID = "TID-ab1234-x";
 	static final String PARENT_OPT_ID = "AAAA";
@@ -16,21 +16,24 @@ public class TracyTestPerf {
 
 	@Required(average = 1, percentile99=1, max = 20)
 	@Test
-	public void singleTraceTest() {
-		Tracy.setContext(TASK_ID, PARENT_OPT_ID);
+	public void testQuadEventAndAnnotationTracePerformance() {
+		Tracy.setContext();
 		Tracy.before("L1");
-		  Tracy.annotate("someKey", "someValue");
+		  Tracy.annotate("L1Key", "L1Value");
           Tracy.before("L11");
-		  Tracy.annotate("someKey", "someValue");
+		  Tracy.annotate("L11Key", "L11Value");
 		  Tracy.after("L11");
 		  Tracy.before("L12");
-		  Tracy.annotate("someKey", "someValue");
+		  Tracy.annotate("L12Key", "L12Value");
 		  Tracy.after("L12");
 		  Tracy.before("L13");
-		  Tracy.annotate("someKey", "someValue");
+		  Tracy.annotate("L13Key", "L13Value");
 		  Tracy.after("L13");
 		Tracy.after("L1");
 		List<TracyEvent> events = Tracy.getEvents();
-		events.get(0);
+		//TODO: Test impact of logging using a logging framework 
+//		for (TracyEvent event : events)	{
+//			System.out.println(event.toString());
+//		}
 	}
 }
