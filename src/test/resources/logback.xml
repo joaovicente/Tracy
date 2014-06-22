@@ -1,14 +1,17 @@
 <configuration>
-
-  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+  <timestamp key="byMinute" datePattern="yyyyMMdd'T'HHmm"/>
+  <appender name="FILE" class="ch.qos.logback.core.FileAppender">
     <!-- encoders are assigned the type
          ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
+<!--     <file>tracy.log</file> -->
+     <file>logs/tracy-${byMinute}.log</file>
+    <append>true</append>
     <encoder>
       <pattern>%msg %n</pattern>
+      <immediateFlush>false</immediateFlush>
     </encoder>
   </appender>
-
-  <root level="DEBUG">
-    <appender-ref ref="STDOUT" />
+  <root level="INFO">
+    <appender-ref ref="FILE" />
   </root>
 </configuration>
