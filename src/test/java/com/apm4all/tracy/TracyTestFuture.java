@@ -21,18 +21,17 @@ public class TracyTestFuture {
 	static final String L11_LABEL_NAME = "L11 Operation";
 	private	ExecutorService executor = Executors.newFixedThreadPool(NTHREDS);
 
-	//TODO: Create ctx = Tracy.createFutureTheadContext();
 	//TODO: Create TracyableFuture interface providing getData() and getTracyThreadContext()
-	//TODO: Create Tracy.mergeFutureThreadContext(ctx);
 	
-	private Future<Long> retrieve()	{
-		Callable<Long> worker = null;
+	private Future<String> futureIt(final int i)	{
+		Callable<String> worker = null;
 		System.out.println("Executing future");
-		worker = new Callable<Long>() {
-			public Long call() throws Exception {
-				System.out.println("Executing future (call)");
-				Long someInteger = System.currentTimeMillis();
-				return someInteger;
+		//TODO: Create ctx = Tracy.createFutureTheadContext();
+		worker = new Callable<String>() {
+			public String call() throws Exception {
+				System.out.println("Executing future (call) " + i);
+				String out = Thread.currentThread().getName() + " " + Integer.toString(i);
+				return out;
 			}
 		};
 		return executor.submit(worker);
@@ -42,19 +41,20 @@ public class TracyTestFuture {
 	public void testFutureTrace() {
 		//FIXME: Future test blocking
 		final int NUM_FUTURES = 2;
-		ArrayList<Future<Long>> futuresList = new ArrayList<Future<Long>>();
+		ArrayList<Future<String>> futuresList = new ArrayList<Future<String>>();
 		int i;
 		try {
 			for (i=0; i<NUM_FUTURES ; i++)	{
-				System.out.println("Calling future");
-				futuresList.add(retrieve());
+				System.out.println("Calling future " +i);
+				futuresList.add(futureIt(i));
 			}
-			Thread.sleep(1000);
+//			Thread.sleep(1000);
 			
-			for (Future<Long> future : futuresList)	{
+			for (Future<String> future : futuresList)	{
 				System.out.println("Polling future");
-				Long l =  future.get();
-				System.out.println("Got " + l);
+				String out =  future.get();
+				System.out.println("Got future " + out);
+                //TODO: Create Tracy.mergeFutureThreadContext(ctx);
 			}
 		} catch (Exception e) {
 			throw new RuntimeException(e);
