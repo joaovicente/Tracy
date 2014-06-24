@@ -115,4 +115,24 @@ public class Tracy {
 		TracyThreadContext ctx = threadContext.get();
 		return ctx.getParentOptId();
 	}
+
+	public static TracyThreadContext createWorkerTheadContext() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public static void setWorkerContext(TracyThreadContext ctx) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public static TracyThreadContext getWorkerContext() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public static void mergeWorkerContext(TracyThreadContext tracyThreadContext) {
+		// TODO Auto-generated method stub
+		
+	}
 }
