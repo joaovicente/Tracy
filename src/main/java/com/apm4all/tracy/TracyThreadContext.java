@@ -24,102 +24,101 @@ import java.util.Stack;
 import java.util.Random;
 
 public class TracyThreadContext {
-	private static Random r = new Random();
-	private static String hostname = null;
-	private String taskId;
-	private String parentOptId;
-	private Stack<TracyEvent> stack;
-	private List<TracyEvent> poppedList;
-	//TODO: Devise mechanism to relay TaskId and parentOptId to child worker threads as well as getting worker thread events back to main thread 
-	//TODO: Develop TracyEvent log reporter 
-	
-	public TracyThreadContext(String taskId, String parentOptId) {
-		super();
-		resolveHostname();
-		this.taskId = taskId;
-		this.parentOptId = parentOptId;
-		stack = new Stack<TracyEvent>();
-		poppedList = new ArrayList<TracyEvent>();
-	}
+    private static Random r = new Random();
+    private static String hostname = null;
+    private String taskId;
+    private String parentOptId;
+    private Stack<TracyEvent> stack;
+    private List<TracyEvent> poppedList;
+    //TODO: Develop TracyEvent log reporter 
 
-	static void resolveHostname() {
-		try {
-			if (hostname == null) {
-				hostname = InetAddress.getLocalHost().getHostName();
-			}
-		} catch (UnknownHostException e) {
-			hostname = "unknown";
-		}
-	}
+    public TracyThreadContext(String taskId, String parentOptId) {
+        super();
+        resolveHostname();
+        this.taskId = taskId;
+        this.parentOptId = parentOptId;
+        stack = new Stack<TracyEvent>();
+        poppedList = new ArrayList<TracyEvent>();
+    }
 
-	static int randomNumber(int upperLimit)	{
-		return r.nextInt(upperLimit);
-	}
+    static void resolveHostname() {
+        try {
+            if (hostname == null) {
+                hostname = InetAddress.getLocalHost().getHostName();
+            }
+        } catch (UnknownHostException e) {
+            hostname = "unknown";
+        }
+    }
 
-	//TODO: OptId must be unique within all taskId TracyEvents. Must use a better mechanism to avoid collisions. (e.g. using IP address, threadId, milliseconds as input)
-	static String generateRandomOptId()	{
-		return Integer.toHexString(randomNumber(0xFFFF)).toUpperCase();
-	}
-	
-	static String generateRandomTaskId()	{
-		return Integer.toHexString(randomNumber(0x7FFFFFFF)).toUpperCase();
-	}
+    static int randomNumber(int upperLimit)	{
+        return r.nextInt(upperLimit);
+    }
 
-	public String getTaskId() {
-		return taskId;
-	}
+    //TODO: OptId must be unique within all taskId TracyEvents. Must use a better mechanism to avoid collisions. (e.g. using IP address, threadId, milliseconds as input)
+    static String generateRandomOptId()	{
+        return Integer.toHexString(randomNumber(0xFFFF)).toUpperCase();
+    }
 
-	public String getParentOptId() {
-		return parentOptId;
-	}
-	
-	public String getOptId() {
-		TracyEvent event = stack.peek();
-		return event.optId;
-	}
+    static String generateRandomTaskId()	{
+        return Integer.toHexString(randomNumber(0x7FFFFFFF)).toUpperCase();
+    }
 
-	public void push(String label) {
-		long msec = System.currentTimeMillis();
-		String eventParentOptId;
-		// Event parent OptId will be lower stack event,
-		if (stack.size() > 0)	{
-			 eventParentOptId = stack.peek().getOptId();
-		}
-		else	{
-			// or context parent in case this is first stack level
-			eventParentOptId = this.parentOptId;
-		}
-		// Generate random optId (must be unique per taskid event set)
-		String optId = generateRandomOptId();
-		// Create new TracyEvent
-		TracyEvent event = new TracyEvent(this.taskId, label, eventParentOptId, optId, msec);
-		event.addAnnotation("host", hostname);
-		stack.add(event);
-	}
+    public String getTaskId() {
+        return taskId;
+    }
 
-	public void pop() {
-		TracyEvent event = stack.pop();
-		event.setMsecAfter(System.currentTimeMillis());
-		poppedList.add(event);
-	}
+    public String getParentOptId() {
+        return parentOptId;
+    }
 
-	public List<TracyEvent> getPoppedList() {
-		return poppedList;
-	}
+    public String getOptId() {
+        TracyEvent event = stack.peek();
+        return event.optId;
+    }
 
-	public void setPoppedList(List<TracyEvent> poppedList) {
-		this.poppedList = poppedList;
-	}
-	
-	public void annotate(String... args) {
-		stack.peek().addAnnotations(args);
-	}
+    public void push(String label) {
+        long msec = System.currentTimeMillis();
+        String eventParentOptId;
+        // Event parent OptId will be lower stack event,
+        if (stack.size() > 0)	{
+            eventParentOptId = stack.peek().getOptId();
+        }
+        else	{
+            // or context parent in case this is first stack level
+            eventParentOptId = this.parentOptId;
+        }
+        // Generate random optId (must be unique per taskid event set)
+        String optId = generateRandomOptId();
+        // Create new TracyEvent
+        TracyEvent event = new TracyEvent(this.taskId, label, eventParentOptId, optId, msec);
+        event.addAnnotation("host", hostname);
+        stack.add(event);
+    }
 
-	public void mergeChildContext(TracyThreadContext ctx) {
-		for (TracyEvent event : ctx.getPoppedList())	{
-			poppedList.add(event);
-		}
-	}
-	
-	
+    public void pop() {
+        TracyEvent event = stack.pop();
+        event.setMsecAfter(System.currentTimeMillis());
+        poppedList.add(event);
+    }
+
+    public List<TracyEvent> getPoppedList() {
+        return poppedList;
+    }
+
+    public void setPoppedList(List<TracyEvent> poppedList) {
+        this.poppedList = poppedList;
+    }
+
+    public void annotate(String... args) {
+        stack.peek().addAnnotations(args);
+    }
+
+    public void mergeChildContext(TracyThreadContext ctx) {
+        for (TracyEvent event : ctx.getPoppedList())	{
+            poppedList.add(event);
+        }
+    }
+
+
 }

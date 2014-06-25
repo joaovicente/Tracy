@@ -25,140 +25,139 @@ import java.util.Map;
  * @author joao.diogo.vicente@gmail.com
  */
 public class Tracy {
-	static final String TRACY_DEFAULT_TASK_ID = "NA";
-	static final String TRACY_DEFAULT_PARENT_OPT_ID = "NA";
-	private final static ThreadLocal <TracyThreadContext> threadContext = new ThreadLocal <TracyThreadContext>();
+    static final String TRACY_DEFAULT_TASK_ID = "NA";
+    static final String TRACY_DEFAULT_PARENT_OPT_ID = "NA";
+    private final static ThreadLocal <TracyThreadContext> threadContext = new ThreadLocal <TracyThreadContext>();
 
-	/**
-	 * Tracy allows to trace execution flow and later represent it as a Directed Acyclic Graph (DAG)
-	 * A Tracy identifier (taskId) starts at the most outbound endpoint exposed by a system<br>
-	 * The taskId is to be propagated across components, JVMs and hosts
-	 * If the endpoint is outside this JVM/component you should have received a taskId and optId from a client.<br>
-	 * @param taskId is a string which allows correlating Tracy events resulting of a endpoint being hit
-	 * @param parentOptId is a string identifying the parent operation which invoked some logic on a local component
-	 */
-	public static void setContext(String taskId, String parentOptId) {
-		threadContext.set(new TracyThreadContext(taskId, parentOptId));
-	}
-	
-	 /**
+    /**
+     * Tracy allows to trace execution flow and later represent it as a Directed Acyclic Graph (DAG)
+     * A Tracy identifier (taskId) starts at the most outbound endpoint exposed by a system<br>
+     * The taskId is to be propagated across components, JVMs and hosts
+     * If the endpoint is outside this JVM/component you should have received a taskId and optId from a client.<br>
+     * @param taskId is a string which allows correlating Tracy events resulting of a endpoint being hit
+     * @param parentOptId is a string identifying the parent operation which invoked some logic on a local component
+     */
+    public static void setContext(String taskId, String parentOptId) {
+        threadContext.set(new TracyThreadContext(taskId, parentOptId));
+    }
+
+    /**
      * Setting context in this manner is highly discouraged.<br>
      * taskId is fundamental to correlate Tracy events.<br>
      * optId is fundamental to place the parent node in the Tracy DAG    
      */	
-	public static void setContext() {
-		setContext(TracyThreadContext.generateRandomTaskId(), TracyThreadContext.generateRandomOptId());
-	}
-	
-	 /**
+    public static void setContext() {
+        setContext(TracyThreadContext.generateRandomTaskId(), TracyThreadContext.generateRandomOptId());
+    }
+
+    /**
      * Call before starting an operation you want to capture elapsed time for.<br>
      * You can nest before() calls if you want to trace both caller and callee methods, 
      * but make sure you call after() for every before().
      * @param label is the name you will see in the trace event report of graph node representation or timeline
      */	
-	public static void before(String label) {
-		TracyThreadContext ctx = threadContext.get();
-		ctx.push(label);
-	}
-	
-	 /**
+    public static void before(String label) {
+        TracyThreadContext ctx = threadContext.get();
+        ctx.push(label);
+    }
+
+    /**
      * Call after finishing an operation you want to capture elapsed time for.<br>
      * @param label is the name you will see in the trace event report of graph node representation or timeline
      */	
-	public static void after(String label) {
-		TracyThreadContext ctx = threadContext.get();
-		ctx.pop();
-	}
+    public static void after(String label) {
+        TracyThreadContext ctx = threadContext.get();
+        ctx.pop();
+    }
 
-	 /**
+    /**
      * before() and after() will capture timing information and hostname in a TracyEvent.<br>
      * annotate() allows capturing other information you want to see in TracyEvent (e.g. bytesReceived, bytesSent, etc)
      * for the TracyEvent for which you last called before() for
      * @param keyValueSequence is the sequence key,value strings you want on the TracyEvent 
      * (e.g. annotate("bytesSent", "103", "bytesReceived", "15432")
      */	
-	public static void annotate(String... keyValueSequence) {
-		TracyThreadContext ctx = threadContext.get();
-		ctx.annotate(keyValueSequence);
-	}
-	
-	 /**
+    public static void annotate(String... keyValueSequence) {
+        TracyThreadContext ctx = threadContext.get();
+        ctx.annotate(keyValueSequence);
+    }
+
+    /**
      * Once all work has been done, and TracyEvents are ready to be collected you can collect them using this method
      * @return list of TracyEvents
      */	
-	public static List<TracyEvent> getEvents() {
-		TracyThreadContext ctx = threadContext.get();
-		return ctx.getPoppedList();
-	}
-	
-	 /**
+    public static List<TracyEvent> getEvents() {
+        TracyThreadContext ctx = threadContext.get();
+        return ctx.getPoppedList();
+    }
+
+    /**
      * Once all work has been done, and TracyEvents are ready to be collected you can collect them using this method
      * This method differs from getEvents() in the sense that the client does not need to know the structure of 
      * TracyEvents to be able to consume them.
      * @return list of TracyEvent maps
      */	
-	public static List<Map<String, String>> getEventsAsMaps() {
-		List<Map<String, String>> list = new ArrayList<Map<String, String>>();
-		TracyThreadContext ctx = threadContext.get();
-		for (TracyEvent event : ctx.getPoppedList())	{
-			list.add(event.toMap());
-		}
-		return list;
-	}
-	
-	public static String getTaskId() {
-		TracyThreadContext ctx = threadContext.get();
-		return ctx.getTaskId();
-	}
-	
-	public static String getParentOptId() {
-		TracyThreadContext ctx = threadContext.get();
-		return ctx.getParentOptId();
-	}
-	/**
-	* Creates Tracy worker thread context to be bound to the worker thread
-	* The context returned contains only parentage information
-	* Note: This needs to be called from the requester thread
-	* @return Context to be bound to the worker thread
-	*/
-	public static TracyThreadContext createWorkerTheadContext() {
-		TracyThreadContext currentCtx = threadContext.get();
-		TracyThreadContext workerCtx = new TracyThreadContext(
-				currentCtx.getTaskId(), currentCtx.getOptId());
-		return workerCtx;
-	}
+    public static List<Map<String, String>> getEventsAsMaps() {
+        List<Map<String, String>> list = new ArrayList<Map<String, String>>();
+        TracyThreadContext ctx = threadContext.get();
+        for (TracyEvent event : ctx.getPoppedList())	{
+            list.add(event.toMap());
+        }
+        return list;
+    }
 
-	
-	/**
-	* Attaches parentage context created by createWorkerThread()<br>
-	* Once this context is attached before() after() will create TracyEvents
-	* within the worker thread.
-	* @return Context to be bound to the worker thread
-	*/
-	public static void setWorkerContext(TracyThreadContext ctx) {
-		threadContext.set(ctx);
-		
-	}
+    public static String getTaskId() {
+        TracyThreadContext ctx = threadContext.get();
+        return ctx.getTaskId();
+    }
 
-	/**
-	* When called from the worker thread, will return the worker TracyThreadContext 
-	* It is the responsibility of the caller to propagate this context using 
-	* TracyableData.setTracyContext()
-	* Note: This is to be called from the worker thread
-	* @return worker TracyThreadContext 
-	*/
-	public static TracyThreadContext getWorkerContext() {
-		return threadContext.get();
-	}
+    public static String getParentOptId() {
+        TracyThreadContext ctx = threadContext.get();
+        return ctx.getParentOptId();
+    }
+    /**
+     * Creates Tracy worker thread context to be bound to the worker thread
+     * The context returned contains only parentage information
+     * Note: This needs to be called from the requester thread
+     * @return Context to be bound to the worker thread
+     */
+    public static TracyThreadContext createWorkerTheadContext() {
+        TracyThreadContext currentCtx = threadContext.get();
+        TracyThreadContext workerCtx = new TracyThreadContext(
+                currentCtx.getTaskId(), currentCtx.getOptId());
+        return workerCtx;
+    }
 
-	/**
-	* When called from the requester thread, will merge worker TracyThreadContext into the 
-	* requester TracyThreadContext
-	* @return worker TracyThreadContext 
-	*/
-	public static void mergeWorkerContext(TracyThreadContext tracyThreadContext) {
-		TracyThreadContext ctx = threadContext.get();
-		ctx.mergeChildContext(tracyThreadContext);
-		
-	}
+
+    /**
+     * Attaches parentage context created by createWorkerThread()<br>
+     * Once this context is attached before() after() will create TracyEvents
+     * within the worker thread.
+     * @return Context to be bound to the worker thread
+     */
+    public static void setWorkerContext(TracyThreadContext ctx) {
+        threadContext.set(ctx);
+    }
+
+    /**
+     * When called from the worker thread, will return the worker TracyThreadContext 
+     * It is the responsibility of the caller to propagate this context using 
+     * TracyableData.setTracyContext()
+     * Note: This is to be called from the worker thread
+     * @return worker TracyThreadContext 
+     */
+    public static TracyThreadContext getWorkerContext() {
+        return threadContext.get();
+    }
+
+    /**
+     * When called from the requester thread, will merge worker TracyThreadContext into the 
+     * requester TracyThreadContext
+     * @return worker TracyThreadContext 
+     */
+    public static void mergeWorkerContext(TracyThreadContext tracyThreadContext) {
+        TracyThreadContext ctx = threadContext.get();
+        ctx.mergeChildContext(tracyThreadContext);
+
+    }
 }
