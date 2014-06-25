@@ -11,6 +11,7 @@ import ch.qos.logback.classic.Logger;
 
 public class TracyTestPerf {
     private static final Logger logger = (Logger) LoggerFactory.getLogger(TracyTestPerf.class);
+    private static boolean logToFile = false;
 
     @Rule
     public ContiPerfRule i = new ContiPerfRule();
@@ -33,8 +34,10 @@ public class TracyTestPerf {
         Tracy.after("L13");
         Tracy.after("L1");
         List<TracyEvent> events = Tracy.getEvents();
-        for (TracyEvent event : events)	{
-            logger.info(event.toString());
+        if (logToFile)  {
+            for (TracyEvent event : events)	{
+                logger.info(event.toString());
+            }
         }
     }
 }
