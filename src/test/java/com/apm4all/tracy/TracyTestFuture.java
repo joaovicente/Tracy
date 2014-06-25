@@ -1,6 +1,9 @@
 package com.apm4all.tracy;
 
+import static org.junit.Assert.*;
+
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -21,7 +24,7 @@ public class TracyTestFuture {
 	private Future<TracyableData> futureIt(final int i)	{
 		Callable<TracyableData> worker = null;
 		System.out.println("Executing future");
-		// Creates Tracy worker thread context which will be attached to the worker thread
+		// Creates Tracy worker thread context to be bound to the worker thread
 		final TracyThreadContext ctx = Tracy.createWorkerTheadContext();
 		worker = new Callable<TracyableData>() {
 			public TracyableData call() throws Exception {
@@ -41,10 +44,12 @@ public class TracyTestFuture {
 	}
 	
 	@Test
-	public void testFutureTrace() {
+	public void testFutureTrace() throws InterruptedException {
 		final int NUM_FUTURES = 2;
 		ArrayList<Future<TracyableData>> futuresList = new ArrayList<Future<TracyableData>>();
 		int i;
+		Tracy.setContext();
+		Tracy.before("Requestor");
 		try {
 			for (i=0; i<NUM_FUTURES ; i++)	{
 				System.out.println("Calling future " +i);
@@ -56,13 +61,16 @@ public class TracyTestFuture {
 				System.out.println("Polling future");
 				TracyableData out =  future.get();
 				String str = (String) out.getData();
-				System.out.println("Got future " + out);
+				System.out.println("Got future " + str);
+                // Merge worker trace into the task handler thread Tracy context
 				Tracy.mergeWorkerContext(out.getTracyThreadContext());
-                //TODO: Create Tracy.mergeFutureThreadContext(ctx);
 			}
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+		Tracy.after("Requestor");
+		List<TracyEvent> events = Tracy.getEvents();
+		assertEquals(3, events.size());
 	}
 	
 }

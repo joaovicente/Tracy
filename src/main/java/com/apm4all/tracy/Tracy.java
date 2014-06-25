@@ -27,7 +27,7 @@ import java.util.Map;
 public class Tracy {
 	static final String TRACY_DEFAULT_TASK_ID = "NA";
 	static final String TRACY_DEFAULT_PARENT_OPT_ID = "NA";
-	private final static ThreadLocal <TracyThreadContext> threadContext = new ThreadLocal <TracyThreadContext>();;
+	private final static ThreadLocal <TracyThreadContext> threadContext = new ThreadLocal <TracyThreadContext>();
 
 	/**
 	 * Tracy allows to trace execution flow and later represent it as a Directed Acyclic Graph (DAG)
@@ -115,24 +115,50 @@ public class Tracy {
 		TracyThreadContext ctx = threadContext.get();
 		return ctx.getParentOptId();
 	}
-
+	/**
+	* Creates Tracy worker thread context to be bound to the worker thread
+	* The context returned contains only parentage information
+	* Note: This needs to be called from the requester thread
+	* @return Context to be bound to the worker thread
+	*/
 	public static TracyThreadContext createWorkerTheadContext() {
-		// TODO Auto-generated method stub
-		return null;
+		TracyThreadContext currentCtx = threadContext.get();
+		TracyThreadContext workerCtx = new TracyThreadContext(
+				currentCtx.getTaskId(), currentCtx.getOptId());
+		return workerCtx;
 	}
 
+	
+	/**
+	* Attaches parentage context created by createWorkerThread()<br>
+	* Once this context is attached before() after() will create TracyEvents
+	* within the worker thread.
+	* @return Context to be bound to the worker thread
+	*/
 	public static void setWorkerContext(TracyThreadContext ctx) {
-		// TODO Auto-generated method stub
+		threadContext.set(ctx);
 		
 	}
 
+	/**
+	* When called from the worker thread, will return the worker TracyThreadContext 
+	* It is the responsibility of the caller to propagate this context using 
+	* TracyableData.setTracyContext()
+	* Note: This is to be called from the worker thread
+	* @return worker TracyThreadContext 
+	*/
 	public static TracyThreadContext getWorkerContext() {
-		// TODO Auto-generated method stub
-		return null;
+		return threadContext.get();
 	}
 
+	/**
+	* When called from the requester thread, will merge worker TracyThreadContext into the 
+	* requester TracyThreadContext
+	* @return worker TracyThreadContext 
+	*/
 	public static void mergeWorkerContext(TracyThreadContext tracyThreadContext) {
-		// TODO Auto-generated method stub
+		TracyThreadContext ctx = threadContext.get();
+		ctx.mergeChildContext(tracyThreadContext);
 		
 	}
 }

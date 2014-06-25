@@ -72,6 +72,11 @@ public class TracyThreadContext {
 	public String getParentOptId() {
 		return parentOptId;
 	}
+	
+	public String getOptId() {
+		TracyEvent event = stack.peek();
+		return event.optId;
+	}
 
 	public void push(String label) {
 		long msec = System.currentTimeMillis();
@@ -109,4 +114,12 @@ public class TracyThreadContext {
 	public void annotate(String... args) {
 		stack.peek().addAnnotations(args);
 	}
+
+	public void mergeChildContext(TracyThreadContext ctx) {
+		for (TracyEvent event : ctx.getPoppedList())	{
+			poppedList.add(event);
+		}
+	}
+	
+	
 }
