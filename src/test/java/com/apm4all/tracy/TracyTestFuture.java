@@ -73,4 +73,36 @@ public class TracyTestFuture {
         assertEquals("Worker-1", events.get(1).getLabel());
         assertEquals("Requestor", events.get(2).getLabel());
     }
+    
+    @Test
+    public void testFutureTrace_disabled() throws InterruptedException {
+        final int NUM_FUTURES = 2;
+        ArrayList<Future<TracyableData>> futuresList = new ArrayList<Future<TracyableData>>();
+        int i;
+        // Intentionally don't setup context
+        // Tracy.setContext(); 
+        Tracy.before("Requestor");
+        try {
+            for (i=0; i<NUM_FUTURES ; i++)	{
+//                System.out.println("Calling future " +i);
+                futuresList.add(futureIt(i));
+            }
+
+            i=1;
+            for (Future<TracyableData> future : futuresList)	{
+//                System.out.println("Polling future");
+                TracyableData out =  future.get();
+                String str = (String) out.getData();
+                assertEquals("pool-1-thread-"+Integer.toString(i), str);
+//                System.out.println("Got future " + str);
+                // Merge worker trace into the task handler thread Tracy context
+                Tracy.mergeWorkerContext(out.getTracyThreadContext());
+                i++;
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        Tracy.after("Requestor");
+        assertEquals(null, Tracy.getEvents());
+    }
 }

@@ -17,7 +17,7 @@ public class TracyTestPerf {
     public ContiPerfRule i = new ContiPerfRule();
 
     @PerfTest(threads=1, duration=5000, rampUp = 100)
-    @Required(average = 1, percentile99=1, max = 20)
+    @Required(average = 1, percentile99=1, max = 50)
     @Test
     public void testQuadEventAndAnnotationTracePerformance() {
         Tracy.setContext();

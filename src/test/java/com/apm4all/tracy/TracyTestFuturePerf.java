@@ -44,13 +44,47 @@ public class TracyTestFuturePerf {
 
     
     @PerfTest(threads=1, duration=5000, rampUp = 100)
-    @Required(average = 1, percentile99=1, max = 20)
+    @Required(average = 1, percentile99=1, max = 50)
     @Test
     public void testFutureTracePerf() throws InterruptedException {
         final int NUM_FUTURES = 8;
         ArrayList<Future<TracyableData>> futuresList = new ArrayList<Future<TracyableData>>();
         int i;
         Tracy.setContext();
+        Tracy.before("Requestor");
+        try {
+            for (i=0; i<NUM_FUTURES ; i++)  {
+                futuresList.add(futureIt(i));
+            }
+
+            for (Future<TracyableData> future : futuresList)    {
+                TracyableData out =  future.get();
+                @SuppressWarnings("unused")
+                String str = (String) out.getData();
+                Tracy.mergeWorkerContext(out.getTracyThreadContext());
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        Tracy.after("Requestor");
+        List<TracyEvent> events = Tracy.getEvents();
+        if (logToFile)  {
+            for (TracyEvent event : events)	{
+                logger.info(event.toString());
+            }
+        }
+    }
+    
+    
+    @PerfTest(threads=1, duration=5000, rampUp = 100)
+    @Required(average = 1, percentile99=1, max = 50)
+    @Test
+    public void testFutureTracePerf_disabled() throws InterruptedException {
+        final int NUM_FUTURES = 8;
+        ArrayList<Future<TracyableData>> futuresList = new ArrayList<Future<TracyableData>>();
+        int i;
+        // Intentionally don't setup context
+        // Tracy.setContext(); 
         Tracy.before("Requestor");
         try {
             for (i=0; i<NUM_FUTURES ; i++)  {

@@ -58,7 +58,9 @@ public class Tracy {
      */	
     public static void before(String label) {
         TracyThreadContext ctx = threadContext.get();
-        ctx.push(label);
+        if (isValidContext(ctx))    {
+            ctx.push(label);
+        }
     }
 
     /**
@@ -67,7 +69,9 @@ public class Tracy {
      */	
     public static void after(String label) {
         TracyThreadContext ctx = threadContext.get();
-        ctx.pop();
+        if (isValidContext(ctx))   {
+            ctx.pop();
+        }
     }
 
     /**
@@ -88,7 +92,11 @@ public class Tracy {
      */	
     public static List<TracyEvent> getEvents() {
         TracyThreadContext ctx = threadContext.get();
-        return ctx.getPoppedList();
+        List<TracyEvent> events = null;
+        if (isValidContext(ctx)) {
+            events = ctx.getPoppedList();
+        }
+        return events;
     }
 
     /**
@@ -123,11 +131,13 @@ public class Tracy {
      */
     public static TracyThreadContext createWorkerTheadContext() {
         TracyThreadContext currentCtx = threadContext.get();
-        TracyThreadContext workerCtx = new TracyThreadContext(
+        TracyThreadContext workerCtx = null;
+        if (isValidContext(currentCtx))  {
+            workerCtx = new TracyThreadContext(
                 currentCtx.getTaskId(), currentCtx.getOptId());
+        }
         return workerCtx;
     }
-
 
     /**
      * Attaches parentage context created by createWorkerThread()<br>
@@ -157,7 +167,12 @@ public class Tracy {
      */
     public static void mergeWorkerContext(TracyThreadContext tracyThreadContext) {
         TracyThreadContext ctx = threadContext.get();
-        ctx.mergeChildContext(tracyThreadContext);
-
+        if (isValidContext(ctx)) {
+            ctx.mergeChildContext(tracyThreadContext);
+        }
+    }
+    
+    private static boolean isValidContext(TracyThreadContext ctx) {
+        return (null != ctx);
     }
 }
