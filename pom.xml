@@ -4,7 +4,7 @@
 	<groupId>com.apm4all.tracy</groupId>
 	<artifactId>Tracy</artifactId>
 	<packaging>jar</packaging>
-	<version>1.0.0</version>
+	<version>1.0.1-SNAPSHOT</version>
 	<name>Tracy</name>
 	<url>http://maven.apache.org</url>
 	<dependencies>
