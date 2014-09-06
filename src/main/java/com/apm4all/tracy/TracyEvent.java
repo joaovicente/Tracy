@@ -67,6 +67,30 @@ public class TracyEvent {
         }
         return map;
     }
+    
+    private void addJsonElement(StringBuilder sb, String key, String value, boolean first)	{
+       if (false == first)	{
+           sb.append(",");
+        }
+        sb.append("\""+key+"\":\""+value+"\"");
+    }
+    
+    public String toJsonString() {
+        StringBuilder jsonBuffer = new StringBuilder(200);
+        jsonBuffer.append("{");
+        addJsonElement(jsonBuffer, "taskId", taskId, true);
+        addJsonElement(jsonBuffer, "parentOptId", parentOptId, false);
+        addJsonElement(jsonBuffer, "label", label, false);
+        addJsonElement(jsonBuffer, "optId", optId, false);
+        addJsonElement(jsonBuffer, "msecBefore", Long.toString(msecBefore), false);
+        addJsonElement(jsonBuffer, "msecAfter", Long.toString(msecAfter), false);
+        addJsonElement(jsonBuffer, "msecElapsed", Long.toString(msecElapsed), false);
+        for (String key : annotations.keySet())	{
+        	addJsonElement(jsonBuffer, key, annotations.get(key), false);
+        }
+        jsonBuffer.append("}");
+        return jsonBuffer.toString();
+    }
 
     public void addAnnotation(String key, String value)	{
         annotations.put(key, value);

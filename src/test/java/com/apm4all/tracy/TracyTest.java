@@ -17,6 +17,8 @@
 package com.apm4all.tracy;
 
 import static org.junit.Assert.*;
+
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -101,5 +103,73 @@ public class TracyTest {
         assertEquals(L1_LABEL_NAME, map.get("label"));
         assertEquals("10", map.get("sizeOut"));
         assertEquals("2000", map.get("sizeIn"));
+    }
+
+    private String jsonEvent(
+    		String taskId, 
+    		String parentOptId, 
+    		String label, 
+    		String optId, 
+    		String msecBefore, 
+    		String msecAfter, 
+    		String msecElapsed,
+    		String host,
+    		Map<String, String> annotations 
+    		)	
+    {
+    	StringBuilder sb = new StringBuilder(200);
+    	sb.append("{");
+    	sb.append("\"taskId\":\"" + taskId + "\"");
+    	sb.append(",\"parentOptId\":\"" + parentOptId + "\"");
+    	sb.append(",\"label\":\"" + label + "\"");
+    	sb.append(",\"optId\":\"" + optId + "\"");
+    	sb.append(",\"msecBefore\":\"" + msecBefore + "\"");
+    	sb.append(",\"msecAfter\":\"" + msecAfter + "\"");
+    	sb.append(",\"msecElapsed\":\"" + msecElapsed + "\"");
+    	for (String key : annotations.keySet())	{
+    		sb.append(",\"" + key + "\":\"" + annotations.get(key) + "\"");
+    	}
+    	sb.append(",\"host\":\"" + host + "\"");
+    	sb.append("}");
+    	return sb.toString();
+    }
+    
+    @Test
+    public void testGetEventsAsJsonString_withAnnotations() throws InterruptedException {
+        Tracy.setContext(TASK_ID, PARENT_OPT_ID);
+        Tracy.before(L1_LABEL_NAME);
+        Tracy.annotate("sizeOut", "10", "sizeIn", "2000");
+        Thread.sleep(10);
+        Tracy.after(L1_LABEL_NAME);
+        Tracy.before(L11_LABEL_NAME);
+        Thread.sleep(10);
+        Tracy.after(L11_LABEL_NAME);
+        
+        Map<String, String> annotations = new HashMap<String, String>();
+        annotations.put("sizeOut", "10");
+        annotations.put("sizeIn", "2000");
+        List<String> events = Tracy.getEventsAsJson();
+        List<Map<String, String>> eventsAsMaps = Tracy.getEventsAsMaps();
+        assertEquals(2, events.size());
+        
+        String jsonEvent1 = jsonEvent(
+        		TASK_ID, PARENT_OPT_ID, L1_LABEL_NAME, 
+        		eventsAsMaps.get(0).get("optId"), 
+        		eventsAsMaps.get(0).get("msecBefore"), 
+        		eventsAsMaps.get(0).get("msecAfter"), 
+        		eventsAsMaps.get(0).get("msecElapsed"), 
+        		eventsAsMaps.get(0).get("host"), 
+        		annotations);
+        assertEquals(jsonEvent1, events.get(0));
+        annotations.clear();
+        String jsonEvent2 = jsonEvent(
+        		TASK_ID, PARENT_OPT_ID, L11_LABEL_NAME, 
+        		eventsAsMaps.get(1).get("optId"), 
+        		eventsAsMaps.get(1).get("msecBefore"), 
+        		eventsAsMaps.get(1).get("msecAfter"), 
+        		eventsAsMaps.get(1).get("msecElapsed"), 
+        		eventsAsMaps.get(1).get("host"), 
+        		annotations);
+        assertEquals(jsonEvent2, events.get(1));
     }
 }

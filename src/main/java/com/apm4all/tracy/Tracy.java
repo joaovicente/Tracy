@@ -114,6 +114,20 @@ public class Tracy {
         return list;
     }
 
+    
+    /**
+     * Gets List of Tracy events in JSON format
+     * @return list of Tracy JSONified events
+     */	
+	public static List<String> getEventsAsJson() {
+		List<String> list = new ArrayList<String>(20);
+        TracyThreadContext ctx = threadContext.get();
+        for (TracyEvent event : ctx.getPoppedList())	{
+            list.add(event.toJsonString());
+        }
+        return list;
+	}
+	
     public static String getTaskId() {
         TracyThreadContext ctx = threadContext.get();
         return ctx.getTaskId();
@@ -175,4 +189,5 @@ public class Tracy {
     private static boolean isValidContext(TracyThreadContext ctx) {
         return (null != ctx);
     }
+
 }
