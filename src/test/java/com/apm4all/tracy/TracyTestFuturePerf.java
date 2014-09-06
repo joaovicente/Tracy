@@ -24,12 +24,12 @@ public class TracyTestFuturePerf {
     @Rule
     public ContiPerfRule i = new ContiPerfRule();
 
-    private Future<TracyableData> futureIt(final int i)	{
-        Callable<TracyableData> worker = null;
+    private Future<TracyableFutureResponse> futureIt(final int i)	{
+        Callable<TracyableFutureResponse> worker = null;
         final TracyThreadContext ctx = Tracy.createWorkerTheadContext();
-        worker = new Callable<TracyableData>() {
-            public TracyableData call() throws Exception {
-                TracyableData td = new TracyableData();
+        worker = new Callable<TracyableFutureResponse>() {
+            public TracyableFutureResponse call() throws Exception {
+                TracyableFutureResponse td = new TracyableFutureResponse();
                 Tracy.setWorkerContext(ctx);
                 Tracy.before("Worker-" + Integer.toString(i));
                 String out = Thread.currentThread().getName();
@@ -48,7 +48,7 @@ public class TracyTestFuturePerf {
     @Test
     public void testFutureTracePerf() throws InterruptedException {
         final int NUM_FUTURES = 8;
-        ArrayList<Future<TracyableData>> futuresList = new ArrayList<Future<TracyableData>>();
+        ArrayList<Future<TracyableFutureResponse>> futuresList = new ArrayList<Future<TracyableFutureResponse>>();
         int i;
         Tracy.setContext();
         Tracy.before("Requestor");
@@ -57,8 +57,8 @@ public class TracyTestFuturePerf {
                 futuresList.add(futureIt(i));
             }
 
-            for (Future<TracyableData> future : futuresList)    {
-                TracyableData out =  future.get();
+            for (Future<TracyableFutureResponse> future : futuresList)    {
+                TracyableFutureResponse out =  future.get();
                 @SuppressWarnings("unused")
                 String str = (String) out.getData();
                 Tracy.mergeWorkerContext(out.getTracyThreadContext());
@@ -81,7 +81,7 @@ public class TracyTestFuturePerf {
     @Test
     public void testFutureTracePerf_disabled() throws InterruptedException {
         final int NUM_FUTURES = 8;
-        ArrayList<Future<TracyableData>> futuresList = new ArrayList<Future<TracyableData>>();
+        ArrayList<Future<TracyableFutureResponse>> futuresList = new ArrayList<Future<TracyableFutureResponse>>();
         int i;
         // Intentionally don't setup context
         // Tracy.setContext(); 
@@ -91,8 +91,8 @@ public class TracyTestFuturePerf {
                 futuresList.add(futureIt(i));
             }
 
-            for (Future<TracyableData> future : futuresList)    {
-                TracyableData out =  future.get();
+            for (Future<TracyableFutureResponse> future : futuresList)    {
+                TracyableFutureResponse out =  future.get();
                 @SuppressWarnings("unused")
                 String str = (String) out.getData();
                 Tracy.mergeWorkerContext(out.getTracyThreadContext());

@@ -16,7 +16,7 @@
 
 package com.apm4all.tracy;
 
-public class TracyableData {
+public class TracyableFutureResponse {
 	private Object data;
 	private TracyThreadContext tracyThreadContext;
 

@@ -115,9 +115,11 @@ public class TracyThreadContext {
     }
 
     public void mergeChildContext(TracyThreadContext ctx) {
-        for (TracyEvent event : ctx.getPoppedList())	{
-            poppedList.add(event);
-        }
+    	if (null != ctx)	{
+    		for (TracyEvent event : ctx.getPoppedList())	{
+    			poppedList.add(event);
+    		}
+    	}
     }
 
 

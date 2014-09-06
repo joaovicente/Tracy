@@ -17,20 +17,23 @@ public class TracyTestFuture {
 
     //TODO: Create TracyableFuture interface providing getData() and getTracyThreadContext()
 
-    private Future<TracyableData> futureIt(final int i)	{
-        Callable<TracyableData> worker = null;
+    private Future<TracyableFutureResponse> futureIt(final TracyableFutureRequest input)	{
+        Callable<TracyableFutureResponse> worker = null;
 //        System.out.println("Executing future");
         // Creates Tracy worker thread context to be bound to the worker thread
         final TracyThreadContext ctx = Tracy.createWorkerTheadContext();
-        worker = new Callable<TracyableData>() {
-            public TracyableData call() throws Exception {
-                TracyableData td = new TracyableData();
+        worker = new Callable<TracyableFutureResponse>() {
+            public TracyableFutureResponse call() throws Exception {
+                TracyableFutureResponse td = new TracyableFutureResponse();
                 // Binds context to worker thread so static Tracy calls can be made (e.g. before() after())
-                Tracy.setWorkerContext(ctx);
+                if (input.isTraced())	{
+                    Tracy.setWorkerContext(ctx);
+                }
 //                System.out.println("Executing future (call) ");
-                Tracy.before("Worker-" + Integer.toString(i));
-                String out = Thread.currentThread().getName();
-                Tracy.after("Worker-" + Integer.toString(i));
+                Thread.sleep(((Integer)(input.getRequest()))*100);
+                Tracy.before("Worker-" + input.getRequest().toString());
+                String out = input.getRequest().toString();
+                Tracy.after("Worker-" + input.getRequest().toString());
                 td.setData(out);
                 td.setTracyThreadContext(Tracy.getWorkerContext());
                 return td;
@@ -42,22 +45,23 @@ public class TracyTestFuture {
     @Test
     public void testFutureTrace() throws InterruptedException {
         final int NUM_FUTURES = 2;
-        ArrayList<Future<TracyableData>> futuresList = new ArrayList<Future<TracyableData>>();
+        ArrayList<Future<TracyableFutureResponse>> futuresList = new ArrayList<Future<TracyableFutureResponse>>();
         int i;
+        
         Tracy.setContext();
         Tracy.before("Requestor");
         try {
             for (i=0; i<NUM_FUTURES ; i++)	{
 //                System.out.println("Calling future " +i);
-                futuresList.add(futureIt(i));
+                futuresList.add(futureIt(new TracyableFutureRequest(true, new Integer(i))));
             }
 
-            i=1;
-            for (Future<TracyableData> future : futuresList)	{
+            i=0;
+            for (Future<TracyableFutureResponse> future : futuresList)	{
 //                System.out.println("Polling future");
-                TracyableData out =  future.get();
+                TracyableFutureResponse out =  future.get();
                 String str = (String) out.getData();
-                assertEquals("pool-1-thread-"+Integer.toString(i), str);
+                assertEquals(Integer.toString(i), str);
 //                System.out.println("Got future " + str);
                 // Merge worker trace into the task handler thread Tracy context
                 Tracy.mergeWorkerContext(out.getTracyThreadContext());
@@ -77,23 +81,23 @@ public class TracyTestFuture {
     @Test
     public void testFutureTrace_disabled() throws InterruptedException {
         final int NUM_FUTURES = 2;
-        ArrayList<Future<TracyableData>> futuresList = new ArrayList<Future<TracyableData>>();
+        ArrayList<Future<TracyableFutureResponse>> futuresList = new ArrayList<Future<TracyableFutureResponse>>();
         int i;
-        // Intentionally don't setup context
-        // Tracy.setContext(); 
+       
+//        Tracy.setContext();
         Tracy.before("Requestor");
         try {
             for (i=0; i<NUM_FUTURES ; i++)	{
 //                System.out.println("Calling future " +i);
-                futuresList.add(futureIt(i));
+                futuresList.add(futureIt(new TracyableFutureRequest(false, new Integer(i))));
             }
 
-            i=1;
-            for (Future<TracyableData> future : futuresList)	{
+            i=0;
+            for (Future<TracyableFutureResponse> future : futuresList)	{
 //                System.out.println("Polling future");
-                TracyableData out =  future.get();
+                TracyableFutureResponse out =  future.get();
                 String str = (String) out.getData();
-                assertEquals("pool-1-thread-"+Integer.toString(i), str);
+                assertEquals(Integer.toString(i), str);
 //                System.out.println("Got future " + str);
                 // Merge worker trace into the task handler thread Tracy context
                 Tracy.mergeWorkerContext(out.getTracyThreadContext());
