@@ -49,6 +49,21 @@ public class Tracy {
     public static void setContext() {
         setContext(TracyThreadContext.generateRandomTaskId(), TracyThreadContext.generateRandomOptId());
     }
+    
+    /**
+     * Clearing context ensures there is no residual context sticking to a recycled thread.<br>
+     */	
+    public static void clearContext() {
+        threadContext.set(null);
+    }
+    
+    /**
+     * Clearing context ensures there is no residual context sticking to a recycled thread.<br>
+     * Currently just calls clearContext but may change in future so creating a distintion in the API<br>
+     */	
+    public static void clearWorkerContext() {
+        clearContext();
+    }
 
     /**
      * Call before starting an operation you want to capture elapsed time for.<br>

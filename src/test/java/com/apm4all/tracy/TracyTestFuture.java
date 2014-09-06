@@ -29,6 +29,9 @@ public class TracyTestFuture {
                 if (request.isTraced())	{
                     Tracy.setWorkerContext(ctx);
                 }
+                else	{
+                	Tracy.clearWorkerContext();
+                }
 //                System.out.println("Executing future (call) ");
                 Thread.sleep(((Integer)(request.getData()))*100);
                 Tracy.before("Worker-" + request.getData().toString());
@@ -84,7 +87,7 @@ public class TracyTestFuture {
         ArrayList<Future<TracyableFutureResponse>> futuresList = new ArrayList<Future<TracyableFutureResponse>>();
         int i;
        
-//        Tracy.setContext();
+        Tracy.clearContext();
         Tracy.before("Requestor");
         try {
             for (i=0; i<NUM_FUTURES ; i++)	{
