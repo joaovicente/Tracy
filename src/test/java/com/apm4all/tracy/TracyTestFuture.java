@@ -17,7 +17,7 @@ public class TracyTestFuture {
 
     //TODO: Create TracyableFuture interface providing getData() and getTracyThreadContext()
 
-    private Future<TracyableFutureResponse> futureIt(final TracyableFutureRequest input)	{
+    private Future<TracyableFutureResponse> futureIt(final TracyableFutureRequest request)	{
         Callable<TracyableFutureResponse> worker = null;
 //        System.out.println("Executing future");
         // Creates Tracy worker thread context to be bound to the worker thread
@@ -26,14 +26,14 @@ public class TracyTestFuture {
             public TracyableFutureResponse call() throws Exception {
                 TracyableFutureResponse td = new TracyableFutureResponse();
                 // Binds context to worker thread so static Tracy calls can be made (e.g. before() after())
-                if (input.isTraced())	{
+                if (request.isTraced())	{
                     Tracy.setWorkerContext(ctx);
                 }
 //                System.out.println("Executing future (call) ");
-                Thread.sleep(((Integer)(input.getRequest()))*100);
-                Tracy.before("Worker-" + input.getRequest().toString());
-                String out = input.getRequest().toString();
-                Tracy.after("Worker-" + input.getRequest().toString());
+                Thread.sleep(((Integer)(request.getData()))*100);
+                Tracy.before("Worker-" + request.getData().toString());
+                String out = request.getData().toString();
+                Tracy.after("Worker-" + request.getData().toString());
                 td.setData(out);
                 td.setTracyThreadContext(Tracy.getWorkerContext());
                 return td;

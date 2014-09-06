@@ -2,19 +2,19 @@ package com.apm4all.tracy;
 
 public class TracyableFutureRequest {
 	private boolean traced;
-	Object request;
+	private Object data;
 
-	public TracyableFutureRequest(boolean traced, Object request) {
+	public TracyableFutureRequest(boolean traced, Object data) {
 		super();
 		this.traced = traced;
-		this.request = request;
+		this.data = data;
 	}
 	
 	public boolean isTraced()	{
 		return(traced);
 	}
 
-	public Object getRequest() {
-		return request;
+	public Object getData() {
+		return data;
 	}
 }
