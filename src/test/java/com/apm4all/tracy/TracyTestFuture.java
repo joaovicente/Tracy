@@ -34,6 +34,7 @@ public class TracyTestFuture {
                 }
 //                System.out.println("Executing future (call) ");
                 Thread.sleep(((Integer)(request.getData()))*100);
+                // request.getData() retrieves input data the worker required
                 Tracy.before("Worker-" + request.getData().toString());
                 String out = request.getData().toString();
                 Tracy.after("Worker-" + request.getData().toString());
