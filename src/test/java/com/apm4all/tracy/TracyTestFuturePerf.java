@@ -24,16 +24,25 @@ public class TracyTestFuturePerf {
     @Rule
     public ContiPerfRule i = new ContiPerfRule();
 
-    private Future<TracyableFutureResponse> futureIt(final int i)	{
+    private Future<TracyableFutureResponse> futureIt(final TracyableFutureRequest request)	{
         Callable<TracyableFutureResponse> worker = null;
+//        System.out.println("Executing future");
+        // Creates Tracy worker thread context to be bound to the worker thread
         final TracyThreadContext ctx = Tracy.createWorkerTheadContext();
         worker = new Callable<TracyableFutureResponse>() {
             public TracyableFutureResponse call() throws Exception {
                 TracyableFutureResponse td = new TracyableFutureResponse();
-                Tracy.setWorkerContext(ctx);
-                Tracy.before("Worker-" + Integer.toString(i));
-                String out = Thread.currentThread().getName();
-                Tracy.after("Worker-" + Integer.toString(i));
+                // Binds context to worker thread so static Tracy calls can be made (e.g. before() after())
+                if (request.isTraced())	{
+                    Tracy.setWorkerContext(ctx);
+                }
+                else	{
+                	Tracy.clearWorkerContext();
+                }
+//                System.out.println("Executing future (call) ");
+                Tracy.before("Worker-" + request.getData().toString());
+                String out = request.getData().toString();
+                Tracy.after("Worker-" + request.getData().toString());
                 td.setData(out);
                 td.setTracyThreadContext(Tracy.getWorkerContext());
                 return td;
@@ -41,7 +50,6 @@ public class TracyTestFuturePerf {
         };
         return executor.submit(worker);
     }
-
     
     @PerfTest(threads=1, duration=5000, rampUp = 100)
     @Required(average = 1, percentile99=1, max = 50)
@@ -54,7 +62,7 @@ public class TracyTestFuturePerf {
         Tracy.before("Requestor");
         try {
             for (i=0; i<NUM_FUTURES ; i++)  {
-                futuresList.add(futureIt(i));
+                futuresList.add(futureIt(new TracyableFutureRequest(true, new Integer(i))));
             }
 
             for (Future<TracyableFutureResponse> future : futuresList)    {
@@ -84,11 +92,11 @@ public class TracyTestFuturePerf {
         ArrayList<Future<TracyableFutureResponse>> futuresList = new ArrayList<Future<TracyableFutureResponse>>();
         int i;
         // Intentionally don't setup context
-        // Tracy.setContext(); 
+        Tracy.clearContext(); 
         Tracy.before("Requestor");
         try {
             for (i=0; i<NUM_FUTURES ; i++)  {
-                futuresList.add(futureIt(i));
+                futuresList.add(futureIt(new TracyableFutureRequest(true, new Integer(i))));
             }
 
             for (Future<TracyableFutureResponse> future : futuresList)    {
