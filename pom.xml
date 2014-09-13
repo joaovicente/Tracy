@@ -59,4 +59,9 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+    <plugin>
+        <groupId>org.eluder.coveralls</groupId>
+        <artifactId>coveralls-maven-plugin</artifactId>
+        <version>2.2.0</version>
+    </plugin>
 </project>
