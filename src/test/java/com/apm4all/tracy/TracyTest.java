@@ -63,25 +63,6 @@ public class TracyTest {
         assertTrue(event.getMsecElapsed() > event.getMsecAfter()  - event.getMsecBefore() - MSEC_SLEEP_JITTER);
         assertTrue(event.getMsecElapsed() < event.getMsecAfter()  - event.getMsecBefore() + MSEC_SLEEP_JITTER);
     }
-    
-    
-    @Test
-    public void testGetEvents_intAnnotation() throws InterruptedException {
-        String intName = "intName";
-        int intValue = Integer.MAX_VALUE;
-	Tracy.setContext(TASK_ID, PARENT_OPT_ID);
-        Tracy.before(L1_LABEL_NAME);
-        Tracy.annotate(intName, intValue);
-        Tracy.after(L1_LABEL_NAME);
-        List<TracyEvent> events = Tracy.getEvents();
-        assertEquals(1, events.size());
-        TracyEvent event = events.get(0);
-        assertEquals(TASK_ID, event.getTaskId());
-        assertEquals(PARENT_OPT_ID, event.getParentOptId());
-        assertEquals(L1_LABEL_NAME, event.getLabel());
-        
-        assertEquals(new Integer(intValue).toString() , Tracy.getEventsAsMaps().get(0).get(intName));
-    }
 
     @Test
     public void testGetEvents_twoEventsTwoLevelStack() throws InterruptedException {
@@ -123,7 +104,7 @@ public class TracyTest {
         assertEquals("10", map.get("sizeOut"));
         assertEquals("2000", map.get("sizeIn"));
     }
-    
+
     private String jsonEvent(
     		String taskId, 
     		String parentOptId, 
