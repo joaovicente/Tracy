@@ -42,6 +42,7 @@ public class TracyTest {
         Tracy.setContext(TASK_ID, PARENT_OPT_ID);
         assertEquals(TASK_ID, Tracy.getTaskId());
         assertEquals(PARENT_OPT_ID, Tracy.getParentOptId());
+        Tracy.clearContext();
     }
 
     @Test
@@ -62,6 +63,7 @@ public class TracyTest {
         assertTrue(event.getMsecAfter() < event.getMsecBefore() + MSEC_OPERATION_TIME + MSEC_SLEEP_JITTER);
         assertTrue(event.getMsecElapsed() > event.getMsecAfter()  - event.getMsecBefore() - MSEC_SLEEP_JITTER);
         assertTrue(event.getMsecElapsed() < event.getMsecAfter()  - event.getMsecBefore() + MSEC_SLEEP_JITTER);
+        Tracy.clearContext();
     }
     
     
@@ -81,6 +83,7 @@ public class TracyTest {
         assertEquals(L1_LABEL_NAME, event.getLabel());
         
         assertEquals(new Integer(intValue).toString() , Tracy.getEventsAsMaps().get(0).get(intName));
+        Tracy.clearContext();
     }
 
     @Test
@@ -105,6 +108,7 @@ public class TracyTest {
         assertEquals(TASK_ID, l11Event.getTaskId());
         assertEquals(l1Event.getOptId(), l11Event.getParentOptId());
         assertEquals(L11_LABEL_NAME, l11Event.getLabel());
+        Tracy.clearContext();
     }
 
     @Test
@@ -122,6 +126,7 @@ public class TracyTest {
         assertEquals(L1_LABEL_NAME, map.get("label"));
         assertEquals("10", map.get("sizeOut"));
         assertEquals("2000", map.get("sizeIn"));
+        Tracy.clearContext();
     }
     
     private String jsonEvent(
@@ -190,5 +195,6 @@ public class TracyTest {
         		eventsAsMaps.get(1).get("host"), 
         		annotations);
         assertEquals(jsonEvent2, events.get(1));
+        Tracy.clearContext();
     }
 }

@@ -80,6 +80,7 @@ public class TracyTestFuture {
         assertEquals("Worker-0", events.get(0).getLabel());
         assertEquals("Worker-1", events.get(1).getLabel());
         assertEquals("Requestor", events.get(2).getLabel());
+        Tracy.clearContext();
     }
     
     @Test
@@ -112,5 +113,6 @@ public class TracyTestFuture {
         }
         Tracy.after("Requestor");
         assertEquals(null, Tracy.getEvents());
+        Tracy.clearContext();
     }
 }

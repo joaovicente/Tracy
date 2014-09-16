@@ -81,6 +81,7 @@ public class TracyTestFuturePerf {
                 logger.info(event.toString());
             }
         }
+        Tracy.clearContext();
     }
     
     
