@@ -160,6 +160,13 @@ public class Tracy {
         return ctx.getParentOptId();
     }
     
+    /**
+     * Allows user to set a custom optId (usually automatically created)
+     * This method can be safely called any time between a 'before' and 'after'
+     * 
+     * @param customOptId is the String which will be recorded as Tracy optId. Best practice is to use a 4 character string outside of 32bit hex pattern [0000..1111]
+     * e.g. setOptId("U001")
+     */
     public static void setOptId(String customOptId) {
         TracyThreadContext ctx = threadContext.get();
         ctx.setOptId(customOptId);

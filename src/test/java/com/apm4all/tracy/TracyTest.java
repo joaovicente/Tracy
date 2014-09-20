@@ -151,9 +151,15 @@ public class TracyTest {
 
     @Test
     public void testGetEvents_safeUponException() throws InterruptedException {
-	//FIXME: Implementation pending
-	// Current runtime behavior seems safe, but will sleep better at night if there is a test pass for it
-	assertTrue(false);
+	Tracy.setContext(TASK_ID, PARENT_OPT_ID);
+        Tracy.before(L1_LABEL_NAME);
+        Tracy.before(L11_LABEL_NAME);
+        Tracy.after(L11_LABEL_NAME);
+        // Simulate an exception at L1 causing after not being called
+        //Tracy.after(L1_LABEL_NAME);
+        List<TracyEvent> events = Tracy.getEvents();
+        assertEquals(1, events.size());
+        //FIXME: Ideal behavior would be for upon 'before' without matching 'after' condition to trigger 'error' annotation with last Exception thrown 
     }
     
     private String jsonEvent(
