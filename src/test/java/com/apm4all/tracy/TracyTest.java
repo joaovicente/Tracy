@@ -85,6 +85,8 @@ public class TracyTest {
         assertEquals(new Integer(intValue).toString() , Tracy.getEventsAsMaps().get(0).get(intName));
         Tracy.clearContext();
     }
+    
+   
 
     @Test
     public void testGetEvents_twoEventsTwoLevelStack() throws InterruptedException {
@@ -127,6 +129,31 @@ public class TracyTest {
         assertEquals("10", map.get("sizeOut"));
         assertEquals("2000", map.get("sizeIn"));
         Tracy.clearContext();
+    }
+    
+    @Test
+    public void testGetEvents_validCustomOptId() throws InterruptedException {
+	final String CUSTOM_OPT_ID = "U001"; 
+	Tracy.setContext(TASK_ID, PARENT_OPT_ID);
+        Tracy.before(L1_LABEL_NAME);
+        // Reserved range is string representation of 32bit hex range [0000..FFFF]
+        Tracy.setOptId(CUSTOM_OPT_ID); 
+        Tracy.after(L1_LABEL_NAME);
+        List<TracyEvent> events = Tracy.getEvents();
+        assertEquals(1, events.size());
+        TracyEvent event = events.get(0);
+        assertEquals(TASK_ID, event.getTaskId());
+        assertEquals(PARENT_OPT_ID, event.getParentOptId());
+        assertEquals(L1_LABEL_NAME, event.getLabel());
+        assertEquals(CUSTOM_OPT_ID, event.getOptId());
+        Tracy.clearContext();
+    }
+
+    @Test
+    public void testGetEvents_safeUponException() throws InterruptedException {
+	//FIXME: Implementation pending
+	// Current runtime behavior seems safe, but will sleep better at night if there is a test pass for it
+	assertTrue(false);
     }
     
     private String jsonEvent(

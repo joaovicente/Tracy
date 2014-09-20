@@ -76,6 +76,11 @@ public class TracyThreadContext {
         TracyEvent event = stack.peek();
         return event.optId;
     }
+    
+    public void setOptId(String optId) {
+        TracyEvent event = stack.peek();
+        event.setOptId(optId);
+    }
 
     public void push(String label) {
         long msec = System.currentTimeMillis();

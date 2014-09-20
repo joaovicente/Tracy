@@ -159,6 +159,12 @@ public class Tracy {
         TracyThreadContext ctx = threadContext.get();
         return ctx.getParentOptId();
     }
+    
+    public static void setOptId(String customOptId) {
+        TracyThreadContext ctx = threadContext.get();
+        ctx.setOptId(customOptId);
+    }
+    
     /**
      * Creates Tracy worker thread context to be bound to the worker thread
      * The context returned contains only parentage information
@@ -211,5 +217,6 @@ public class Tracy {
     private static boolean isValidContext(TracyThreadContext ctx) {
         return (null != ctx);
     }
+
 
 }
