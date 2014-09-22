@@ -66,7 +66,6 @@ public class TracyTest {
         Tracy.clearContext();
     }
     
-    
     @Test
     public void testGetEvents_intAnnotation() throws InterruptedException {
         String intName = "intName";
@@ -86,8 +85,6 @@ public class TracyTest {
         Tracy.clearContext();
     }
     
-   
-
     @Test
     public void testGetEvents_twoEventsTwoLevelStack() throws InterruptedException {
         Tracy.setContext(TASK_ID, PARENT_OPT_ID);
@@ -161,7 +158,7 @@ public class TracyTest {
         assertEquals(1, events.size());
         //FIXME: Ideal behavior would be for upon 'before' without matching 'after' condition to trigger 'error' annotation with last Exception thrown 
     }
-    
+
     private String jsonEvent(
     		String taskId, 
     		String parentOptId, 

@@ -107,13 +107,6 @@ public class Tracy {
     }
 
     /**
-     * Convenience annotate() method to save user from converting int to String
-     */	
-    public static void annotate(String intName, int intValue) {
-	annotate(intName, new Integer(intValue).toString());
-    }
-
-    /**
      * Once all work has been done, and TracyEvents are ready to be collected you can collect them using this method
      * @return list of TracyEvents
      */	
