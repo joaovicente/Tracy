@@ -129,6 +129,33 @@ public class TracyTest {
     }
     
     @Test
+    public void testGetEventsAsMap_unAfteredErrorL1() throws InterruptedException {
+        Tracy.setContext(TASK_ID, PARENT_OPT_ID);
+        Tracy.before(L1_LABEL_NAME);
+        List<Map<String, String>> events = Tracy.getEventsAsMaps();
+        assertEquals(1, events.size());
+        Map<String, String> map = events.get(0);
+        assertEquals(L1_LABEL_NAME, map.get("label"));
+        assertEquals("unknown", map.get("error"));
+        Tracy.clearContext();
+    }
+    
+    @Test
+    public void testGetEventsAsMap_unAfteredErrorL11() throws InterruptedException {
+        Tracy.setContext(TASK_ID, PARENT_OPT_ID);
+        Tracy.before(L1_LABEL_NAME);
+        Tracy.before(L11_LABEL_NAME);
+        Tracy.after(L11_LABEL_NAME);
+        List<Map<String, String>> events = Tracy.getEventsAsMaps();
+        assertEquals(2, events.size());
+        assertEquals(L11_LABEL_NAME, events.get(0).get("label"));
+        assertEquals(null, events.get(0).get("error"));
+        assertEquals(L1_LABEL_NAME, events.get(1).get("label"));
+        assertEquals("unknown", events.get(1).get("error"));
+        Tracy.clearContext();
+    }
+    
+    @Test
     public void testGetEvents_validCustomOptId() throws InterruptedException {
 	final String CUSTOM_OPT_ID = "U001"; 
 	Tracy.setContext(TASK_ID, PARENT_OPT_ID);
@@ -145,7 +172,7 @@ public class TracyTest {
         assertEquals(CUSTOM_OPT_ID, event.getOptId());
         Tracy.clearContext();
     }
-
+    
     @Test
     public void testGetEvents_safeUponException() throws InterruptedException {
 	Tracy.setContext(TASK_ID, PARENT_OPT_ID);

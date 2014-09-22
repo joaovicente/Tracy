@@ -106,8 +106,18 @@ public class TracyThreadContext {
         event.setMsecAfter(System.currentTimeMillis());
         poppedList.add(event);
     }
+    
+    public void forcePop() {
+        TracyEvent event = stack.pop();
+        event.setMsecAfter(System.currentTimeMillis());
+        event.addAnnotation("error", "unknown");
+        poppedList.add(event);
+    }
 
     public List<TracyEvent> getPoppedList() {
+	while(stack.isEmpty() == false)	{
+	    forcePop();
+	}
         return poppedList;
     }
 
