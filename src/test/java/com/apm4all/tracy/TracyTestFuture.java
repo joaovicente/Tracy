@@ -112,7 +112,7 @@ public class TracyTestFuture {
             throw new RuntimeException(e);
         }
         Tracy.after("Requestor");
-        assertEquals(null, Tracy.getEvents());
+        assertTrue(Tracy.getEvents().isEmpty());
         Tracy.clearContext();
     }
 }

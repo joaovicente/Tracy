@@ -27,6 +27,9 @@ import java.util.Map;
 public class Tracy {
     static final String TRACY_DEFAULT_TASK_ID = "NA";
     static final String TRACY_DEFAULT_PARENT_OPT_ID = "NA";
+    static List<String> EMPTY_STRING_LIST = new ArrayList<String>();
+    static List<TracyEvent> EMPTY_TRACY_EVENT_LIST = new ArrayList<TracyEvent>(); 
+    static List<Map<String, String>> EMPTY_LIST_OF_MAPS = new ArrayList<Map<String, String>>();
     private final static ThreadLocal <TracyThreadContext> threadContext = new ThreadLocal <TracyThreadContext>();
 
     /**
@@ -98,7 +101,9 @@ public class Tracy {
      */	
     public static void annotate(String... keyValueSequence) {
         TracyThreadContext ctx = threadContext.get();
-        ctx.annotate(keyValueSequence);
+        if (isValidContext(ctx)) {
+            ctx.annotate(keyValueSequence);
+        }
     }
 
     /**
@@ -114,7 +119,7 @@ public class Tracy {
      */	
     public static List<TracyEvent> getEvents() {
         TracyThreadContext ctx = threadContext.get();
-        List<TracyEvent> events = null;
+        List<TracyEvent> events = EMPTY_TRACY_EVENT_LIST;
         if (isValidContext(ctx)) {
             events = ctx.getPoppedList();
         }
@@ -128,10 +133,13 @@ public class Tracy {
      * @return list of TracyEvent maps
      */	
     public static List<Map<String, String>> getEventsAsMaps() {
-        List<Map<String, String>> list = new ArrayList<Map<String, String>>();
+        List<Map<String, String>> list = EMPTY_LIST_OF_MAPS; 
         TracyThreadContext ctx = threadContext.get();
-        for (TracyEvent event : ctx.getPoppedList())	{
-            list.add(event.toMap());
+        if (isValidContext(ctx)) {
+            list = new ArrayList<Map<String, String>>(20);
+            for (TracyEvent event : ctx.getPoppedList())	{
+        	list.add(event.toMap());
+            }
         }
         return list;
     }
@@ -141,12 +149,15 @@ public class Tracy {
      * Gets List of Tracy events in JSON format
      * @return list of Tracy JSONified events
      */	
-	public static List<String> getEventsAsJson() {
-		List<String> list = new ArrayList<String>(20);
-        TracyThreadContext ctx = threadContext.get();
-        for (TracyEvent event : ctx.getPoppedList())	{
-            list.add(event.toJsonString());
-        }
+    public static List<String> getEventsAsJson() {
+        List<String> list = Tracy.EMPTY_STRING_LIST;
+	TracyThreadContext ctx = threadContext.get();
+	if (isValidContext(ctx)) {
+	    list = new ArrayList<String>(20);
+	    for (TracyEvent event : ctx.getPoppedList())	{
+		list.add(event.toJsonString());
+	    }
+	}
         return list;
 	}
 	
@@ -169,7 +180,9 @@ public class Tracy {
      */
     public static void setOptId(String customOptId) {
         TracyThreadContext ctx = threadContext.get();
-        ctx.setOptId(customOptId);
+        if (isValidContext(ctx))    {
+            ctx.setOptId(customOptId);
+        }
     }
     
     /**
