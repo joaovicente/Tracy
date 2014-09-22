@@ -80,8 +80,24 @@ public class TracyTest {
         assertEquals(TASK_ID, event.getTaskId());
         assertEquals(PARENT_OPT_ID, event.getParentOptId());
         assertEquals(L1_LABEL_NAME, event.getLabel());
-        
         assertEquals(new Integer(intValue).toString() , Tracy.getEventsAsMaps().get(0).get(intName));
+        Tracy.clearContext();
+    }
+    
+    
+    @Test
+    public void testGetEvents_componentAnnotated() throws InterruptedException {
+	final String COMPONENT_NAME = "Component X";
+	Tracy.setContext(TASK_ID, PARENT_OPT_ID, COMPONENT_NAME);
+        Tracy.before(L1_LABEL_NAME);
+        Tracy.after(L1_LABEL_NAME);
+        List<TracyEvent> events = Tracy.getEvents();
+        assertEquals(1, events.size());
+        TracyEvent event = events.get(0);
+        assertEquals(TASK_ID, event.getTaskId());
+        assertEquals(PARENT_OPT_ID, event.getParentOptId());
+        assertEquals(L1_LABEL_NAME, event.getLabel());
+        assertEquals(COMPONENT_NAME, Tracy.getEventsAsMaps().get(0).get("component"));
         Tracy.clearContext();
     }
     

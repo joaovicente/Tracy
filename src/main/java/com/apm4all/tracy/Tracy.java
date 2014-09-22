@@ -42,7 +42,11 @@ public class Tracy {
      */
     public static void setContext(String taskId, String parentOptId) {
         threadContext.set(new TracyThreadContext(taskId, parentOptId));
-    }
+    }    
+    
+    public static void setContext(String taskId, String parentOptId, String componentName) {
+        threadContext.set(new TracyThreadContext(taskId, parentOptId, componentName));
+    }    
 
     /**
      * Setting context in this manner is highly discouraged.<br>

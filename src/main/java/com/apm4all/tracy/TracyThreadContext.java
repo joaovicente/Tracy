@@ -26,6 +26,7 @@ import java.util.Random;
 public class TracyThreadContext {
     private static Random r = new Random();
     private static String hostname = null;
+    private static String component = null;
     private String taskId;
     private String parentOptId;
     private Stack<TracyEvent> stack;
@@ -37,6 +38,17 @@ public class TracyThreadContext {
         resolveHostname();
         this.taskId = taskId;
         this.parentOptId = parentOptId;
+        stack = new Stack<TracyEvent>();
+        poppedList = new ArrayList<TracyEvent>();
+    }
+    
+    
+    public TracyThreadContext(String taskId, String parentOptId, String componentName) {
+        super();
+        resolveHostname();
+        this.taskId = taskId;
+        this.parentOptId = parentOptId;
+        component = componentName;
         stack = new Stack<TracyEvent>();
         poppedList = new ArrayList<TracyEvent>();
     }
@@ -98,6 +110,9 @@ public class TracyThreadContext {
         // Create new TracyEvent
         TracyEvent event = new TracyEvent(this.taskId, label, eventParentOptId, optId, msec);
         event.addAnnotation("host", hostname);
+        if (component != null)	{
+            event.addAnnotation("component", component);
+        }
         stack.add(event);
     }
 
