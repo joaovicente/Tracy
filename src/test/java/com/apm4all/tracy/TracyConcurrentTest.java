@@ -20,7 +20,7 @@ public class TracyConcurrentTest {
     public void test() {
         List<String> tracyEvents = null;
         Tracy.setContext("myTaskId", "null", "parallel");
-        Tracy.before("workerSetup");
+        Tracy.before("delegator");
         
         CustomCallable callable1 = new CustomCallable(1000);
         CustomCallable callable2 = new CustomCallable(2000);
@@ -29,7 +29,6 @@ public class TracyConcurrentTest {
         FutureTask<String> futureTask2 = new TracyFutureTask<String>(callable2);
 
         ExecutorService executor = Executors.newFixedThreadPool(2);
-        Tracy.after("workerSetup");
         executor.execute(futureTask1);
         executor.execute(futureTask2);
 
@@ -54,6 +53,7 @@ public class TracyConcurrentTest {
                 if(s !=null){
                     System.out.println("FutureTask2 output="+s);
                 }
+                Tracy.after("delegator");
                 tracyEvents = Tracy.getEventsAsJson();
                 for (String event : tracyEvents)   {
                     System.out.println(event);
