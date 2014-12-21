@@ -1,7 +1,10 @@
 package com.apm4all.tracy;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -15,6 +18,10 @@ public class TracyConcurrentTest {
 
     @Test
     public void test() {
+        List<String> tracyEvents = null;
+        Tracy.setContext("myTaskId", "null", "parallel");
+        Tracy.before("workerSetup");
+        
         CustomCallable callable1 = new CustomCallable(1000);
         CustomCallable callable2 = new CustomCallable(2000);
 
@@ -22,6 +29,7 @@ public class TracyConcurrentTest {
         FutureTask<String> futureTask2 = new TracyFutureTask<String>(callable2);
 
         ExecutorService executor = Executors.newFixedThreadPool(2);
+        Tracy.after("workerSetup");
         executor.execute(futureTask1);
         executor.execute(futureTask2);
 
@@ -29,6 +37,7 @@ public class TracyConcurrentTest {
             try {
                 if(futureTask1.isDone() && futureTask2.isDone()){
                     System.out.println("Done");
+                    Thread.sleep(1000);
                     //shut down executor service
                     executor.shutdown();
                     fail("Not yet implemented");
@@ -44,6 +53,10 @@ public class TracyConcurrentTest {
                 String s = futureTask2.get(200L, TimeUnit.MILLISECONDS);
                 if(s !=null){
                     System.out.println("FutureTask2 output="+s);
+                }
+                tracyEvents = Tracy.getEventsAsJson();
+                for (String event : tracyEvents)   {
+                    System.out.println(event);
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();

@@ -2,29 +2,31 @@ package com.apm4all.tracy;
 import java.util.concurrent.Callable;
 
 public class TracyCallable<V> implements Callable<V>{
-    boolean tracyOn = false;
-    String taskId;
-    String parentOptId;
-    String component;
+    private TracyThreadContext tracyWorkerContext = null;
     
     public TracyCallable(){
         // TODO: setup context only if parent thread is Tracing
-        this.tracyOn = true;
-        this.taskId = Thread.currentThread().getName() + "-" 
-                +  Long.toString(System.currentTimeMillis());
-        this.parentOptId= Thread.currentThread().getName() + "-" 
-                +  Long.toString(System.currentTimeMillis());
-        this.component = "whateverComponent";
+        if (Tracy.isEnabled())    {
+            TracyThreadContext parentContext = Tracy.getTracyThreadContext();
+            this.tracyWorkerContext = new TracyThreadContext(
+                    parentContext.getTaskId(),
+                    parentContext.getOptId(),
+                    parentContext.getComponent());
+        }
     }
+
     
     public V call() throws Exception {
-        if (this.tracyOn)   {
-            // TODO: Create new worker thread context 
-            // Tracy.setContext(this.taskId, this.parentOptId, this.component)
+        if (Tracy.isEnabled(this.tracyWorkerContext))   {
+            Tracy.setContext(this.tracyWorkerContext);
         }
         else    {
-            // TODO: Ensure worker does not have Tracy context
+            Tracy.clearContext();
         }
         return null;
+    }
+    
+    public TracyThreadContext getTracyWorkerContext() {
+        return tracyWorkerContext;
     }
 }

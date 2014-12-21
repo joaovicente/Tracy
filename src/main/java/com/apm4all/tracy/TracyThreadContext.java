@@ -27,6 +27,7 @@ public class TracyThreadContext {
     private static Random r = new Random();
     private static String hostname = null;
     private static String component = null;
+
     private String taskId;
     private String parentOptId;
     private Stack<TracyEvent> stack;
@@ -42,7 +43,12 @@ public class TracyThreadContext {
         poppedList = new ArrayList<TracyEvent>();
     }
     
-    
+    /**
+     * Creates Thread context using taskId, parentOptId and componentName
+     * @param taskId
+     * @param parentOptId
+     * @param componentName
+     */  
     public TracyThreadContext(String taskId, String parentOptId, String componentName) {
         super();
         resolveHostname();
@@ -92,6 +98,10 @@ public class TracyThreadContext {
     public void setOptId(String optId) {
         TracyEvent event = stack.peek();
         event.setOptId(optId);
+    }
+
+    public String getComponent() {
+        return component;
     }
 
     public void push(String label) {

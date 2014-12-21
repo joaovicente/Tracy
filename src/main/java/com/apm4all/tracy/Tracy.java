@@ -47,6 +47,13 @@ public class Tracy {
     public static void setContext(String taskId, String parentOptId, String componentName) {
         threadContext.set(new TracyThreadContext(taskId, parentOptId, componentName));
     }    
+    
+    /**
+     * Attaches existing context to ThreadLocal 
+     */	
+    protected static void setContext(TracyThreadContext ctx) {
+        threadContext.set(ctx);
+    }
 
     /**
      * Setting context in this manner is highly discouraged.<br>
@@ -66,7 +73,7 @@ public class Tracy {
     
     /**
      * Clearing context ensures there is no residual context sticking to a recycled thread.<br>
-     * Currently just calls clearContext but may change in future so creating a distintion in the API<br>
+     * Currently just calls clearContext but may change in future so creating a distinction in the API<br>
      */	
     public static void clearWorkerContext() {
         clearContext();
@@ -169,7 +176,11 @@ public class Tracy {
         TracyThreadContext ctx = threadContext.get();
         return ctx.getTaskId();
     }
-
+    
+    public static final TracyThreadContext getTracyThreadContext() {
+        return threadContext.get();
+    }
+    
     public static String getParentOptId() {
         TracyThreadContext ctx = threadContext.get();
         return ctx.getParentOptId();
@@ -231,10 +242,10 @@ public class Tracy {
      * requester TracyThreadContext
      * @return worker TracyThreadContext 
      */
-    public static void mergeWorkerContext(TracyThreadContext tracyThreadContext) {
+    public static void mergeWorkerContext(TracyThreadContext workerTracyThreadContext) {
         TracyThreadContext ctx = threadContext.get();
         if (isValidContext(ctx)) {
-            ctx.mergeChildContext(tracyThreadContext);
+            ctx.mergeChildContext(workerTracyThreadContext);
         }
     }
     
@@ -242,5 +253,12 @@ public class Tracy {
         return (null != ctx);
     }
 
-
+    public static boolean isEnabled() {
+        TracyThreadContext ctx = threadContext.get();
+        return(isValidContext(ctx));
+    }
+    
+    public static boolean isEnabled(TracyThreadContext ctx) {
+        return(isValidContext(ctx));
+    }
 }

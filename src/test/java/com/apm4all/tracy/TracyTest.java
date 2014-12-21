@@ -70,7 +70,7 @@ public class TracyTest {
     public void testGetEvents_intAnnotation() throws InterruptedException {
         String intName = "intName";
         int intValue = Integer.MAX_VALUE;
-	Tracy.setContext(TASK_ID, PARENT_OPT_ID);
+        Tracy.setContext(TASK_ID, PARENT_OPT_ID);
         Tracy.before(L1_LABEL_NAME);
         Tracy.annotate(intName, intValue);
         Tracy.after(L1_LABEL_NAME);
@@ -87,8 +87,8 @@ public class TracyTest {
     
     @Test
     public void testGetEvents_componentAnnotated() throws InterruptedException {
-	final String COMPONENT_NAME = "Component X";
-	Tracy.setContext(TASK_ID, PARENT_OPT_ID, COMPONENT_NAME);
+	    final String COMPONENT_NAME = "Component X";
+        Tracy.setContext(TASK_ID, PARENT_OPT_ID, COMPONENT_NAME);
         Tracy.before(L1_LABEL_NAME);
         Tracy.after(L1_LABEL_NAME);
         List<TracyEvent> events = Tracy.getEvents();
@@ -173,8 +173,8 @@ public class TracyTest {
     
     @Test
     public void testGetEvents_validCustomOptId() throws InterruptedException {
-	final String CUSTOM_OPT_ID = "U001"; 
-	Tracy.setContext(TASK_ID, PARENT_OPT_ID);
+        final String CUSTOM_OPT_ID = "U001"; 
+        Tracy.setContext(TASK_ID, PARENT_OPT_ID);
         Tracy.before(L1_LABEL_NAME);
         // Reserved range is string representation of 32bit hex range [0000..FFFF]
         Tracy.setOptId(CUSTOM_OPT_ID); 
@@ -190,16 +190,16 @@ public class TracyTest {
     }
     
     private String jsonEvent(
-    		String taskId, 
-    		String parentOptId, 
-    		String label, 
-    		String optId, 
-    		String msecBefore, 
-    		String msecAfter, 
-    		String msecElapsed,
-    		String host,
-    		Map<String, String> annotations 
-    		)	
+            String taskId, 
+            String parentOptId, 
+            String label, 
+            String optId, 
+            String msecBefore, 
+            String msecAfter, 
+            String msecElapsed,
+            String host,
+            Map<String, String> annotations 
+            )	
     {
     	StringBuilder sb = new StringBuilder(200);
     	sb.append("{");
