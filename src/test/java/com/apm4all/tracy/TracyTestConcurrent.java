@@ -1,9 +1,6 @@
 package com.apm4all.tracy;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -14,7 +11,7 @@ import java.util.concurrent.TimeoutException;
 
 import org.junit.Test;
 
-public class TracyConcurrentTest {
+public class TracyTestConcurrent {
 
     @Test
     public void test() {
@@ -39,7 +36,12 @@ public class TracyConcurrentTest {
                     Thread.sleep(1000);
                     //shut down executor service
                     executor.shutdown();
-                    fail("Not yet implemented");
+                    Tracy.after("delegator");
+                    tracyEvents = Tracy.getEventsAsJson();
+                    for (String event : tracyEvents)   {
+                        System.out.println(event);
+                    }
+                    assertEquals(3, tracyEvents.size());
                     return;
                 }
 
@@ -52,11 +54,6 @@ public class TracyConcurrentTest {
                 String s = futureTask2.get(200L, TimeUnit.MILLISECONDS);
                 if(s !=null){
                     System.out.println("FutureTask2 output="+s);
-                }
-                Tracy.after("delegator");
-                tracyEvents = Tracy.getEventsAsJson();
-                for (String event : tracyEvents)   {
-                    System.out.println(event);
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();

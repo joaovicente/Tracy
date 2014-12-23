@@ -4,6 +4,12 @@ import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+/**
+* Allows Tracy usage in an ExecutorService <br>
+* TracyFutureTask simply extracts worker TracyThreadContext from the TracyCallable
+* and merges it into the parent TracyThreadContext when the parent thread retrieves 
+* the worker thread result
+*/
 public class TracyFutureTask<V> extends FutureTask<V>{
     private TracyCallable<V> callable = null;
     public TracyFutureTask(TracyCallable<V> callable) {
@@ -11,31 +17,29 @@ public class TracyFutureTask<V> extends FutureTask<V>{
         this.callable = callable;
     }
    
-    @Override
-    public void done() {
-        // Update parent thread Tracy with child Tracy context
-//        System.out.println("TracyFutureTask.get() " + callable.getTracyWorkerContext().getPoppedList().toString());
-//        System.out.println("TracyFutureTask.get() called from " + Thread.currentThread().getName());
-//        Tracy.mergeWorkerContext(callable.getTracyWorkerContext());
+    private void mergeWorkerTracyTheadContext() {
+        Tracy.mergeWorkerContext(callable.getTracyWorkerContext());
     }
     
+    /**
+     * When called from the parent thread to retrieve callable result,
+     * it will merge the worker TracyThreadContext into the parent TracyThreadContext
+     */
     @Override
     public V get() throws InterruptedException, ExecutionException {
         V v = super.get();
-        // Update parent thread Tracy with child Tracy context
-        System.out.println("TracyFutureTask.get() " + callable.getTracyWorkerContext().getPoppedList().toString());
-        System.out.println("TracyFutureTask.get() called from " + Thread.currentThread().getName());
-        Tracy.mergeWorkerContext(callable.getTracyWorkerContext());
+        this.mergeWorkerTracyTheadContext();
         return v;
     }
     
+    /**
+     * When called from the parent thread to retrieve callable result,
+     * it will merge the worker TracyThreadContext into the parent TracyThreadContext
+     */
     @Override
     public V get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
         V v = super.get(timeout, unit);
-        // Update parent thread Tracy with child Tracy context
-        System.out.println("TracyFutureTask.get() " + callable.getTracyWorkerContext().getPoppedList().toString());
-        System.out.println("TracyFutureTask.get() called from " + Thread.currentThread().getName());
-        Tracy.mergeWorkerContext(callable.getTracyWorkerContext());
+        this.mergeWorkerTracyTheadContext();
         return v;
     }
 }
