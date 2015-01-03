@@ -54,7 +54,9 @@ public class TracyThreadContext {
         resolveHostname();
         this.taskId = taskId;
         this.parentOptId = parentOptId;
-        component = componentName;
+        if (component == null || component.equals(componentName) == false) {
+            component = componentName;
+        }
         stack = new Stack<TracyEvent>();
         poppedList = new ArrayList<TracyEvent>();
     }

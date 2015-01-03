@@ -2,9 +2,9 @@ package com.apm4all.tracy;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -119,11 +119,70 @@ public class TracyTestConcurrentPerf {
             }
         }
     }
+   
+    private boolean taskTracingOn(int taskId)    {
+        return ( (taskId % 2) == 0 );
+    }
+    
     
     @PerfTest(threads=10, duration=5000, rampUp = 1000, timer = RandomTimer.class, timerParams = { 1, 10 })
     @Required(percentile99 = 1)
     @Test
     public void testTwoThreadsSampledTracing() {
-        fail("Not Implemented yet - Simulate Tracy enabled for 50% requests");
+        boolean thourough = false;
+        List<String> tracyEvents = null;
+        int randomInt = randomInput();
+        if (taskTracingOn(randomInt))   {
+            Tracy.setContext(Integer.toString(randomInt), "null", "TracyTestConcurrentPerf");
+        }
+        else {
+            Tracy.clearContext();
+        }
+        Tracy.before("delegator");
+       
+        TracyableArithmeticOperationCallable op1Callable = new TracyableArithmeticOperationCallable(randomInt, 2);
+        TracyableArithmeticOperationCallable op2Callable = new TracyableArithmeticOperationCallable(randomInt, 3);
+
+        FutureTask<Integer> futureTaskOp1 = new TracyFutureTask<Integer>(op1Callable);
+        FutureTask<Integer> futureTaskOp2 = new TracyFutureTask<Integer>(op2Callable);
+
+        executor.execute(futureTaskOp1);
+        executor.execute(futureTaskOp2);
+
+        while (true) {
+            try {
+                if(futureTaskOp1.isDone() && futureTaskOp2.isDone()){
+                    Tracy.after("delegator");
+                    assertEquals("multiplyBy2", new Integer(randomInt*2), (Integer)futureTaskOp1.get());
+                    assertEquals("multiplyBy3", new Integer(randomInt*3), (Integer)futureTaskOp2.get());
+                    tracyEvents = Tracy.getEventsAsJson();
+                    if (logToFile)  {
+                        for (String event : tracyEvents)   {
+                            logger.info(event.toString());
+                        }
+                    }
+                    if (thourough ) {
+                        List<Map<String, String>> tracyEventsAsMaps = Tracy.getEventsAsMaps();
+                        for (Map<String, String> eventAsMap : tracyEventsAsMaps) {
+                            assertEquals(new Integer(randomInt).toString(), eventAsMap.get("taskId") );
+                        }
+                    }
+                    
+                    assertNotNull(tracyEvents);
+                    if (taskTracingOn(randomInt))   {
+                        assertEquals(3, tracyEvents.size());
+                    }
+                    else
+                    {
+                        assertEquals(0, tracyEvents.size());
+                    }
+                    return;
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
