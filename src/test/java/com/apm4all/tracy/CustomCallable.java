@@ -19,7 +19,7 @@ public class CustomCallable extends TracyCallable<String> {
         Tracy.before(Thread.currentThread().getName());
         someWork(); 
         Tracy.after(Thread.currentThread().getName());
-        System.out.println("CustomCallable.call()" + Tracy.getEvents().toString());
+//      System.out.println("CustomCallable.call()" + Tracy.getEvents().toString());
         return Thread.currentThread().getName();
     }
 }
