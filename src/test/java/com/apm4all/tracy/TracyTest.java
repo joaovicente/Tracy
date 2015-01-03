@@ -25,6 +25,7 @@ import java.util.Map;
 import org.junit.Test;
 
 public class TracyTest {
+    static final String COMPONENT_NAME = "TracyTest";
     static final String TASK_ID = "TID-ab1234-x";
     static final String PARENT_OPT_ID = "AAAA";
     static final String L1_LABEL_NAME = "L1 Operation";
@@ -39,7 +40,7 @@ public class TracyTest {
 
     @Test
     public void testSetContext_full() {
-        Tracy.setContext(TASK_ID, PARENT_OPT_ID);
+        Tracy.setContext(TASK_ID, PARENT_OPT_ID, COMPONENT_NAME);
         assertEquals(TASK_ID, Tracy.getTaskId());
         assertEquals(PARENT_OPT_ID, Tracy.getParentOptId());
         Tracy.clearContext();
@@ -49,7 +50,7 @@ public class TracyTest {
     public void testGetEvents() throws InterruptedException {
         final int MSEC_OPERATION_TIME = 1000;
         final int MSEC_SLEEP_JITTER = 100;
-        Tracy.setContext(TASK_ID, PARENT_OPT_ID);
+        Tracy.setContext(TASK_ID, PARENT_OPT_ID, COMPONENT_NAME);
         Tracy.before(L1_LABEL_NAME);
         Thread.sleep(MSEC_OPERATION_TIME);
         Tracy.after(L1_LABEL_NAME);
@@ -70,7 +71,7 @@ public class TracyTest {
     public void testGetEvents_intAnnotation() throws InterruptedException {
         String intName = "intName";
         int intValue = Integer.MAX_VALUE;
-        Tracy.setContext(TASK_ID, PARENT_OPT_ID);
+        Tracy.setContext(TASK_ID, PARENT_OPT_ID, COMPONENT_NAME);
         Tracy.before(L1_LABEL_NAME);
         Tracy.annotate(intName, intValue);
         Tracy.after(L1_LABEL_NAME);
@@ -103,7 +104,7 @@ public class TracyTest {
     
     @Test
     public void testGetEvents_twoEventsTwoLevelStack() throws InterruptedException {
-        Tracy.setContext(TASK_ID, PARENT_OPT_ID);
+        Tracy.setContext(TASK_ID, PARENT_OPT_ID, COMPONENT_NAME);
         Tracy.before(L1_LABEL_NAME);
         Tracy.before(L11_LABEL_NAME);
         Thread.sleep(100);
@@ -128,7 +129,7 @@ public class TracyTest {
 
     @Test
     public void testGetEventsAsMap_withAnnotations() throws InterruptedException {
-        Tracy.setContext(TASK_ID, PARENT_OPT_ID);
+        Tracy.setContext(TASK_ID, PARENT_OPT_ID, COMPONENT_NAME);
         Tracy.before(L1_LABEL_NAME);
         Tracy.annotate("sizeOut", "10", "sizeIn", "2000");
         Thread.sleep(100);
@@ -146,7 +147,7 @@ public class TracyTest {
     
     @Test
     public void testGetEventsAsMap_unAfteredErrorL1() throws InterruptedException {
-        Tracy.setContext(TASK_ID, PARENT_OPT_ID);
+        Tracy.setContext(TASK_ID, PARENT_OPT_ID, COMPONENT_NAME);
         Tracy.before(L1_LABEL_NAME);
         List<Map<String, String>> events = Tracy.getEventsAsMaps();
         assertEquals(1, events.size());
@@ -158,7 +159,7 @@ public class TracyTest {
     
     @Test
     public void testGetEventsAsMap_unAfteredErrorL11() throws InterruptedException {
-        Tracy.setContext(TASK_ID, PARENT_OPT_ID);
+        Tracy.setContext(TASK_ID, PARENT_OPT_ID, COMPONENT_NAME);
         Tracy.before(L1_LABEL_NAME);
         Tracy.before(L11_LABEL_NAME);
         Tracy.after(L11_LABEL_NAME);
@@ -174,7 +175,7 @@ public class TracyTest {
     @Test
     public void testGetEvents_validCustomOptId() throws InterruptedException {
         final String CUSTOM_OPT_ID = "U001"; 
-        Tracy.setContext(TASK_ID, PARENT_OPT_ID);
+        Tracy.setContext(TASK_ID, PARENT_OPT_ID, COMPONENT_NAME);
         Tracy.before(L1_LABEL_NAME);
         // Reserved range is string representation of 32bit hex range [0000..FFFF]
         Tracy.setOptId(CUSTOM_OPT_ID); 
@@ -198,6 +199,7 @@ public class TracyTest {
             String msecAfter, 
             String msecElapsed,
             String host,
+            String component,
             Map<String, String> annotations 
             )	
     {
@@ -214,13 +216,14 @@ public class TracyTest {
     		sb.append(",\"" + key + "\":\"" + annotations.get(key) + "\"");
     	}
     	sb.append(",\"host\":\"" + host + "\"");
+    	sb.append(",\"component\":\"" + component + "\"");
     	sb.append("}");
     	return sb.toString();
     }
     
     @Test
     public void testGetEventsAsJsonString_withAnnotations() throws InterruptedException {
-        Tracy.setContext(TASK_ID, PARENT_OPT_ID);
+        Tracy.setContext(TASK_ID, PARENT_OPT_ID, COMPONENT_NAME);
         Tracy.before(L1_LABEL_NAME);
         Tracy.annotate("sizeOut", "10", "sizeIn", "2000");
         Thread.sleep(10);
@@ -243,6 +246,7 @@ public class TracyTest {
         		eventsAsMaps.get(0).get("msecAfter"), 
         		eventsAsMaps.get(0).get("msecElapsed"), 
         		eventsAsMaps.get(0).get("host"), 
+        		eventsAsMaps.get(0).get("component"), 
         		annotations);
         assertEquals(jsonEvent1, events.get(0));
         annotations.clear();
@@ -253,6 +257,7 @@ public class TracyTest {
         		eventsAsMaps.get(1).get("msecAfter"), 
         		eventsAsMaps.get(1).get("msecElapsed"), 
         		eventsAsMaps.get(1).get("host"), 
+        		eventsAsMaps.get(0).get("component"), 
         		annotations);
         assertEquals(jsonEvent2, events.get(1));
         Tracy.clearContext();

@@ -11,7 +11,7 @@ import java.util.concurrent.TimeoutException;
 
 import org.junit.Test;
 
-public class TracyTestConcurrent {
+public class TracyConcurrentTest {
 
     @Test
     public void testTwoThreadsTracing() {
@@ -42,6 +42,7 @@ public class TracyTestConcurrent {
                         System.out.println(event);
                     }
                     assertEquals(3, tracyEvents.size());
+                    Tracy.clearContext();
                     return;
                 }
 

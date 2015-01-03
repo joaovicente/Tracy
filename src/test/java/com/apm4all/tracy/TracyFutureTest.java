@@ -11,7 +11,7 @@ import java.util.concurrent.Future;
 
 import org.junit.Test;
 
-public class TracyTestFuture {
+public class TracyFutureTest {
     private static final int NTHREDS = 10;
     private	ExecutorService executor = Executors.newFixedThreadPool(NTHREDS);
 
