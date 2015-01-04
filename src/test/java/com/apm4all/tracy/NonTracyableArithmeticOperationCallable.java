@@ -1,7 +1,7 @@
 package com.apm4all.tracy;
-import com.apm4all.tracy.TracyCallable;
+import java.util.concurrent.Callable;
 
-public class NonTracyableArithmeticOperationCallable extends TracyCallable<Integer> {
+public class NonTracyableArithmeticOperationCallable implements Callable<Integer> {
     private int input1;
     private int input2;
     private int output;
@@ -15,7 +15,6 @@ public class NonTracyableArithmeticOperationCallable extends TracyCallable<Integ
         output = input1 * input2;
     }
     
-    @Override
     public Integer call() throws Exception {
         someWork(); 
         return new Integer(output);

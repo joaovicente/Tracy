@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -57,8 +58,8 @@ public class TracyConcurrentTestPerf {
         Tracy.setContext(Integer.toString(randomInt), "null", "TracyTestConcurrentPerf");
         Tracy.before("delegator");
        
-        TracyableArithmeticOperationCallable op1Callable = new TracyableArithmeticOperationCallable(randomInt, 2);
-        TracyableArithmeticOperationCallable op2Callable = new TracyableArithmeticOperationCallable(randomInt, 3);
+        TracyCallable<Integer> op1Callable = new TracyCallable<Integer>(new TracyableArithmeticOperationCallable(randomInt, 2));
+        TracyCallable<Integer> op2Callable = new TracyCallable<Integer>(new TracyableArithmeticOperationCallable(randomInt, 3));
 
         FutureTask<Integer> futureTaskOp1 = new TracyFutureTask<Integer>(op1Callable);
         FutureTask<Integer> futureTaskOp2 = new TracyFutureTask<Integer>(op2Callable);
@@ -96,8 +97,8 @@ public class TracyConcurrentTestPerf {
     public void testTwoThreadsNotTracing() {
         int randomInt = randomInput();
        
-        NonTracyableArithmeticOperationCallable op1Callable = new NonTracyableArithmeticOperationCallable(randomInt, 2);
-        NonTracyableArithmeticOperationCallable op2Callable = new NonTracyableArithmeticOperationCallable(randomInt, 3);
+        Callable<Integer> op1Callable = new NonTracyableArithmeticOperationCallable(randomInt, 2);
+        Callable<Integer> op2Callable = new NonTracyableArithmeticOperationCallable(randomInt, 3);
 
         FutureTask<Integer> futureTaskOp1 = new FutureTask<Integer>(op1Callable);
         FutureTask<Integer> futureTaskOp2 = new FutureTask<Integer>(op2Callable);
@@ -140,8 +141,8 @@ public class TracyConcurrentTestPerf {
         }
         Tracy.before("delegator");
        
-        TracyableArithmeticOperationCallable op1Callable = new TracyableArithmeticOperationCallable(randomInt, 2);
-        TracyableArithmeticOperationCallable op2Callable = new TracyableArithmeticOperationCallable(randomInt, 3);
+        TracyCallable<Integer> op1Callable = new TracyCallable<Integer>(new TracyableArithmeticOperationCallable(randomInt, 2));
+        TracyCallable<Integer> op2Callable = new TracyCallable<Integer>(new TracyableArithmeticOperationCallable(randomInt, 3));
 
         FutureTask<Integer> futureTaskOp1 = new TracyFutureTask<Integer>(op1Callable);
         FutureTask<Integer> futureTaskOp2 = new TracyFutureTask<Integer>(op2Callable);

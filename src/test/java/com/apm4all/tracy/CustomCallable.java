@@ -1,7 +1,7 @@
 package com.apm4all.tracy;
-import com.apm4all.tracy.TracyCallable;
+import java.util.concurrent.Callable;
 
-public class CustomCallable extends TracyCallable<String> {
+public class CustomCallable implements Callable<String> {
     
     private long waitTime;
      
@@ -13,9 +13,7 @@ public class CustomCallable extends TracyCallable<String> {
         Thread.sleep(waitTime);
     }
     
-    @Override
     public String call() throws Exception {
-        super.call(); // This enables
         Tracy.before(Thread.currentThread().getName());
         someWork(); 
         Tracy.after(Thread.currentThread().getName());

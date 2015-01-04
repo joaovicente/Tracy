@@ -17,8 +17,9 @@
 package com.apm4all.tracy;
 import java.util.concurrent.Callable;
 
-public abstract class TracyCallable<V> implements Callable<V>{
+public class TracyCallable<V> implements Callable<V>{
     private TracyThreadContext tracyWorkerContext = null;
+    Callable<V> userCallable = null;
    
     /**
      * A Callable base class used to hold tracyThreadContext for the worker thread <br>
@@ -27,8 +28,9 @@ public abstract class TracyCallable<V> implements Callable<V>{
      * 2. Create TracyThreadContext to be used within the worker thread 
      * (if parent thread had a non-null TracyThreadContext)
      */
-    public TracyCallable(){
+    public TracyCallable(Callable<V> userCallable){
         // Setup context only if parent thread is Tracing
+        this.userCallable = userCallable; 
         if (Tracy.isEnabled())    {
             TracyThreadContext parentContext = Tracy.getTracyThreadContext();
             this.tracyWorkerContext = new TracyThreadContext(
@@ -51,7 +53,7 @@ public abstract class TracyCallable<V> implements Callable<V>{
         else    {
             Tracy.clearContext();
         }
-        return null;
+        return userCallable.call();
     }
     
     /**

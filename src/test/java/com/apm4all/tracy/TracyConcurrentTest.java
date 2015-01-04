@@ -22,8 +22,8 @@ public class TracyConcurrentTest {
         Tracy.setContext("someTaskId", "null", "TracyTestConcurrent");
         Tracy.before("delegator");
         
-        CustomCallable callable1 = new CustomCallable(1000);
-        CustomCallable callable2 = new CustomCallable(2000);
+        TracyCallable<String> callable1 = new TracyCallable<String>(new CustomCallable(1000));
+        TracyCallable<String> callable2 = new TracyCallable<String>(new CustomCallable(2000));
 
         FutureTask<String> futureTask1 = new TracyFutureTask<String>(callable1);
         FutureTask<String> futureTask2 = new TracyFutureTask<String>(callable2);
@@ -77,8 +77,8 @@ public class TracyConcurrentTest {
 //        Tracy.setContext("someTaskId", "null", "parallel");
 //        Tracy.before("delegator");
         
-        CustomCallable callable1 = new CustomCallable(1000);
-        CustomCallable callable2 = new CustomCallable(2000);
+        TracyCallable<String> callable1 = new TracyCallable<String>(new CustomCallable(1000));
+        TracyCallable<String> callable2 = new TracyCallable<String>(new CustomCallable(2000));
 
         FutureTask<String> futureTask1 = new TracyFutureTask<String>(callable1);
         FutureTask<String> futureTask2 = new TracyFutureTask<String>(callable2);
@@ -143,8 +143,8 @@ public class TracyConcurrentTest {
                 Tracy.clearContext();
             }
             Tracy.before("delegator");
-            TracyableArithmeticOperationCallable op1Callable = new TracyableArithmeticOperationCallable(taskId, 2);
-            TracyableArithmeticOperationCallable op2Callable = new TracyableArithmeticOperationCallable(taskId, 3);
+            TracyCallable<Integer> op1Callable = new TracyCallable<Integer>(new TracyableArithmeticOperationCallable(taskId, 2));
+            TracyCallable<Integer> op2Callable = new TracyCallable<Integer>(new TracyableArithmeticOperationCallable(taskId, 3));
 
             FutureTask<Integer> futureTaskOp1 = new TracyFutureTask<Integer>(op1Callable);
             FutureTask<Integer> futureTaskOp2 = new TracyFutureTask<Integer>(op2Callable);
