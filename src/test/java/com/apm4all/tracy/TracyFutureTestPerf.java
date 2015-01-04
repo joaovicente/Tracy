@@ -15,9 +15,9 @@ import org.slf4j.LoggerFactory;
 
 import ch.qos.logback.classic.Logger;
 
-public class TracyTestFuturePerf {
+public class TracyFutureTestPerf {
     private static final int NTHREDS = 10;
-    private static final Logger logger = (Logger) LoggerFactory.getLogger(TracyTestFuturePerf.class);
+    private static final Logger logger = (Logger) LoggerFactory.getLogger(TracyFutureTestPerf.class);
     private	ExecutorService executor = Executors.newFixedThreadPool(NTHREDS);
     private static boolean logToFile = false;
 

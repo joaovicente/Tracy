@@ -16,6 +16,10 @@
 
 package com.apm4all.tracy;
 
+/**
+ * Use TracyCallable and TracyFutureTask instead as illustrated in TracyConcurrentTest
+ */
+@Deprecated
 public class TracyableFutureResponse {
 	private Object data;
 	private TracyThreadContext tracyThreadContext;

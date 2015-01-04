@@ -23,10 +23,10 @@ import org.slf4j.LoggerFactory;
 
 import ch.qos.logback.classic.Logger;
 
-public class TracyTestConcurrentPerf {
+public class TracyConcurrentTestPerf {
     ExecutorService executor = Executors.newFixedThreadPool(30);
     Random r = new Random();
-    private static final Logger logger = (Logger) LoggerFactory.getLogger(TracyTestFuturePerf.class);
+    private static final Logger logger = (Logger) LoggerFactory.getLogger(TracyFutureTestPerf.class);
     private static boolean logToFile = true;
     @Rule
     public ContiPerfRule i = new ContiPerfRule();

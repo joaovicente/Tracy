@@ -32,6 +32,7 @@ public class TracyConcurrentTest {
         executor.execute(futureTask1);
         executor.execute(futureTask2);
 
+        System.out.println("== Running: testTwoThreadsTracing");
         while (true) {
             try {
                 if(futureTask1.isDone() && futureTask2.isDone()){
@@ -72,6 +73,7 @@ public class TracyConcurrentTest {
     @Test
     public void testTwoThreadsNotTracing() {
         List<String> tracyEvents = null;
+        System.out.println("== Running: testTwoThreadsNotTracing");
 //        Tracy.setContext("someTaskId", "null", "parallel");
 //        Tracy.before("delegator");
         
@@ -131,6 +133,7 @@ public class TracyConcurrentTest {
         List<String> tracyEvents = null;
         ExecutorService executor = Executors.newFixedThreadPool(2);
        
+        System.out.println("== Running: testInterleavedTracing (4 tasks executed [1..4] Only tasks 2 and 4 are traced)");
         // Expect to produce traces for even task ids 2 and 4, and to not produce them for 1 and 3
         for (int taskId = 1 ; taskId < 5 ; taskId++)   {
             if (taskTracingOn(taskId)) {
