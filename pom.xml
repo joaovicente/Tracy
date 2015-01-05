@@ -4,7 +4,7 @@
 	<groupId>com.apm4all.tracy</groupId>
 	<artifactId>Tracy</artifactId>
 	<packaging>jar</packaging>
-	<version>2.1.0</version>
+	<version>2.2.0</version>
 	<name>Tracy</name>
 	<description>A simple tracing framework inspired by XTrace</description>
 	<url>http://www.apm4all.com</url>
