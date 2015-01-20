@@ -121,9 +121,16 @@ public class Tracy {
      * Convenience annotate() method to save user from converting int to String
      */	
     public static void annotate(String intName, int intValue) {
-	annotate(intName, new Integer(intValue).toString());
+        annotate(intName, new Integer(intValue).toString());
     }
 
+    /**
+     * Convenience annotate() method to save user from converting long to String
+     */	
+    public static void annotate(String longName, long longValue) {
+        annotate(longName, new Long(longValue).toString());
+    }
+    
     /**
      * Once all work has been done, and TracyEvents are ready to be collected you can collect them using this method
      * @return list of TracyEvents
@@ -162,13 +169,13 @@ public class Tracy {
      */	
     public static List<String> getEventsAsJson() {
         List<String> list = Tracy.EMPTY_STRING_LIST;
-	TracyThreadContext ctx = threadContext.get();
-	if (isValidContext(ctx)) {
-	    list = new ArrayList<String>(20);
-	    for (TracyEvent event : ctx.getPoppedList())	{
-		list.add(event.toJsonString());
-	    }
-	}
+        TracyThreadContext ctx = threadContext.get();
+        if (isValidContext(ctx)) {
+            list = new ArrayList<String>(20);
+            for (TracyEvent event : ctx.getPoppedList())	{
+                list.add(event.toJsonString());
+            }
+        }
         return list;
 	}
 	
@@ -260,5 +267,33 @@ public class Tracy {
     
     public static boolean isEnabled(TracyThreadContext ctx) {
         return(isValidContext(ctx));
+    }
+
+    /**
+     * In case where an exception is thrown Tracy.frameError(errorString) can be used to 
+     * unwind all Tracy stack frames with a particular user error message.
+     * This is useful when one wants to signal an custom error for a task when one does not
+     * know (or does not care) how deep the the Tracy stack is.
+     */
+    public static void outerError(String error) {
+        TracyThreadContext ctx = threadContext.get();
+        if (isValidContext(ctx)) {
+            ctx.popAllWithError(error);
+        }
+    }
+
+    /**
+     * In case where an exception is thrown Tracy.frameError(errorString) can be used to 
+     * close Tracy stack frame with a user error message while still flow to continue.<br>
+     * This can be useful when in a retry exception where the task may be recoverable.<br>
+     * If the current frame is not the only Tracy stack frame the next frame will resume normally.
+     * In case the user wants to raise an error all the way up to the inner Tracy stack frame, 
+     * then outerError(errorString) should be used instead  
+     */
+    public static void frameError(String error) {
+        TracyThreadContext ctx = threadContext.get();
+        if (isValidContext(ctx)) {
+            ctx.popFrameWithError(error);
+        }
     }
 }
