@@ -85,6 +85,23 @@ public class TracyTest {
         Tracy.clearContext();
     }
     
+    @Test
+    public void testGetEvents_longAnnotation() throws InterruptedException {
+        String longName = "longName";
+        long longValue = Long.MAX_VALUE;
+        Tracy.setContext(TASK_ID, PARENT_OPT_ID, COMPONENT_NAME);
+        Tracy.before(L1_LABEL_NAME);
+        Tracy.annotate(longName, longValue);
+        Tracy.after(L1_LABEL_NAME);
+        List<TracyEvent> events = Tracy.getEvents();
+        assertEquals(1, events.size());
+        TracyEvent event = events.get(0);
+        assertEquals(TASK_ID, event.getTaskId());
+        assertEquals(PARENT_OPT_ID, event.getParentOptId());
+        assertEquals(L1_LABEL_NAME, event.getLabel());
+        assertEquals(new Long(longValue).toString() , Tracy.getEventsAsMaps().get(0).get(longName));
+        Tracy.clearContext();
+    }
     
     @Test
     public void testGetEvents_componentAnnotated() throws InterruptedException {
@@ -261,5 +278,74 @@ public class TracyTest {
         		annotations);
         assertEquals(jsonEvent2, events.get(1));
         Tracy.clearContext();
+    }
+    
+    @Test
+    public void testOuterError_twoLevelStack() throws InterruptedException {
+        final String CUSTOM_ERROR_MESSAGE = "CustomErrorMessage";
+        Tracy.setContext(TASK_ID, PARENT_OPT_ID, COMPONENT_NAME);
+        Tracy.before(L1_LABEL_NAME);
+        Tracy.before(L11_LABEL_NAME);
+        Thread.sleep(100);
+        Tracy.outerError(CUSTOM_ERROR_MESSAGE);
+        
+        List<TracyEvent> events = Tracy.getEvents();
+        assertEquals(2, events.size());
+
+        // L1 event will be popped last
+        TracyEvent l1Event = events.get(1);
+        assertEquals(TASK_ID, l1Event.getTaskId());
+        assertEquals(PARENT_OPT_ID, l1Event.getParentOptId());
+        assertEquals(L1_LABEL_NAME, l1Event.getLabel());
+        assertEquals(L1_LABEL_NAME, l1Event.getLabel());
+        assertEquals(CUSTOM_ERROR_MESSAGE, l1Event.getError());
+
+        // L11 event will be popped first
+        TracyEvent l11Event = events.get(0);
+        assertEquals(TASK_ID, l11Event.getTaskId());
+        assertEquals(l1Event.getOptId(), l11Event.getParentOptId());
+        assertEquals(L11_LABEL_NAME, l11Event.getLabel());
+        assertEquals(CUSTOM_ERROR_MESSAGE, l11Event.getError());
+        Tracy.clearContext();
+    }
+
+    @Test
+    public void testFrameError_twoLevelStack() throws InterruptedException {
+        final String CUSTOM_ERROR_MESSAGE = "CustomErrorMessage";
+        Tracy.setContext(TASK_ID, PARENT_OPT_ID, COMPONENT_NAME);
+        Tracy.before(L1_LABEL_NAME);
+        Tracy.before(L11_LABEL_NAME);
+        Thread.sleep(100);
+        Tracy.frameError(CUSTOM_ERROR_MESSAGE);
+        Tracy.after(L1_LABEL_NAME);
+        
+        List<TracyEvent> events = Tracy.getEvents();
+        assertEquals(2, events.size());
+
+        // L1 event will be popped last
+        TracyEvent l1Event = events.get(1);
+        assertEquals(TASK_ID, l1Event.getTaskId());
+        assertEquals(PARENT_OPT_ID, l1Event.getParentOptId());
+        assertEquals(L1_LABEL_NAME, l1Event.getLabel());
+        assertEquals(L1_LABEL_NAME, l1Event.getLabel());
+        assertEquals(null, l1Event.getError());
+
+        // L11 event will be popped first
+        TracyEvent l11Event = events.get(0);
+        assertEquals(TASK_ID, l11Event.getTaskId());
+        assertEquals(l1Event.getOptId(), l11Event.getParentOptId());
+        assertEquals(L11_LABEL_NAME, l11Event.getLabel());
+        assertEquals(CUSTOM_ERROR_MESSAGE, l11Event.getError());
+        Tracy.clearContext();
+    }
+    
+    @Test
+    public void testAnnotateBeforeBefore() throws InterruptedException {
+        Tracy.setContext(TASK_ID, PARENT_OPT_ID, COMPONENT_NAME);
+        try {
+            Tracy.annotate("anyKey", "anyValue");
+        } catch (Exception e) {
+            fail();
+        }
     }
 }

@@ -129,15 +129,21 @@ public class TracyThreadContext {
     }
 
     public void pop() {
-        TracyEvent event = stack.pop();
-        event.setMsecAfter(System.currentTimeMillis());
-        poppedList.add(event);
+        if (stack.isEmpty() == false)   {
+            TracyEvent event = stack.pop();
+            event.setMsecAfter(System.currentTimeMillis());
+            poppedList.add(event);
+        }
     }
     
     public void forcePop() {
+        forcePop("unknown");
+    }
+    
+    public void forcePop(String error) {
         TracyEvent event = stack.pop();
         event.setMsecAfter(System.currentTimeMillis());
-        event.addAnnotation("error", "unknown");
+        event.addAnnotation("error", error);
         poppedList.add(event);
     }
 
@@ -147,13 +153,28 @@ public class TracyThreadContext {
 	}
         return poppedList;
     }
-
+    
+    public void popAllWithError(String error) {
+        while(stack.isEmpty() == false)	{
+            forcePop(error);
+        }
+    }
+    
+    public void popFrameWithError(String error) {
+        if (stack.isEmpty() == false)	{
+            forcePop(error);
+        }
+    }
+    
+    
     public void setPoppedList(List<TracyEvent> poppedList) {
         this.poppedList = poppedList;
     }
 
     public void annotate(String... args) {
-        stack.peek().addAnnotations(args);
+        if (stack.isEmpty() == false)   {
+            stack.peek().addAnnotations(args);
+        }
     }
 
     public void mergeChildContext(TracyThreadContext ctx) {

@@ -164,4 +164,8 @@ public class TracyEvent {
     public void setTaskId(String taskId) {
         this.taskId = taskId;
     }
+    
+    public String getError()  {
+        return this.annotations.get("error");
+    }
 }

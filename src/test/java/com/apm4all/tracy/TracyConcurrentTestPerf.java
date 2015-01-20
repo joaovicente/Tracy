@@ -25,28 +25,28 @@ import org.slf4j.LoggerFactory;
 import ch.qos.logback.classic.Logger;
 
 public class TracyConcurrentTestPerf {
-    ExecutorService executor = Executors.newFixedThreadPool(30);
-    Random r = new Random();
+    ExecutorService executor = null;
+    Random r = null;
     private static final Logger logger = (Logger) LoggerFactory.getLogger(TracyFutureTestPerf.class);
     private static boolean logToFile = true;
     @Rule
     public ContiPerfRule i = new ContiPerfRule();
 
-    private int randomInput()    {
-        // Random number below 10000
-        return r.nextInt(9999);
-    }
-    
     @Before
     public void setup()  {
-        
+        executor = Executors.newFixedThreadPool(30);
+        r = new Random();
     }
     
     @After
     public void tearDown()  {
         //shut down executor service
         executor.shutdown();
-        
+    }
+    
+    private int randomInput()    {
+        // Random number below 10000
+        return r.nextInt(9999);
     }
     
     @PerfTest(threads=10, duration=5000, rampUp = 1000, timer = RandomTimer.class, timerParams = { 1, 10 })
@@ -173,8 +173,7 @@ public class TracyConcurrentTestPerf {
                     if (taskTracingOn(randomInt))   {
                         assertEquals(3, tracyEvents.size());
                     }
-                    else
-                    {
+                    else {
                         assertEquals(0, tracyEvents.size());
                     }
                     return;
