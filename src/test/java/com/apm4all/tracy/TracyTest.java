@@ -32,13 +32,6 @@ public class TracyTest {
     static final String L11_LABEL_NAME = "L11 Operation";
 
     @Test
-    public void testSetContext_empty() {
-        Tracy.setContext();
-        //TODO: There should be no parent optId
-        //assertEquals(Tracy.TRACY_DEFAULT_PARENT_OPT_ID, Tracy.getParentOptId());
-    }
-
-    @Test
     public void testSetContext_full() {
         Tracy.setContext(TASK_ID, PARENT_OPT_ID, COMPONENT_NAME);
         assertEquals(TASK_ID, Tracy.getTaskId());

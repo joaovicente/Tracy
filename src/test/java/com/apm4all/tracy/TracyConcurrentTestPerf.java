@@ -27,7 +27,7 @@ import ch.qos.logback.classic.Logger;
 public class TracyConcurrentTestPerf {
     ExecutorService executor = null;
     Random r = null;
-    private static final Logger logger = (Logger) LoggerFactory.getLogger(TracyFutureTestPerf.class);
+    private static final Logger logger = (Logger) LoggerFactory.getLogger(TracyConcurrentTestPerf.class);
     private static boolean logToFile = true;
     @Rule
     public ContiPerfRule i = new ContiPerfRule();

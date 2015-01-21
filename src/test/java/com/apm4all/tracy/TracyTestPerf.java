@@ -20,7 +20,7 @@ public class TracyTestPerf {
     @Required(average = 1, percentile99=1, max = 50)
     @Test
     public void testQuadEventAndAnnotationTracePerformance() {
-        Tracy.setContext();
+        Tracy.setContext(null, null, "SomeComponentName");
         Tracy.before("L1");
         Tracy.annotate("L1Key", "L1Value");
         Tracy.before("L11");

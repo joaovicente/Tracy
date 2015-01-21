@@ -39,12 +39,12 @@ public class Tracy {
      * If the endpoint is outside this JVM/component you should have received a taskId and optId from a client.<br>
      * @param taskId is a string which allows correlating Tracy events resulting of a endpoint being hit
      * @param parentOptId is a string identifying the parent operation which invoked some logic on a local component
+     * @param componentName is a string identifying the name of the component the tracy belongs to
      */
-    public static void setContext(String taskId, String parentOptId) {
-        threadContext.set(new TracyThreadContext(taskId, parentOptId));
-    }    
-    
     public static void setContext(String taskId, String parentOptId, String componentName) {
+        if (taskId == null) {
+            taskId = TracyThreadContext.generateRandomTaskId();
+        }
         threadContext.set(new TracyThreadContext(taskId, parentOptId, componentName));
     }    
     
@@ -55,15 +55,6 @@ public class Tracy {
         threadContext.set(ctx);
     }
 
-    /**
-     * Setting context in this manner is highly discouraged.<br>
-     * taskId is fundamental to correlate Tracy events.<br>
-     * optId is fundamental to place the parent node in the Tracy DAG    
-     */	
-    public static void setContext() {
-        setContext(TracyThreadContext.generateRandomTaskId(), TracyThreadContext.generateRandomOptId());
-    }
-    
     /**
      * Clearing context ensures there is no residual context sticking to a recycled thread.<br>
      */	
