@@ -353,4 +353,16 @@ public class TracyTest {
         events = Tracy.getEvents();
         assertEquals("null", events.get(0).getAnnotation(ANY_KEY));
     }
+
+    @Test
+    public void testSetTaskIdAtTheEnd() throws InterruptedException {
+    	final String NEW_TASK_ID = "newTaskId";
+        List<TracyEvent> events;
+        Tracy.setContext(TASK_ID, PARENT_OPT_ID, COMPONENT_NAME);
+        Tracy.before("test");
+        Tracy.after("test");
+        Tracy.setTaskId(NEW_TASK_ID);
+        events = Tracy.getEvents();
+        assertEquals(NEW_TASK_ID, events.get(0).getTaskId());
+    }
 }

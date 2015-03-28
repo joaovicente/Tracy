@@ -175,6 +175,13 @@ public class Tracy {
         return ctx.getTaskId();
     }
     
+    public static void setTaskId(String taskId) {
+        TracyThreadContext ctx = threadContext.get();
+        if (isValidContext(ctx))    {
+        	ctx.setTaskId(taskId);
+        }
+    }
+    
     public static final TracyThreadContext getTracyThreadContext() {
         return threadContext.get();
     }
@@ -183,7 +190,7 @@ public class Tracy {
         TracyThreadContext ctx = threadContext.get();
         return ctx.getParentOptId();
     }
-    
+   
     /**
      * Allows user to set a custom optId (usually automatically created)
      * This method can be safely called any time between a 'before' and 'after'

@@ -87,6 +87,13 @@ public class TracyThreadContext {
     public String getTaskId() {
         return taskId;
     }
+    
+    public void setTaskId(String taskId) {
+        this.taskId = taskId;
+        for (TracyEvent event : poppedList)	{
+        	event.setTaskId(taskId);
+        }
+    }
 
     public String getParentOptId() {
         return parentOptId;
