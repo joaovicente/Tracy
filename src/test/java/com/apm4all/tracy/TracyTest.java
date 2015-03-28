@@ -341,4 +341,16 @@ public class TracyTest {
             fail();
         }
     }
+    
+    @Test
+    public void testAnnotateWithNull() throws InterruptedException {
+    	final String ANY_KEY = "anyKey";
+        List<TracyEvent> events;
+        Tracy.setContext(TASK_ID, PARENT_OPT_ID, COMPONENT_NAME);
+        Tracy.before("test");
+        Tracy.annotate(ANY_KEY, null);
+        Tracy.after("test");
+        events = Tracy.getEvents();
+        assertEquals("null", events.get(0).getAnnotation(ANY_KEY));
+    }
 }

@@ -105,9 +105,12 @@ public class TracyEvent {
             throw new IllegalArgumentException(
                     "Tracy.addAnnotation requires an even number of arguments.");
         }
+        String value = "null";
         for (int i=0; i<args.length/2; i++) {
             String key = args[2*i].toString();
-            String value = args[2*i + 1].toString();
+            if (null != args[2*i + 1])	{
+            	value = args[2*i + 1].toString();
+            }
             addAnnotation(key, value);
         }
     }
