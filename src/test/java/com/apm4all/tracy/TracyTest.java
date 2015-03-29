@@ -365,4 +365,16 @@ public class TracyTest {
         events = Tracy.getEvents();
         assertEquals(NEW_TASK_ID, events.get(0).getTaskId());
     }
+    
+    @Test
+    public void testGetEventsAsJsonArray()	{
+    	Tracy.setContext(TASK_ID, PARENT_OPT_ID, COMPONENT_NAME);
+        Tracy.before("test1");
+        Tracy.after("test1");
+        Tracy.before("test2");
+        Tracy.after("test2");
+        String jsonArray = Tracy.getEventsAsJsonArray();
+        // TODO: Make assertion more robust (using Jackson Parser)
+        assertNotNull(jsonArray);
+    }
 }
