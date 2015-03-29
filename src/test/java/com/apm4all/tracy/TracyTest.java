@@ -18,11 +18,17 @@ package com.apm4all.tracy;
 
 import static org.junit.Assert.*;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
+
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.CollectionType;
 
 public class TracyTest {
     static final String COMPONENT_NAME = "TracyTest";
@@ -367,14 +373,16 @@ public class TracyTest {
     }
     
     @Test
-    public void testGetEventsAsJsonArray()	{
+    public void testGetEventsAsJsonArray() throws JsonParseException, JsonMappingException, IOException	{
     	Tracy.setContext(TASK_ID, PARENT_OPT_ID, COMPONENT_NAME);
         Tracy.before("test1");
         Tracy.after("test1");
         Tracy.before("test2");
         Tracy.after("test2");
         String jsonArray = Tracy.getEventsAsJsonArray();
-        // TODO: Make assertion more robust (using Jackson Parser)
-        assertNotNull(jsonArray);
+        ObjectMapper mapper = new ObjectMapper();
+        CollectionType mapCollectionType = mapper.getTypeFactory().constructCollectionType(List.class, Map.class);
+        List<Map<String, String>> result = mapper.readValue(jsonArray, mapCollectionType);
+        assertEquals(2, result.size());
     }
 }
