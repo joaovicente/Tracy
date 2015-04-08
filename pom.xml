@@ -6,7 +6,7 @@
 	<groupId>com.apm4all.tracy</groupId>
 	<artifactId>Tracy</artifactId>
 	<packaging>jar</packaging>
-	<version>2.4.1</version>
+	<version>2.5.0</version>
 	<name>Tracy</name>
 	<description>A simple tracing framework inspired by XTrace</description>
 	<url>http://www.apm4all.com</url>
@@ -61,6 +61,18 @@
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-core</artifactId>
 			<version>1.0.1</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-core</artifactId>
+			<version>2.5.1</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>2.5.1</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

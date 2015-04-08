@@ -169,10 +169,45 @@ public class Tracy {
         }
         return list;
 	}
+    
+    /**
+     * Returns Tracy segment as JSON array string
+     * @return Tracy JSON array string
+     */	
+    public static String getEventsAsJsonArray()	{
+    	// Assuming max 8 frames per segment. Typical Tracy JSON frame is ~250 
+    	// ( 250 * 8 = 2000). Rounding up to 2048
+    	final int TRACY_SEGMENT_CHAR_SIZE = 2048;
+    	String jsonArrayString = null;
+    	int frameCounter = 0;
+        TracyThreadContext ctx = threadContext.get();
+        if (isValidContext(ctx) && ctx.getPoppedList().size()>0) {
+        	StringBuilder sb = new StringBuilder(TRACY_SEGMENT_CHAR_SIZE);
+        	sb.append("[");
+        	for (TracyEvent event : ctx.getPoppedList())	{
+        		if (frameCounter > 0)	{
+        			sb.append(",");
+        		}
+        		sb.append(event.toJsonString());
+        		frameCounter++;
+        	}
+        	sb.append("]");
+        	jsonArrayString = sb.toString();
+        }
+        return jsonArrayString;
+    }
+
 	
     public static String getTaskId() {
         TracyThreadContext ctx = threadContext.get();
         return ctx.getTaskId();
+    }
+    
+    public static void setTaskId(String taskId) {
+        TracyThreadContext ctx = threadContext.get();
+        if (isValidContext(ctx))    {
+        	ctx.setTaskId(taskId);
+        }
     }
     
     public static final TracyThreadContext getTracyThreadContext() {
@@ -183,7 +218,7 @@ public class Tracy {
         TracyThreadContext ctx = threadContext.get();
         return ctx.getParentOptId();
     }
-    
+   
     /**
      * Allows user to set a custom optId (usually automatically created)
      * This method can be safely called any time between a 'before' and 'after'

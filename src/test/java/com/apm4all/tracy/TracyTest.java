@@ -18,11 +18,17 @@ package com.apm4all.tracy;
 
 import static org.junit.Assert.*;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
+
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.CollectionType;
 
 public class TracyTest {
     static final String COMPONENT_NAME = "TracyTest";
@@ -340,5 +346,43 @@ public class TracyTest {
         } catch (Exception e) {
             fail();
         }
+    }
+    
+    @Test
+    public void testAnnotateWithNull() throws InterruptedException {
+    	final String ANY_KEY = "anyKey";
+        List<TracyEvent> events;
+        Tracy.setContext(TASK_ID, PARENT_OPT_ID, COMPONENT_NAME);
+        Tracy.before("test");
+        Tracy.annotate(ANY_KEY, null);
+        Tracy.after("test");
+        events = Tracy.getEvents();
+        assertEquals("null", events.get(0).getAnnotation(ANY_KEY));
+    }
+
+    @Test
+    public void testSetTaskIdAtTheEnd() throws InterruptedException {
+    	final String NEW_TASK_ID = "newTaskId";
+        List<TracyEvent> events;
+        Tracy.setContext(TASK_ID, PARENT_OPT_ID, COMPONENT_NAME);
+        Tracy.before("test");
+        Tracy.after("test");
+        Tracy.setTaskId(NEW_TASK_ID);
+        events = Tracy.getEvents();
+        assertEquals(NEW_TASK_ID, events.get(0).getTaskId());
+    }
+    
+    @Test
+    public void testGetEventsAsJsonArray() throws JsonParseException, JsonMappingException, IOException	{
+    	Tracy.setContext(TASK_ID, PARENT_OPT_ID, COMPONENT_NAME);
+        Tracy.before("test1");
+        Tracy.after("test1");
+        Tracy.before("test2");
+        Tracy.after("test2");
+        String jsonArray = Tracy.getEventsAsJsonArray();
+        ObjectMapper mapper = new ObjectMapper();
+        CollectionType mapCollectionType = mapper.getTypeFactory().constructCollectionType(List.class, Map.class);
+        List<Map<String, String>> result = mapper.readValue(jsonArray, mapCollectionType);
+        assertEquals(2, result.size());
     }
 }
