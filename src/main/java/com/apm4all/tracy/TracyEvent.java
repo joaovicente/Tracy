@@ -68,25 +68,39 @@ public class TracyEvent {
         return map;
     }
     
-    private void addJsonElement(StringBuilder sb, String key, String value, boolean first)	{
+    private void addJsonStringValue(StringBuilder sb, String key, String value, boolean first)	{
        if (false == first)	{
            sb.append(",");
         }
         sb.append("\""+key+"\":\""+value+"\"");
     }
     
+    private void addJsonLongValue(StringBuilder sb, String key, long value, boolean first)	{
+       if (false == first)	{
+           sb.append(",");
+        }
+        sb.append("\""+key+"\":"+value);
+    }
+
+    private void addJsonIntValue(StringBuilder sb, String key, int value, boolean first)	{
+       if (false == first)	{
+           sb.append(",");
+        }
+        sb.append("\""+key+"\":"+value);
+    }
+    
     public String toJsonString() {
         StringBuilder jsonBuffer = new StringBuilder(200);
         jsonBuffer.append("{");
-        addJsonElement(jsonBuffer, "taskId", taskId, true);
-        addJsonElement(jsonBuffer, "parentOptId", parentOptId, false);
-        addJsonElement(jsonBuffer, "label", label, false);
-        addJsonElement(jsonBuffer, "optId", optId, false);
-        addJsonElement(jsonBuffer, "msecBefore", Long.toString(msecBefore), false);
-        addJsonElement(jsonBuffer, "msecAfter", Long.toString(msecAfter), false);
-        addJsonElement(jsonBuffer, "msecElapsed", Long.toString(msecElapsed), false);
+        addJsonStringValue(jsonBuffer, "taskId", taskId, true);
+        addJsonStringValue(jsonBuffer, "parentOptId", parentOptId, false);
+        addJsonStringValue(jsonBuffer, "label", label, false);
+        addJsonStringValue(jsonBuffer, "optId", optId, false);
+        addJsonLongValue(jsonBuffer, "msecBefore", msecBefore, false);
+        addJsonLongValue(jsonBuffer, "msecAfter", msecAfter, false);
+        addJsonLongValue(jsonBuffer, "msecElapsed", msecElapsed, false);
         for (String key : annotations.keySet())	{
-        	addJsonElement(jsonBuffer, key, annotations.get(key), false);
+        	addJsonStringValue(jsonBuffer, key, annotations.get(key), false);
         }
         jsonBuffer.append("}");
         return jsonBuffer.toString();

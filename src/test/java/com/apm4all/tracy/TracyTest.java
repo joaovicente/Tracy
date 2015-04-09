@@ -225,9 +225,9 @@ public class TracyTest {
     	sb.append(",\"parentOptId\":\"" + parentOptId + "\"");
     	sb.append(",\"label\":\"" + label + "\"");
     	sb.append(",\"optId\":\"" + optId + "\"");
-    	sb.append(",\"msecBefore\":\"" + msecBefore + "\"");
-    	sb.append(",\"msecAfter\":\"" + msecAfter + "\"");
-    	sb.append(",\"msecElapsed\":\"" + msecElapsed + "\"");
+    	sb.append(",\"msecBefore\":" + msecBefore);
+    	sb.append(",\"msecAfter\":" + msecAfter);
+    	sb.append(",\"msecElapsed\":" + msecElapsed);
     	for (String key : annotations.keySet())	{
     		sb.append(",\"" + key + "\":\"" + annotations.get(key) + "\"");
     	}
