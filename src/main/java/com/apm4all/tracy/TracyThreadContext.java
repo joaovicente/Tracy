@@ -183,7 +183,19 @@ public class TracyThreadContext {
             stack.peek().addAnnotations(args);
         }
     }
+    
+    public void annotate(String key, int value) {
+        if (stack.isEmpty() == false)   {
+            stack.peek().addAnnotation(key, value);
+        }
+    }
 
+    public void annotate(String key, long value) {
+        if (stack.isEmpty() == false)   {
+            stack.peek().addAnnotation(key, value);
+        }
+    }
+    
     public void mergeChildContext(TracyThreadContext ctx) {
     	if (null != ctx)	{
     		for (TracyEvent event : ctx.getPoppedList())	{

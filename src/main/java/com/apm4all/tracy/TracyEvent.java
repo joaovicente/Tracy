@@ -27,7 +27,7 @@ public class TracyEvent {
     long msecBefore;
     long msecAfter;
     long msecElapsed;
-    Map<String, String> annotations;
+    Map<String, Object> annotations;
 
     public TracyEvent(String taskId, String label, String parentOptId ,String optId, long msec) {
         this.taskId = taskId;
@@ -35,7 +35,7 @@ public class TracyEvent {
         this.label = label;
         this.optId = optId;
         this.msecBefore = msec;
-        this.annotations = new HashMap<String, String>(5);
+        this.annotations = new HashMap<String, Object>(5);
     }
 
     public String toString()	{
@@ -44,17 +44,23 @@ public class TracyEvent {
                 + ", \"parentOptId\"=" + "\"" + parentOptId + "\"" 
                 + ", \"label\"=" + "\"" + label + "\"" 
                 + ", \"optId\"=" + "\"" + optId + "\"" 
-                + ", \"msecBefore\"=" + "\"" + msecBefore + "\"" 
-                + ", \"msecAfter\"=" + "\"" + msecAfter + "\""
-                + ", \"msecElapsed\"=" + "\"" + msecElapsed + "\"");
+                + ", \"msecBefore\"=" + msecBefore 
+                + ", \"msecAfter\"=" + msecAfter
+                + ", \"msecElapsed\"=" + msecElapsed);
         for (String key : annotations.keySet())	{
-            sb.append(", \"" + key + "\"=" + "\"" + annotations.get(key) + "\"");
+        	Object value = annotations.get(key);
+        	if (String.class.isInstance(value))	{
+        		sb.append(", \"" + key + "\"=" + "\"" + annotations.get(key).toString() + "\"");
+        	}
+        	else if (Integer.class.isInstance(value) || Long.class.isInstance(value)) {
+        		sb.append(", \"" + key + "\"=" + "\"" + annotations.get(key).toString() + "\"");
+        	}
         }
         return sb.toString();
     }
 
-    public Map<String, String> toMap() {
-        Map<String, String> map = new HashMap<String, String>(10);
+    public Map<String, Object> toMap() {
+        Map<String, Object> map = new HashMap<String, Object>(10);
         map.put("taskId", taskId);
         map.put("parentOptId", parentOptId);
         map.put("label", label);
@@ -100,7 +106,16 @@ public class TracyEvent {
         addJsonLongValue(jsonBuffer, "msecAfter", msecAfter, false);
         addJsonLongValue(jsonBuffer, "msecElapsed", msecElapsed, false);
         for (String key : annotations.keySet())	{
-        	addJsonStringValue(jsonBuffer, key, annotations.get(key), false);
+        	Object value = annotations.get(key);
+        	if (String.class.isInstance(value))	{
+        		addJsonStringValue(jsonBuffer, key, (String)value, false);
+        	}
+        	else if (Integer.class.isInstance(value))	{
+        		addJsonIntValue(jsonBuffer, key, ((Integer)value).intValue(), false);
+        	}
+        	else if  (Long.class.isInstance(value)) {
+        		addJsonLongValue(jsonBuffer, key, ((Long)value).longValue(), false);
+        	}
         }
         jsonBuffer.append("}");
         return jsonBuffer.toString();
@@ -110,7 +125,15 @@ public class TracyEvent {
         annotations.put(key, value);
     }
     
-    public String getAnnotation(String key) {
+    public void addAnnotation(String key, int value)	{
+        annotations.put(key, new Integer(value));
+    }
+    
+    public void addAnnotation(String key, long value)	{
+        annotations.put(key, new Long(value));
+    }
+    
+    public Object getAnnotation(String key) {
         return annotations.get(key);
     }
 
@@ -186,7 +209,7 @@ public class TracyEvent {
         this.taskId = taskId;
     }
     
-    public String getError()  {
+    public Object getError()  {
         return this.annotations.get("error");
     }
 }

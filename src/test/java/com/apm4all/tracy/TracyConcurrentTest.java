@@ -163,10 +163,10 @@ public class TracyConcurrentTest {
                             System.out.println(event.toString());
                         }
                         assertNotNull(tracyEvents);
-                        List<Map<String, String>> tracyEventsAsMaps = Tracy.getEventsAsMaps();
+                        List<Map<String, Object>> tracyEventsAsMaps = Tracy.getEventsAsMaps();
                         if (taskTracingOn(taskId)) {
                             assertEquals(3, tracyEvents.size());
-                            for (Map<String, String> eventAsMap : tracyEventsAsMaps) {
+                            for (Map<String, Object> eventAsMap : tracyEventsAsMaps) {
                                 assertEquals(new Integer(taskId).toString(), eventAsMap.get("taskId") );
                             }
                         }
