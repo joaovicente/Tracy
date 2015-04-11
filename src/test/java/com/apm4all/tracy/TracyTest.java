@@ -68,11 +68,11 @@ public class TracyTest {
     
     @Test
     public void testGetEvents_intAnnotation() throws InterruptedException {
-        String intName = "intName";
+        final String INT_NAME = "intName";
         int intValue = Integer.MAX_VALUE;
         Tracy.setContext(TASK_ID, PARENT_OPT_ID, COMPONENT_NAME);
         Tracy.before(L1_LABEL_NAME);
-        Tracy.annotate(intName, intValue);
+        Tracy.annotate(INT_NAME, intValue);
         Tracy.after(L1_LABEL_NAME);
         List<TracyEvent> events = Tracy.getEvents();
         assertEquals(1, events.size());
@@ -80,17 +80,18 @@ public class TracyTest {
         assertEquals(TASK_ID, event.getTaskId());
         assertEquals(PARENT_OPT_ID, event.getParentOptId());
         assertEquals(L1_LABEL_NAME, event.getLabel());
-        assertEquals(new Integer(intValue) , Tracy.getEventsAsMaps().get(0).get(intName));
+        assertEquals(event.getAnnotation(INT_NAME), new Integer(intValue));
+        assertEquals(new Integer(intValue) , Tracy.getEventsAsMaps().get(0).get(INT_NAME));
         Tracy.clearContext();
     }
     
     @Test
     public void testGetEvents_longAnnotation() throws InterruptedException {
-        String longName = "longName";
+        final String LONG_NAME = "longName";
         long longValue = Long.MAX_VALUE;
         Tracy.setContext(TASK_ID, PARENT_OPT_ID, COMPONENT_NAME);
         Tracy.before(L1_LABEL_NAME);
-        Tracy.annotate(longName, longValue);
+        Tracy.annotate(LONG_NAME, longValue);
         Tracy.after(L1_LABEL_NAME);
         List<TracyEvent> events = Tracy.getEvents();
         assertEquals(1, events.size());
@@ -98,7 +99,8 @@ public class TracyTest {
         assertEquals(TASK_ID, event.getTaskId());
         assertEquals(PARENT_OPT_ID, event.getParentOptId());
         assertEquals(L1_LABEL_NAME, event.getLabel());
-        assertEquals(new Long(longValue), Tracy.getEventsAsMaps().get(0).get(longName));
+        assertEquals(event.getAnnotation(LONG_NAME), new Long(longValue));
+        assertEquals(new Long(longValue), Tracy.getEventsAsMaps().get(0).get(LONG_NAME));
         Tracy.clearContext();
     }
     
