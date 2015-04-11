@@ -109,7 +109,7 @@ public class Tracy {
     }
 
     /**
-     * Convenience annotate() method to save user from converting int to String
+     * Annotate an integer value
      */	
     public static void annotate(String intName, int intValue) {
         TracyThreadContext ctx = threadContext.get();
@@ -119,7 +119,7 @@ public class Tracy {
     }
 
     /**
-     * Convenience annotate() method to save user from converting long to String
+     * Annotate a long value
      */	
     public static void annotate(String longName, long longValue) {
         TracyThreadContext ctx = threadContext.get();
@@ -204,11 +204,24 @@ public class Tracy {
     }
 
 	
+    /**
+     * Gets the Tracy taskId
+     * @return Tracy taskId
+     */	
     public static String getTaskId() {
         TracyThreadContext ctx = threadContext.get();
         return ctx.getTaskId();
     }
     
+    /**
+     * taskId is normally set at Tracy.setContext(...) and never changed after<br>
+     * taskId is: <br>
+     * Either provided by the transport mechanism (HTTP header).<br>
+     * Or created by the local JVM, if the local JVM is the entry Task entry point<br>
+     * setTaskId() allows the user to change the taskId after all Tracy has been gathered, for example, 
+     * in case the JVM is a client who wants to use a trasactionId of a server as the taskId<br>
+     * WARNING: It is assumed that after serTaskId() is called no more before/after calls are made.
+     */	
     public static void setTaskId(String taskId) {
         TracyThreadContext ctx = threadContext.get();
         if (isValidContext(ctx))    {
