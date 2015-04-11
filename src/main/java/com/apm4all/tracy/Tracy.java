@@ -29,7 +29,7 @@ public class Tracy {
     static final String TRACY_DEFAULT_PARENT_OPT_ID = "NA";
     static List<String> EMPTY_STRING_LIST = new ArrayList<String>();
     static List<TracyEvent> EMPTY_TRACY_EVENT_LIST = new ArrayList<TracyEvent>(); 
-    static List<Map<String, String>> EMPTY_LIST_OF_MAPS = new ArrayList<Map<String, String>>();
+    static List<Map<String, Object>> EMPTY_LIST_OF_MAPS = new ArrayList<Map<String, Object>>();
     private final static ThreadLocal <TracyThreadContext> threadContext = new ThreadLocal <TracyThreadContext>();
 
     /**
@@ -109,17 +109,23 @@ public class Tracy {
     }
 
     /**
-     * Convenience annotate() method to save user from converting int to String
+     * Annotate an integer value
      */	
     public static void annotate(String intName, int intValue) {
-        annotate(intName, new Integer(intValue).toString());
+        TracyThreadContext ctx = threadContext.get();
+        if (isValidContext(ctx)) {
+        	ctx.annotate(intName, intValue);
+        }
     }
 
     /**
-     * Convenience annotate() method to save user from converting long to String
+     * Annotate a long value
      */	
     public static void annotate(String longName, long longValue) {
-        annotate(longName, new Long(longValue).toString());
+        TracyThreadContext ctx = threadContext.get();
+        if (isValidContext(ctx)) {
+            ctx.annotate(longName, longValue);
+        }
     }
     
     /**
@@ -141,11 +147,11 @@ public class Tracy {
      * TracyEvents to be able to consume them.
      * @return list of TracyEvent maps
      */	
-    public static List<Map<String, String>> getEventsAsMaps() {
-        List<Map<String, String>> list = EMPTY_LIST_OF_MAPS; 
+    public static List<Map<String, Object>> getEventsAsMaps() {
+        List<Map<String, Object>> list = EMPTY_LIST_OF_MAPS; 
         TracyThreadContext ctx = threadContext.get();
         if (isValidContext(ctx)) {
-            list = new ArrayList<Map<String, String>>(20);
+            list = new ArrayList<Map<String, Object>>(20);
             for (TracyEvent event : ctx.getPoppedList())	{
         	list.add(event.toMap());
             }
@@ -198,11 +204,24 @@ public class Tracy {
     }
 
 	
+    /**
+     * Gets the Tracy taskId
+     * @return Tracy taskId
+     */	
     public static String getTaskId() {
         TracyThreadContext ctx = threadContext.get();
         return ctx.getTaskId();
     }
     
+    /**
+     * taskId is normally set at Tracy.setContext(...) and never changed after<br>
+     * taskId is: <br>
+     * Either provided by the transport mechanism (HTTP header).<br>
+     * Or created by the local JVM, if the local JVM is the entry Task entry point<br>
+     * setTaskId() allows the user to change the taskId after all Tracy has been gathered, for example, 
+     * in case the JVM is a client who wants to use a trasactionId of a server as the taskId<br>
+     * WARNING: It is assumed that after serTaskId() is called no more before/after calls are made.
+     */	
     public static void setTaskId(String taskId) {
         TracyThreadContext ctx = threadContext.get();
         if (isValidContext(ctx))    {

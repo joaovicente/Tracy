@@ -68,11 +68,11 @@ public class TracyTest {
     
     @Test
     public void testGetEvents_intAnnotation() throws InterruptedException {
-        String intName = "intName";
+        final String INT_NAME = "intName";
         int intValue = Integer.MAX_VALUE;
         Tracy.setContext(TASK_ID, PARENT_OPT_ID, COMPONENT_NAME);
         Tracy.before(L1_LABEL_NAME);
-        Tracy.annotate(intName, intValue);
+        Tracy.annotate(INT_NAME, intValue);
         Tracy.after(L1_LABEL_NAME);
         List<TracyEvent> events = Tracy.getEvents();
         assertEquals(1, events.size());
@@ -80,17 +80,18 @@ public class TracyTest {
         assertEquals(TASK_ID, event.getTaskId());
         assertEquals(PARENT_OPT_ID, event.getParentOptId());
         assertEquals(L1_LABEL_NAME, event.getLabel());
-        assertEquals(new Integer(intValue).toString() , Tracy.getEventsAsMaps().get(0).get(intName));
+        assertEquals(event.getAnnotation(INT_NAME), new Integer(intValue));
+        assertEquals(new Integer(intValue) , Tracy.getEventsAsMaps().get(0).get(INT_NAME));
         Tracy.clearContext();
     }
     
     @Test
     public void testGetEvents_longAnnotation() throws InterruptedException {
-        String longName = "longName";
+        final String LONG_NAME = "longName";
         long longValue = Long.MAX_VALUE;
         Tracy.setContext(TASK_ID, PARENT_OPT_ID, COMPONENT_NAME);
         Tracy.before(L1_LABEL_NAME);
-        Tracy.annotate(longName, longValue);
+        Tracy.annotate(LONG_NAME, longValue);
         Tracy.after(L1_LABEL_NAME);
         List<TracyEvent> events = Tracy.getEvents();
         assertEquals(1, events.size());
@@ -98,7 +99,8 @@ public class TracyTest {
         assertEquals(TASK_ID, event.getTaskId());
         assertEquals(PARENT_OPT_ID, event.getParentOptId());
         assertEquals(L1_LABEL_NAME, event.getLabel());
-        assertEquals(new Long(longValue).toString() , Tracy.getEventsAsMaps().get(0).get(longName));
+        assertEquals(event.getAnnotation(LONG_NAME), new Long(longValue));
+        assertEquals(new Long(longValue), Tracy.getEventsAsMaps().get(0).get(LONG_NAME));
         Tracy.clearContext();
     }
     
@@ -150,9 +152,9 @@ public class TracyTest {
         Tracy.annotate("sizeOut", "10", "sizeIn", "2000");
         Thread.sleep(100);
         Tracy.after(L1_LABEL_NAME);
-        List<Map<String, String>> events = Tracy.getEventsAsMaps();
+        List<Map<String, Object>> events = Tracy.getEventsAsMaps();
         assertEquals(1, events.size());
-        Map<String, String> map = events.get(0);
+        Map<String, Object> map = events.get(0);
         assertEquals(TASK_ID, map.get("taskId"));
         assertEquals(PARENT_OPT_ID, map.get("parentOptId"));
         assertEquals(L1_LABEL_NAME, map.get("label"));
@@ -165,9 +167,9 @@ public class TracyTest {
     public void testGetEventsAsMap_unAfteredErrorL1() throws InterruptedException {
         Tracy.setContext(TASK_ID, PARENT_OPT_ID, COMPONENT_NAME);
         Tracy.before(L1_LABEL_NAME);
-        List<Map<String, String>> events = Tracy.getEventsAsMaps();
+        List<Map<String, Object>> events = Tracy.getEventsAsMaps();
         assertEquals(1, events.size());
-        Map<String, String> map = events.get(0);
+        Map<String, Object> map = events.get(0);
         assertEquals(L1_LABEL_NAME, map.get("label"));
         assertEquals("unknown", map.get("error"));
         Tracy.clearContext();
@@ -179,7 +181,7 @@ public class TracyTest {
         Tracy.before(L1_LABEL_NAME);
         Tracy.before(L11_LABEL_NAME);
         Tracy.after(L11_LABEL_NAME);
-        List<Map<String, String>> events = Tracy.getEventsAsMaps();
+        List<Map<String, Object>> events = Tracy.getEventsAsMaps();
         assertEquals(2, events.size());
         assertEquals(L11_LABEL_NAME, events.get(0).get("label"));
         assertEquals(null, events.get(0).get("error"));
@@ -207,16 +209,16 @@ public class TracyTest {
     }
     
     private String jsonEvent(
-            String taskId, 
-            String parentOptId, 
-            String label, 
-            String optId, 
-            String msecBefore, 
-            String msecAfter, 
-            String msecElapsed,
-            String host,
-            String component,
-            Map<String, String> annotations 
+            Object taskId, 
+            Object parentOptId, 
+            Object label, 
+            Object optId, 
+            Object msecBefore, 
+            Object msecAfter, 
+            Object msecElapsed,
+            Object host,
+            Object component,
+            Map<String, Object> annotations 
             )	
     {
     	StringBuilder sb = new StringBuilder(200);
@@ -225,9 +227,9 @@ public class TracyTest {
     	sb.append(",\"parentOptId\":\"" + parentOptId + "\"");
     	sb.append(",\"label\":\"" + label + "\"");
     	sb.append(",\"optId\":\"" + optId + "\"");
-    	sb.append(",\"msecBefore\":\"" + msecBefore + "\"");
-    	sb.append(",\"msecAfter\":\"" + msecAfter + "\"");
-    	sb.append(",\"msecElapsed\":\"" + msecElapsed + "\"");
+    	sb.append(",\"msecBefore\":" + msecBefore);
+    	sb.append(",\"msecAfter\":" + msecAfter);
+    	sb.append(",\"msecElapsed\":" + msecElapsed);
     	for (String key : annotations.keySet())	{
     		sb.append(",\"" + key + "\":\"" + annotations.get(key) + "\"");
     	}
@@ -248,11 +250,11 @@ public class TracyTest {
         Thread.sleep(10);
         Tracy.after(L11_LABEL_NAME);
         
-        Map<String, String> annotations = new HashMap<String, String>();
+        Map<String, Object> annotations = new HashMap<String, Object>();
         annotations.put("sizeOut", "10");
         annotations.put("sizeIn", "2000");
         List<String> events = Tracy.getEventsAsJson();
-        List<Map<String, String>> eventsAsMaps = Tracy.getEventsAsMaps();
+        List<Map<String, Object>> eventsAsMaps = Tracy.getEventsAsMaps();
         assertEquals(2, events.size());
         
         String jsonEvent1 = jsonEvent(

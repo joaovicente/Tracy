@@ -163,8 +163,8 @@ public class TracyConcurrentTestPerf {
                         }
                     }
                     if (thourough ) {
-                        List<Map<String, String>> tracyEventsAsMaps = Tracy.getEventsAsMaps();
-                        for (Map<String, String> eventAsMap : tracyEventsAsMaps) {
+                        List<Map<String, Object>> tracyEventsAsMaps = Tracy.getEventsAsMaps();
+                        for (Map<String, Object> eventAsMap : tracyEventsAsMaps) {
                             assertEquals(new Integer(randomInt).toString(), eventAsMap.get("taskId") );
                         }
                     }
