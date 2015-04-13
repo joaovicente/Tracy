@@ -177,10 +177,10 @@ public class Tracy {
 	}
     
     /**
-     * Returns Tracy segment as JSON array string
-     * @return Tracy JSON array string
+     * Collects JSON Tracy Events array packaged as a value of tracySegment
+     * @return JSON object containing Tracy array string
      */	
-    public static String getEventsAsJsonArray()	{
+    public static String getEventsAsJsonTracySegment()	{
     	// Assuming max 8 frames per segment. Typical Tracy JSON frame is ~250 
     	// ( 250 * 8 = 2000). Rounding up to 2048
     	final int TRACY_SEGMENT_CHAR_SIZE = 2048;
@@ -189,7 +189,7 @@ public class Tracy {
         TracyThreadContext ctx = threadContext.get();
         if (isValidContext(ctx) && ctx.getPoppedList().size()>0) {
         	StringBuilder sb = new StringBuilder(TRACY_SEGMENT_CHAR_SIZE);
-        	sb.append("[");
+        	sb.append("{\"tracySegment\":[");
         	for (TracyEvent event : ctx.getPoppedList())	{
         		if (frameCounter > 0)	{
         			sb.append(",");
@@ -197,7 +197,7 @@ public class Tracy {
         		sb.append(event.toJsonString());
         		frameCounter++;
         	}
-        	sb.append("]");
+        	sb.append("]}");
         	jsonArrayString = sb.toString();
         }
         return jsonArrayString;
