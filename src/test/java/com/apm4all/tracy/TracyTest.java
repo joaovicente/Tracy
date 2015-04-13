@@ -27,8 +27,8 @@ import org.junit.Test;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.type.CollectionType;
 
 public class TracyTest {
     static final String COMPONENT_NAME = "TracyTest";
@@ -375,16 +375,23 @@ public class TracyTest {
     }
     
     @Test
-    public void testGetEventsAsJsonArray() throws JsonParseException, JsonMappingException, IOException	{
+    public void testGetEventsAsJsonTracySegment() throws JsonParseException, JsonMappingException, IOException	{
     	Tracy.setContext(TASK_ID, PARENT_OPT_ID, COMPONENT_NAME);
         Tracy.before("test1");
         Tracy.after("test1");
         Tracy.before("test2");
         Tracy.after("test2");
-        String jsonArray = Tracy.getEventsAsJsonArray();
-        ObjectMapper mapper = new ObjectMapper();
-        CollectionType mapCollectionType = mapper.getTypeFactory().constructCollectionType(List.class, Map.class);
-        List<Map<String, String>> result = mapper.readValue(jsonArray, mapCollectionType);
-        assertEquals(2, result.size());
+        String jsonTracySegment = Tracy.getEventsAsJsonTracySegment();
+       
+        // using Jackson Tree model to validate (see http://wiki.fasterxml.com/JacksonTreeModel)
+        ObjectMapper m = new ObjectMapper();
+        JsonNode rootNode = m.readTree(jsonTracySegment);
+        assertNotNull(rootNode);
+        JsonNode tracySegment = rootNode.path("tracySegment");
+        String label1 = tracySegment.path(0).get("label").textValue();
+        String label2 = tracySegment.path(1).get("label").textValue();
+        assertNull("", tracySegment.path(2).get("label"));
+        assertEquals("test1", label1);
+        assertEquals("test2", label2);
     }
 }
