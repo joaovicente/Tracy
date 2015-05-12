@@ -106,7 +106,7 @@ public class TracyTest {
     
     @Test
     public void testGetEvents_componentAnnotated() throws InterruptedException {
-	    final String COMPONENT_NAME = "Component X";
+	final String COMPONENT_NAME = "Component X";
         Tracy.setContext(TASK_ID, PARENT_OPT_ID, COMPONENT_NAME);
         Tracy.before(L1_LABEL_NAME);
         Tracy.after(L1_LABEL_NAME);
