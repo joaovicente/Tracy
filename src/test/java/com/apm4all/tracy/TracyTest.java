@@ -37,6 +37,46 @@ public class TracyTest {
     static final String L1_LABEL_NAME = "L1 Operation";
     static final String L11_LABEL_NAME = "L11 Operation";
 
+    private int doWork(String operation, int operand1, int operand2) throws InterruptedException  {
+    	int result = 0;
+    	Tracy.before("doWork");
+    	Tracy.annotate("operation",operation);
+    	Tracy.annotate("operand1", operand1);
+    	Tracy.annotate("operand2", operand2);
+    	result = operand1 * operand2;
+    	Thread.sleep(100); // slow it down a bit
+    	Tracy.after("doWork");
+    	return result;
+    }
+    
+    @Test
+    public void testTypicalUsage() throws InterruptedException {
+    	// In the context of a HTTP endpoint TASK_ID and PARENT_OPT_ID would be passed in as HTTP headers
+    	// COMPONENT_NAME would be the name you want to give your component (e.g. my-awesome-service)
+    	Tracy.setContext(TASK_ID, PARENT_OPT_ID, COMPONENT_NAME);
+        
+        // Mark beginning of Tracy frame
+        Tracy.before("testTypicalUsage");
+        
+        // Annotate Tracy frame with result of called method
+        // see doWork implementation above to see construction of inner Tracy frame 
+        Tracy.annotate("doWorkResult", doWork("multiply", 2, 3));
+        
+        // Mark end of Tracy frame
+        Tracy.after("testTypicalUsage");
+        
+        System.out.println("testTypicalUsage output:");
+        // Observe the Tracy frames JSON representation
+        List<String> events = Tracy.getEventsAsJson();
+        for (String event : events)	{
+        	System.out.println(event);
+        }
+        assertEquals(2, events.size());
+        
+        // Clear context when done
+        Tracy.clearContext();
+     }   
+    
     @Test
     public void testSetContext_full() {
         Tracy.setContext(TASK_ID, PARENT_OPT_ID, COMPONENT_NAME);
