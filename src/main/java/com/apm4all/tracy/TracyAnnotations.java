@@ -37,6 +37,10 @@ public class TracyAnnotations {
         annotations.put(key, new Long(value));
 	}
 
+	public void add(String key, Object value) {
+        annotations.put(key, value);
+	}
+	
 	public void add(String... vars)	{
         if (vars.length % 2 != 0) {
             throw new IllegalArgumentException(
@@ -78,6 +82,7 @@ public class TracyAnnotations {
 	}
 	
 	public String asJsonStringWithoutBrackets()	{
+		String stringOrNull = null;
 		StringBuilder jsonBuffer = new StringBuilder(Tracy.TRACY_ESTIMATED_FRAME_SIZE);
 		boolean first = true;
         for (String key : annotations.keySet())	{
@@ -93,7 +98,10 @@ public class TracyAnnotations {
         	}
         	first = false;
         }
-		return jsonBuffer.toString();
+        if (jsonBuffer.length() > 0)	{
+        	stringOrNull = jsonBuffer.toString();
+        }
+		return stringOrNull;
 	}
 	
 	public String toString()	{
@@ -112,4 +120,5 @@ public class TracyAnnotations {
 		}
 		return sb.toString();
 	}
+
 }

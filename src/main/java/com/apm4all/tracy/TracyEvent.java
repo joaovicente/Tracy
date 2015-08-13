@@ -35,7 +35,7 @@ public class TracyEvent {
         this.label = label;
         this.optId = optId;
         this.msecBefore = msec;
-        this.annotations = new TracyAnnotations(Tracy.TRACY_FRAME_ANNOTATION_SIZE);
+        this.annotations = new TracyAnnotations(Tracy.TRACY_FRAME_ESTIMATED_ANNOTATION_COUNT);
     }
 
     public String toString()	{
@@ -53,7 +53,7 @@ public class TracyEvent {
 
     public Map<String, Object> toMap() {
     	final int DEFAULT_TRACY_KEY_SIZE = 7;
-        Map<String, Object> map = new HashMap<String, Object>(Tracy.TRACY_FRAME_ANNOTATION_SIZE 
+        Map<String, Object> map = new HashMap<String, Object>(Tracy.TRACY_FRAME_ESTIMATED_ANNOTATION_COUNT 
         		+ DEFAULT_TRACY_KEY_SIZE);
         map.put("taskId", taskId);
         map.put("parentOptId", parentOptId);

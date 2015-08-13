@@ -19,6 +19,7 @@ package com.apm4all.tracy;
 import static org.junit.Assert.*;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -248,7 +249,7 @@ public class TracyTest {
         Tracy.clearContext();
     }
     
-    private String jsonEvent(
+    private String jsonEventWithoutBrackets(
             Object taskId, 
             Object parentOptId, 
             Object label, 
@@ -262,7 +263,6 @@ public class TracyTest {
             )	
     {
     	StringBuilder sb = new StringBuilder(200);
-    	sb.append("{");
     	sb.append("\"taskId\":\"" + taskId + "\"");
     	sb.append(",\"parentOptId\":\"" + parentOptId + "\"");
     	sb.append(",\"label\":\"" + label + "\"");
@@ -270,17 +270,34 @@ public class TracyTest {
     	sb.append(",\"msecBefore\":" + msecBefore);
     	sb.append(",\"msecAfter\":" + msecAfter);
     	sb.append(",\"msecElapsed\":" + msecElapsed);
+    	sb.append(",\"host\":\"" + host + "\"");
+    	sb.append(",\"component\":\"" + component + "\"");
     	for (String key : annotations.keySet())	{
     		sb.append(",\"" + key + "\":\"" + annotations.get(key) + "\"");
     	}
-    	sb.append(",\"host\":\"" + host + "\"");
-    	sb.append(",\"component\":\"" + component + "\"");
-    	sb.append("}");
     	return sb.toString();
+    }
+   
+    private boolean startsWithBracket(String s)	{
+    	return "{".equals(String.valueOf(s.charAt(0)));
+    }
+    private boolean endsWithBracket(String s)	{
+    	return "}".equals(String.valueOf(s.charAt(s.length()-1)));
+    }
+    
+    private String removeBrackets(String s)	{
+    	return s.substring(1, s.length()-1);
+    }
+    
+    private String sortJsonEvent(String s)	{
+        String[] split = s.split(",");
+        Arrays.sort(split);
+        return Arrays.toString(split);
     }
     
     @Test
     public void testGetEventsAsJsonString_withAnnotations() throws InterruptedException {
+    	// TODO: This example should have Int and Long annotations but jsonEventWithoutBrackets will need to be fixed
         Tracy.setContext(TASK_ID, PARENT_OPT_ID, COMPONENT_NAME);
         Tracy.before(L1_LABEL_NAME);
         Tracy.annotate("sizeOut", "10", "sizeIn", "2000");
@@ -291,13 +308,14 @@ public class TracyTest {
         Tracy.after(L11_LABEL_NAME);
         
         Map<String, Object> annotations = new HashMap<String, Object>();
+        String actualWithoutBrackets = null;
         annotations.put("sizeOut", "10");
         annotations.put("sizeIn", "2000");
         List<String> events = Tracy.getEventsAsJson();
         List<Map<String, Object>> eventsAsMaps = Tracy.getEventsAsMaps();
         assertEquals(2, events.size());
         
-        String jsonEvent1 = jsonEvent(
+        String jsonEvent1 = jsonEventWithoutBrackets(
         		TASK_ID, PARENT_OPT_ID, L1_LABEL_NAME, 
         		eventsAsMaps.get(0).get("optId"), 
         		eventsAsMaps.get(0).get("msecBefore"), 
@@ -306,18 +324,27 @@ public class TracyTest {
         		eventsAsMaps.get(0).get("host"), 
         		eventsAsMaps.get(0).get("component"), 
         		annotations);
-        assertEquals(jsonEvent1, events.get(0));
+       
+        assertTrue(startsWithBracket(events.get(0)));
+        assertTrue(endsWithBracket(events.get(0)));
+        actualWithoutBrackets = removeBrackets(events.get(0));
+        assertEquals(sortJsonEvent(actualWithoutBrackets), sortJsonEvent(jsonEvent1));
+        
         annotations.clear();
-        String jsonEvent2 = jsonEvent(
+        String jsonEvent2 = jsonEventWithoutBrackets(
         		TASK_ID, PARENT_OPT_ID, L11_LABEL_NAME, 
         		eventsAsMaps.get(1).get("optId"), 
         		eventsAsMaps.get(1).get("msecBefore"), 
         		eventsAsMaps.get(1).get("msecAfter"), 
         		eventsAsMaps.get(1).get("msecElapsed"), 
         		eventsAsMaps.get(1).get("host"), 
-        		eventsAsMaps.get(0).get("component"), 
+        		eventsAsMaps.get(1).get("component"), 
         		annotations);
-        assertEquals(jsonEvent2, events.get(1));
+        assertTrue(startsWithBracket(events.get(1)));
+        assertTrue(endsWithBracket(events.get(1)));
+        actualWithoutBrackets = removeBrackets(events.get(1));
+        assertEquals(sortJsonEvent(actualWithoutBrackets), sortJsonEvent(jsonEvent2));
+        
         Tracy.clearContext();
     }
     
@@ -434,4 +461,42 @@ public class TracyTest {
         assertEquals("test1", label1);
         assertEquals("test2", label2);
     }
+    
+    @Test
+    public void testGetHttpResponseAnnotation() {
+    	final String L1 = "L1";
+    	final String L2 = "L2";
+    	final String L3 = "L3";
+    	final String KEY_STR = "key_str";
+    	final String KEY_INT = "key_int";
+    	final String KEY_LONG = "key_long";
+    	final String VAL_STR = "str_val";
+    	final int    VAL_INT = Integer.MAX_VALUE;
+    	final long   VAL_LONG = Long.MAX_VALUE;
+    	Tracy.setContext(TASK_ID, PARENT_OPT_ID, COMPONENT_NAME);
+        Tracy.before(L1);
+		Tracy.annotate(KEY_STR, VAL_STR);
+		Tracy.setHttpResponseAnnotation(KEY_STR);
+        Tracy.before(L2);
+		Tracy.annotate(KEY_INT, VAL_INT);
+		Tracy.setHttpResponseAnnotation(KEY_INT);
+        Tracy.before(L3);
+		Tracy.annotate(KEY_LONG, VAL_LONG);
+		Tracy.setHttpResponseAnnotation(KEY_LONG);
+        Tracy.after(L3);
+        Tracy.after(L2);
+        Tracy.after(L1);
+        String expectedString =
+        		"\"key_long\":9223372036854775807,\"key_int\":2147483647,\"key_str\":\"str_val\"";
+        assertEquals(expectedString,Tracy.getHttpResponseAnnotations());
+    }
+    
+    @Test
+    public void testGetHttpResponseAnnotation_empty() {
+    	Tracy.setContext(TASK_ID, PARENT_OPT_ID, COMPONENT_NAME);
+        Tracy.before("L1");
+        Tracy.after("L1");
+        assertEquals(null, Tracy.getHttpResponseAnnotations());
+    }
+    
 }

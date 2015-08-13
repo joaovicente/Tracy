@@ -32,8 +32,9 @@ public class TracyThreadContext {
     private String parentOptId;
     private Stack<TracyEvent> stack;
     private List<TracyEvent> poppedList;
-    //TODO: Develop TracyEvent log reporter 
+    private TracyAnnotations httpResponseAnnotations;
 
+    @Deprecated
     public TracyThreadContext(String taskId, String parentOptId) {
         super();
         resolveHostname();
@@ -59,6 +60,7 @@ public class TracyThreadContext {
         }
         stack = new Stack<TracyEvent>();
         poppedList = new ArrayList<TracyEvent>();
+        httpResponseAnnotations = new TracyAnnotations(Tracy.TRACY_HTTP_HEADER_ESTIMATED_ANNOTATION_COUNT);
     }
 
     static void resolveHostname() {
@@ -203,6 +205,18 @@ public class TracyThreadContext {
     		}
     	}
     }
-
-
+    
+    public void setHttpResponseAnnotation(String key)	{
+    	Object annotationValue = null;
+        if (stack.isEmpty() == false)   {
+        	annotationValue = stack.peek().getAnnotation(key);
+        	if (null != annotationValue)	{
+        		httpResponseAnnotations.add(key, annotationValue);
+        	}
+        }
+    }
+    
+    public String getHttpResponseAnnotations()	{
+    	return httpResponseAnnotations.asJsonStringWithoutBrackets();
+    }
 }

@@ -27,9 +27,10 @@ import java.util.Map;
 public class Tracy {
     static final String TRACY_DEFAULT_TASK_ID = "NA";
     static final String TRACY_DEFAULT_PARENT_OPT_ID = "NA";
-    static final int TRACY_FRAME_ANNOTATION_SIZE = 30;
-    static final int TRACY_HTTP_HEADER_ANNOTATION_SIZE = 10;
+    static final int TRACY_FRAME_ESTIMATED_ANNOTATION_COUNT = 30;
+    static final int TRACY_HTTP_HEADER_ESTIMATED_ANNOTATION_COUNT = 10;
     static final int TRACY_ESTIMATED_FRAME_SIZE = 200;
+    static final String HTTP_HEADER_X_TRACY_ANNOTATIONS = "X-Tracy-Annotations";
     static List<String> EMPTY_STRING_LIST = new ArrayList<String>();
     static List<TracyEvent> EMPTY_TRACY_EVENT_LIST = new ArrayList<TracyEvent>(); 
     static List<Map<String, Object>> EMPTY_LIST_OF_MAPS = new ArrayList<Map<String, Object>>();
@@ -129,6 +130,47 @@ public class Tracy {
         if (isValidContext(ctx)) {
             ctx.annotate(longName, longValue);
         }
+    }
+    
+
+    /**
+     * This method is used to capture annotations which should be sent back to the HTTP client 
+     * HttpResponse annotations are created by this method and retrieved using getHttpResponseAnnotations()
+     * when the HTTP response header is to be returned as shown in example below<br>
+     * @param key defines the recently annotation (Tracy.annotate(...)) which is to be sent back in the HTTP response header
+     * e.g.<br> 
+     * <code><pre>
+     * public void doGet(HttpServletRequest request, HttpServletResponse response)
+       throws ServletException, IOException
+         {
+           ...
+           response.addHeader("REMOTE_USER", getHttpResponseAnnotations());
+         }
+     * </pre></code>
+     * setHttpResponseAnnotation(key) must be called after a (Tracy frame) Tracy.annotation(key, value) as it will 
+     * retrieve the value from the recently created Tracy.annotation.<br>
+     * setHttpResponseAnnotation(key) can be called from any point in the Tracy frame stack. Tracy will store them
+     * at the topmost level of the thread context to be easily accessible using {@link #getHttpResponseAnnotations} method
+     *   
+     */	
+    public static void setHttpResponseAnnotation(String key)	{
+        TracyThreadContext ctx = threadContext.get();
+        if (isValidContext(ctx)) {
+            ctx.setHttpResponseAnnotation(key);
+        }
+    }
+    
+    /**
+     * Retrieves all annotations previously created with {@link #setHttpResponseAnnotations}
+     * @return a string containing annotations set using setHttpResponseAnnotation() in a JSON format (without {} brackets)
+     */	
+    public static String getHttpResponseAnnotations()	{
+    	String annotations = null;
+        TracyThreadContext ctx = threadContext.get();
+        if (isValidContext(ctx)) {
+            annotations = ctx.getHttpResponseAnnotations();
+        }
+        return annotations;
     }
     
     /**
@@ -266,7 +308,7 @@ public class Tracy {
         TracyThreadContext workerCtx = null;
         if (isValidContext(currentCtx))  {
             workerCtx = new TracyThreadContext(
-                currentCtx.getTaskId(), currentCtx.getOptId());
+                currentCtx.getTaskId(), currentCtx.getOptId(), null);
         }
         return workerCtx;
     }
