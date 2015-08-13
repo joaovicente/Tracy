@@ -27,6 +27,9 @@ import java.util.Map;
 public class Tracy {
     static final String TRACY_DEFAULT_TASK_ID = "NA";
     static final String TRACY_DEFAULT_PARENT_OPT_ID = "NA";
+    static final int TRACY_FRAME_ANNOTATION_SIZE = 30;
+    static final int TRACY_HTTP_HEADER_ANNOTATION_SIZE = 10;
+    static final int TRACY_ESTIMATED_FRAME_SIZE = 200;
     static List<String> EMPTY_STRING_LIST = new ArrayList<String>();
     static List<TracyEvent> EMPTY_TRACY_EVENT_LIST = new ArrayList<TracyEvent>(); 
     static List<Map<String, Object>> EMPTY_LIST_OF_MAPS = new ArrayList<Map<String, Object>>();

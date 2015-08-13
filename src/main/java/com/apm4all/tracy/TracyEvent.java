@@ -27,7 +27,7 @@ public class TracyEvent {
     long msecBefore;
     long msecAfter;
     long msecElapsed;
-    Map<String, Object> annotations;
+    TracyAnnotations annotations;
 
     public TracyEvent(String taskId, String label, String parentOptId ,String optId, long msec) {
         this.taskId = taskId;
@@ -35,11 +35,11 @@ public class TracyEvent {
         this.label = label;
         this.optId = optId;
         this.msecBefore = msec;
-        this.annotations = new HashMap<String, Object>(5);
+        this.annotations = new TracyAnnotations(Tracy.TRACY_FRAME_ANNOTATION_SIZE);
     }
 
     public String toString()	{
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder(Tracy.TRACY_ESTIMATED_FRAME_SIZE);
         sb.append("\"taskId\"=" + "\"" + taskId + "\"" 
                 + ", \"parentOptId\"=" + "\"" + parentOptId + "\"" 
                 + ", \"label\"=" + "\"" + label + "\"" 
@@ -47,20 +47,14 @@ public class TracyEvent {
                 + ", \"msecBefore\"=" + msecBefore 
                 + ", \"msecAfter\"=" + msecAfter
                 + ", \"msecElapsed\"=" + msecElapsed);
-        for (String key : annotations.keySet())	{
-        	Object value = annotations.get(key);
-        	if (String.class.isInstance(value))	{
-        		sb.append(", \"" + key + "\"=" + "\"" + annotations.get(key).toString() + "\"");
-        	}
-        	else if (Integer.class.isInstance(value) || Long.class.isInstance(value)) {
-        		sb.append(", \"" + key + "\"=" + "\"" + annotations.get(key).toString() + "\"");
-        	}
-        }
+        annotations.toString();
         return sb.toString();
     }
 
     public Map<String, Object> toMap() {
-        Map<String, Object> map = new HashMap<String, Object>(10);
+    	final int DEFAULT_TRACY_KEY_SIZE = 7;
+        Map<String, Object> map = new HashMap<String, Object>(Tracy.TRACY_FRAME_ANNOTATION_SIZE 
+        		+ DEFAULT_TRACY_KEY_SIZE);
         map.put("taskId", taskId);
         map.put("parentOptId", parentOptId);
         map.put("label", label);
@@ -68,69 +62,36 @@ public class TracyEvent {
         map.put("msecBefore", Long.toString(msecBefore));
         map.put("msecAfter", Long.toString(msecAfter));
         map.put("msecElapsed", Long.toString(msecElapsed));
-        for (String key : annotations.keySet())	{
-            map.put(key, annotations.get(key));
-        }
+        annotations.appendToMap(map);
         return map;
     }
     
-    private void addJsonStringValue(StringBuilder sb, String key, String value, boolean first)	{
-       if (false == first)	{
-           sb.append(",");
-        }
-        sb.append("\""+key+"\":\""+value+"\"");
-    }
-    
-    private void addJsonLongValue(StringBuilder sb, String key, long value, boolean first)	{
-       if (false == first)	{
-           sb.append(",");
-        }
-        sb.append("\""+key+"\":"+value);
-    }
-
-    private void addJsonIntValue(StringBuilder sb, String key, int value, boolean first)	{
-       if (false == first)	{
-           sb.append(",");
-        }
-        sb.append("\""+key+"\":"+value);
-    }
     
     public String toJsonString() {
-        StringBuilder jsonBuffer = new StringBuilder(200);
+        StringBuilder jsonBuffer = new StringBuilder(Tracy.TRACY_ESTIMATED_FRAME_SIZE);
         jsonBuffer.append("{");
-        addJsonStringValue(jsonBuffer, "taskId", taskId, true);
-        addJsonStringValue(jsonBuffer, "parentOptId", parentOptId, false);
-        addJsonStringValue(jsonBuffer, "label", label, false);
-        addJsonStringValue(jsonBuffer, "optId", optId, false);
-        addJsonLongValue(jsonBuffer, "msecBefore", msecBefore, false);
-        addJsonLongValue(jsonBuffer, "msecAfter", msecAfter, false);
-        addJsonLongValue(jsonBuffer, "msecElapsed", msecElapsed, false);
-        for (String key : annotations.keySet())	{
-        	Object value = annotations.get(key);
-        	if (String.class.isInstance(value))	{
-        		addJsonStringValue(jsonBuffer, key, (String)value, false);
-        	}
-        	else if (Integer.class.isInstance(value))	{
-        		addJsonIntValue(jsonBuffer, key, ((Integer)value).intValue(), false);
-        	}
-        	else if  (Long.class.isInstance(value)) {
-        		addJsonLongValue(jsonBuffer, key, ((Long)value).longValue(), false);
-        	}
-        }
+        JsonFormatter.addJsonStringValue(jsonBuffer, "taskId", taskId, true);
+        JsonFormatter.addJsonStringValue(jsonBuffer, "parentOptId", parentOptId, false);
+        JsonFormatter.addJsonStringValue(jsonBuffer, "label", label, false);
+        JsonFormatter.addJsonStringValue(jsonBuffer, "optId", optId, false);
+        JsonFormatter.addJsonLongValue(jsonBuffer, "msecBefore", msecBefore, false);
+        JsonFormatter.addJsonLongValue(jsonBuffer, "msecAfter", msecAfter, false);
+        JsonFormatter.addJsonLongValue(jsonBuffer, "msecElapsed", msecElapsed, false);
+        annotations.appendToJsonStringBuilder(jsonBuffer);
         jsonBuffer.append("}");
         return jsonBuffer.toString();
     }
 
     public void addAnnotation(String key, String value)	{
-        annotations.put(key, value);
+    	annotations.add(key, value);
     }
     
     public void addAnnotation(String key, int value)	{
-        annotations.put(key, new Integer(value));
+    	annotations.add(key, value);
     }
     
     public void addAnnotation(String key, long value)	{
-        annotations.put(key, new Long(value));
+    	annotations.add(key, value);
     }
     
     public Object getAnnotation(String key) {
@@ -138,18 +99,7 @@ public class TracyEvent {
     }
 
     public void addAnnotations(String... args) {
-        if (args.length % 2 != 0) {
-            throw new IllegalArgumentException(
-                    "Tracy.addAnnotation requires an even number of arguments.");
-        }
-        String value = "null";
-        for (int i=0; i<args.length/2; i++) {
-            String key = args[2*i].toString();
-            if (null != args[2*i + 1])	{
-            	value = args[2*i + 1].toString();
-            }
-            addAnnotation(key, value);
-        }
+    	annotations.add(args);
     }
 
     public long getMsecBefore() {
