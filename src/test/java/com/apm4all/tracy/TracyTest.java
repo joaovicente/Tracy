@@ -489,6 +489,7 @@ public class TracyTest {
         String expectedString =
         		"\"key_long\":9223372036854775807,\"key_int\":2147483647,\"key_str\":\"str_val\"";
         assertEquals(expectedString,Tracy.getHttpResponseAnnotations());
+        Tracy.clearContext();
     }
     
     @Test
@@ -497,6 +498,34 @@ public class TracyTest {
         Tracy.before("L1");
         Tracy.after("L1");
         assertEquals(null, Tracy.getHttpResponseAnnotations());
+        Tracy.clearContext();
     }
     
+    @Test
+    public void testAnnotateFromHttpRequestAnnotations() {
+    	Tracy.setContext(TASK_ID, PARENT_OPT_ID, COMPONENT_NAME);
+    	String csvAnnotations = "key1,val1,key2,val2";
+        Tracy.before("L1");
+    	Tracy.annotateFromHttpRequestAnnotations(csvAnnotations);
+        Tracy.after("L1");
+        List<Map<String, Object>> events = Tracy.getEventsAsMaps();
+        Map<String, Object> map = events.get(0);
+        assertEquals("val1", map.get("key1"));
+        assertEquals("val2", map.get("key2"));
+        Tracy.clearContext();
+	}
+    
+    @Test
+    public void testAnnotateFromHttpRequestAnnotations_odd() {
+    	Tracy.setContext(TASK_ID, PARENT_OPT_ID, COMPONENT_NAME);
+    	String csvAnnotations = "key1,val1,key2";
+        Tracy.before("L1");
+    	Tracy.annotateFromHttpRequestAnnotations(csvAnnotations);
+        Tracy.after("L1");
+        List<Map<String, Object>> events = Tracy.getEventsAsMaps();
+        Map<String, Object> map = events.get(0);
+        assertEquals(null, map.get("key1"));
+        assertEquals(null, map.get("key2"));
+        Tracy.clearContext();
+	}
 }
