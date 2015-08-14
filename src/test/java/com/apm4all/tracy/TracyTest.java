@@ -506,7 +506,7 @@ public class TracyTest {
             fail("annotateOnHttpResponseBuffer(invalidKey) should not have thrown any exception");
          }
         Tracy.after(L1);
-        assertEquals(null,Tracy.getHttpResponseBufferAnnotations());
+        assertEquals("",Tracy.getHttpResponseBufferAnnotations());
         Tracy.clearContext();
     }
     
@@ -523,7 +523,7 @@ public class TracyTest {
             fail("annotateOnHttpResponseBuffer(null) should not have thrown any exception");
          }
         Tracy.after(L1);
-        assertEquals(null,Tracy.getHttpResponseBufferAnnotations());
+        assertEquals("",Tracy.getHttpResponseBufferAnnotations());
         Tracy.clearContext();
     }
     
@@ -532,7 +532,7 @@ public class TracyTest {
         Tracy.setContext(TASK_ID, PARENT_OPT_ID, COMPONENT_NAME);
         Tracy.before("L1");
         Tracy.after("L1");
-        assertEquals(null, Tracy.getHttpResponseBufferAnnotations());
+        assertEquals("", Tracy.getHttpResponseBufferAnnotations());
         Tracy.clearContext();
     }
 

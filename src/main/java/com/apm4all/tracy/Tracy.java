@@ -203,7 +203,7 @@ public class Tracy {
      * @return a string containing annotations set using annotateOnHttpResponseBuffer() in a JSON format (without {} brackets)
      */	
     public static String getHttpResponseBufferAnnotations()	{
-    	String annotations = null;
+    	String annotations = "";
         TracyThreadContext ctx = threadContext.get();
         if (isValidContext(ctx)) {
             annotations = ctx.getHttpResponseBufferAnnotations();

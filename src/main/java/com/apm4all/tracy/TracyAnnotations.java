@@ -82,7 +82,7 @@ public class TracyAnnotations {
 	}
 	
 	public String asJsonStringWithoutBrackets()	{
-		String stringOrNull = null;
+		String output = "";
 		StringBuilder jsonBuffer = new StringBuilder(Tracy.TRACY_ESTIMATED_FRAME_SIZE);
 		boolean first = true;
         for (String key : annotations.keySet())	{
@@ -99,9 +99,9 @@ public class TracyAnnotations {
         	first = false;
         }
         if (jsonBuffer.length() > 0)	{
-        	stringOrNull = jsonBuffer.toString();
+        	output = jsonBuffer.toString();
         }
-		return stringOrNull;
+		return output;
 	}
 	
 	public String toString()	{
