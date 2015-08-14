@@ -39,45 +39,45 @@ public class TracyTest {
     static final String L11_LABEL_NAME = "L11 Operation";
 
     private int doWork(String operation, int operand1, int operand2) throws InterruptedException  {
-    	int result = 0;
-    	Tracy.before("doWork");
-    	Tracy.annotate("operation",operation);
-    	Tracy.annotate("operand1", operand1);
-    	Tracy.annotate("operand2", operand2);
-    	result = operand1 * operand2;
-    	Thread.sleep(100); // slow it down a bit
-    	Tracy.after("doWork");
-    	return result;
+        int result = 0;
+        Tracy.before("doWork");
+        Tracy.annotate("operation",operation);
+        Tracy.annotate("operand1", operand1);
+        Tracy.annotate("operand2", operand2);
+        result = operand1 * operand2;
+        Thread.sleep(100); // slow it down a bit
+        Tracy.after("doWork");
+        return result;
     }
-    
+
     @Test
     public void testTypicalUsage() throws InterruptedException {
-    	// In the context of a HTTP endpoint TASK_ID and PARENT_OPT_ID would be passed in as HTTP headers
-    	// COMPONENT_NAME would be the name you want to give your component (e.g. my-awesome-service)
-    	Tracy.setContext(TASK_ID, PARENT_OPT_ID, COMPONENT_NAME);
-        
+        // In the context of a HTTP endpoint TASK_ID and PARENT_OPT_ID would be passed in as HTTP headers
+        // COMPONENT_NAME would be the name you want to give your component (e.g. my-awesome-service)
+        Tracy.setContext(TASK_ID, PARENT_OPT_ID, COMPONENT_NAME);
+
         // Mark beginning of Tracy frame
         Tracy.before("testTypicalUsage");
-        
+
         // Annotate Tracy frame with result of called method
         // see doWork implementation above to see construction of inner Tracy frame 
         Tracy.annotate("doWorkResult", doWork("multiply", 2, 3));
-        
+
         // Mark end of Tracy frame
         Tracy.after("testTypicalUsage");
-        
+
         System.out.println("testTypicalUsage output:");
         // Observe the Tracy frames JSON representation
         List<String> events = Tracy.getEventsAsJson();
         for (String event : events)	{
-        	System.out.println(event);
+            System.out.println(event);
         }
         assertEquals(2, events.size());
-        
+
         // Clear context when done
         Tracy.clearContext();
-     }   
-    
+    }   
+
     @Test
     public void testSetContext_full() {
         Tracy.setContext(TASK_ID, PARENT_OPT_ID, COMPONENT_NAME);
@@ -106,7 +106,7 @@ public class TracyTest {
         assertTrue(event.getMsecElapsed() < event.getMsecAfter()  - event.getMsecBefore() + MSEC_SLEEP_JITTER);
         Tracy.clearContext();
     }
-    
+
     @Test
     public void testGetEvents_intAnnotation() throws InterruptedException {
         final String INT_NAME = "intName";
@@ -125,7 +125,7 @@ public class TracyTest {
         assertEquals(new Integer(intValue) , Tracy.getEventsAsMaps().get(0).get(INT_NAME));
         Tracy.clearContext();
     }
-    
+
     @Test
     public void testGetEvents_longAnnotation() throws InterruptedException {
         final String LONG_NAME = "longName";
@@ -144,10 +144,10 @@ public class TracyTest {
         assertEquals(new Long(longValue), Tracy.getEventsAsMaps().get(0).get(LONG_NAME));
         Tracy.clearContext();
     }
-    
+
     @Test
     public void testGetEvents_componentAnnotated() throws InterruptedException {
-	final String COMPONENT_NAME = "Component X";
+        final String COMPONENT_NAME = "Component X";
         Tracy.setContext(TASK_ID, PARENT_OPT_ID, COMPONENT_NAME);
         Tracy.before(L1_LABEL_NAME);
         Tracy.after(L1_LABEL_NAME);
@@ -160,7 +160,7 @@ public class TracyTest {
         assertEquals(COMPONENT_NAME, Tracy.getEventsAsMaps().get(0).get("component"));
         Tracy.clearContext();
     }
-    
+
     @Test
     public void testGetEvents_twoEventsTwoLevelStack() throws InterruptedException {
         Tracy.setContext(TASK_ID, PARENT_OPT_ID, COMPONENT_NAME);
@@ -203,7 +203,7 @@ public class TracyTest {
         assertEquals("2000", map.get("sizeIn"));
         Tracy.clearContext();
     }
-    
+
     @Test
     public void testGetEventsAsMap_unAfteredErrorL1() throws InterruptedException {
         Tracy.setContext(TASK_ID, PARENT_OPT_ID, COMPONENT_NAME);
@@ -215,7 +215,7 @@ public class TracyTest {
         assertEquals("unknown", map.get("error"));
         Tracy.clearContext();
     }
-    
+
     @Test
     public void testGetEventsAsMap_unAfteredErrorL11() throws InterruptedException {
         Tracy.setContext(TASK_ID, PARENT_OPT_ID, COMPONENT_NAME);
@@ -230,7 +230,7 @@ public class TracyTest {
         assertEquals("unknown", events.get(1).get("error"));
         Tracy.clearContext();
     }
-    
+
     @Test
     public void testGetEvents_validCustomOptId() throws InterruptedException {
         final String CUSTOM_OPT_ID = "U001"; 
@@ -248,7 +248,7 @@ public class TracyTest {
         assertEquals(CUSTOM_OPT_ID, event.getOptId());
         Tracy.clearContext();
     }
-    
+
     private String jsonEventWithoutBrackets(
             Object taskId, 
             Object parentOptId, 
@@ -262,42 +262,42 @@ public class TracyTest {
             Map<String, Object> annotations 
             )	
     {
-    	StringBuilder sb = new StringBuilder(200);
-    	sb.append("\"taskId\":\"" + taskId + "\"");
-    	sb.append(",\"parentOptId\":\"" + parentOptId + "\"");
-    	sb.append(",\"label\":\"" + label + "\"");
-    	sb.append(",\"optId\":\"" + optId + "\"");
-    	sb.append(",\"msecBefore\":" + msecBefore);
-    	sb.append(",\"msecAfter\":" + msecAfter);
-    	sb.append(",\"msecElapsed\":" + msecElapsed);
-    	sb.append(",\"host\":\"" + host + "\"");
-    	sb.append(",\"component\":\"" + component + "\"");
-    	for (String key : annotations.keySet())	{
-    		sb.append(",\"" + key + "\":\"" + annotations.get(key) + "\"");
-    	}
-    	return sb.toString();
+        StringBuilder sb = new StringBuilder(200);
+        sb.append("\"taskId\":\"" + taskId + "\"");
+        sb.append(",\"parentOptId\":\"" + parentOptId + "\"");
+        sb.append(",\"label\":\"" + label + "\"");
+        sb.append(",\"optId\":\"" + optId + "\"");
+        sb.append(",\"msecBefore\":" + msecBefore);
+        sb.append(",\"msecAfter\":" + msecAfter);
+        sb.append(",\"msecElapsed\":" + msecElapsed);
+        sb.append(",\"host\":\"" + host + "\"");
+        sb.append(",\"component\":\"" + component + "\"");
+        for (String key : annotations.keySet())	{
+            sb.append(",\"" + key + "\":\"" + annotations.get(key) + "\"");
+        }
+        return sb.toString();
     }
-   
+
     private boolean startsWithBracket(String s)	{
-    	return "{".equals(String.valueOf(s.charAt(0)));
+        return "{".equals(String.valueOf(s.charAt(0)));
     }
     private boolean endsWithBracket(String s)	{
-    	return "}".equals(String.valueOf(s.charAt(s.length()-1)));
+        return "}".equals(String.valueOf(s.charAt(s.length()-1)));
     }
-    
+
     private String removeBrackets(String s)	{
-    	return s.substring(1, s.length()-1);
+        return s.substring(1, s.length()-1);
     }
-    
+
     private String sortJsonEvent(String s)	{
         String[] split = s.split(",");
         Arrays.sort(split);
         return Arrays.toString(split);
     }
-    
+
     @Test
     public void testGetEventsAsJsonString_withAnnotations() throws InterruptedException {
-    	// TODO: This example should have Int and Long annotations but jsonEventWithoutBrackets will need to be fixed
+        // TODO: This example should have Int and Long annotations but jsonEventWithoutBrackets will need to be fixed
         Tracy.setContext(TASK_ID, PARENT_OPT_ID, COMPONENT_NAME);
         Tracy.before(L1_LABEL_NAME);
         Tracy.annotate("sizeOut", "10", "sizeIn", "2000");
@@ -306,7 +306,7 @@ public class TracyTest {
         Tracy.before(L11_LABEL_NAME);
         Thread.sleep(10);
         Tracy.after(L11_LABEL_NAME);
-        
+
         Map<String, Object> annotations = new HashMap<String, Object>();
         String actualWithoutBrackets = null;
         annotations.put("sizeOut", "10");
@@ -314,40 +314,40 @@ public class TracyTest {
         List<String> events = Tracy.getEventsAsJson();
         List<Map<String, Object>> eventsAsMaps = Tracy.getEventsAsMaps();
         assertEquals(2, events.size());
-        
+
         String jsonEvent1 = jsonEventWithoutBrackets(
-        		TASK_ID, PARENT_OPT_ID, L1_LABEL_NAME, 
-        		eventsAsMaps.get(0).get("optId"), 
-        		eventsAsMaps.get(0).get("msecBefore"), 
-        		eventsAsMaps.get(0).get("msecAfter"), 
-        		eventsAsMaps.get(0).get("msecElapsed"), 
-        		eventsAsMaps.get(0).get("host"), 
-        		eventsAsMaps.get(0).get("component"), 
-        		annotations);
-       
+                TASK_ID, PARENT_OPT_ID, L1_LABEL_NAME, 
+                eventsAsMaps.get(0).get("optId"), 
+                eventsAsMaps.get(0).get("msecBefore"), 
+                eventsAsMaps.get(0).get("msecAfter"), 
+                eventsAsMaps.get(0).get("msecElapsed"), 
+                eventsAsMaps.get(0).get("host"), 
+                eventsAsMaps.get(0).get("component"), 
+                annotations);
+
         assertTrue(startsWithBracket(events.get(0)));
         assertTrue(endsWithBracket(events.get(0)));
         actualWithoutBrackets = removeBrackets(events.get(0));
         assertEquals(sortJsonEvent(actualWithoutBrackets), sortJsonEvent(jsonEvent1));
-        
+
         annotations.clear();
         String jsonEvent2 = jsonEventWithoutBrackets(
-        		TASK_ID, PARENT_OPT_ID, L11_LABEL_NAME, 
-        		eventsAsMaps.get(1).get("optId"), 
-        		eventsAsMaps.get(1).get("msecBefore"), 
-        		eventsAsMaps.get(1).get("msecAfter"), 
-        		eventsAsMaps.get(1).get("msecElapsed"), 
-        		eventsAsMaps.get(1).get("host"), 
-        		eventsAsMaps.get(1).get("component"), 
-        		annotations);
+                TASK_ID, PARENT_OPT_ID, L11_LABEL_NAME, 
+                eventsAsMaps.get(1).get("optId"), 
+                eventsAsMaps.get(1).get("msecBefore"), 
+                eventsAsMaps.get(1).get("msecAfter"), 
+                eventsAsMaps.get(1).get("msecElapsed"), 
+                eventsAsMaps.get(1).get("host"), 
+                eventsAsMaps.get(1).get("component"), 
+                annotations);
         assertTrue(startsWithBracket(events.get(1)));
         assertTrue(endsWithBracket(events.get(1)));
         actualWithoutBrackets = removeBrackets(events.get(1));
         assertEquals(sortJsonEvent(actualWithoutBrackets), sortJsonEvent(jsonEvent2));
-        
+
         Tracy.clearContext();
     }
-    
+
     @Test
     public void testOuterError_twoLevelStack() throws InterruptedException {
         final String CUSTOM_ERROR_MESSAGE = "CustomErrorMessage";
@@ -356,7 +356,7 @@ public class TracyTest {
         Tracy.before(L11_LABEL_NAME);
         Thread.sleep(100);
         Tracy.outerError(CUSTOM_ERROR_MESSAGE);
-        
+
         List<TracyEvent> events = Tracy.getEvents();
         assertEquals(2, events.size());
 
@@ -386,7 +386,7 @@ public class TracyTest {
         Thread.sleep(100);
         Tracy.frameError(CUSTOM_ERROR_MESSAGE);
         Tracy.after(L1_LABEL_NAME);
-        
+
         List<TracyEvent> events = Tracy.getEvents();
         assertEquals(2, events.size());
 
@@ -406,7 +406,7 @@ public class TracyTest {
         assertEquals(CUSTOM_ERROR_MESSAGE, l11Event.getError());
         Tracy.clearContext();
     }
-    
+
     @Test
     public void testAnnotateBeforeBefore() throws InterruptedException {
         Tracy.setContext(TASK_ID, PARENT_OPT_ID, COMPONENT_NAME);
@@ -416,10 +416,10 @@ public class TracyTest {
             fail();
         }
     }
-    
+
     @Test
     public void testAnnotateWithNull() throws InterruptedException {
-    	final String ANY_KEY = "anyKey";
+        final String ANY_KEY = "anyKey";
         List<TracyEvent> events;
         Tracy.setContext(TASK_ID, PARENT_OPT_ID, COMPONENT_NAME);
         Tracy.before("test");
@@ -431,7 +431,7 @@ public class TracyTest {
 
     @Test
     public void testSetTaskIdAtTheEnd() throws InterruptedException {
-    	final String NEW_TASK_ID = "newTaskId";
+        final String NEW_TASK_ID = "newTaskId";
         List<TracyEvent> events;
         Tracy.setContext(TASK_ID, PARENT_OPT_ID, COMPONENT_NAME);
         Tracy.before("test");
@@ -440,16 +440,16 @@ public class TracyTest {
         events = Tracy.getEvents();
         assertEquals(NEW_TASK_ID, events.get(0).getTaskId());
     }
-    
+
     @Test
     public void testGetEventsAsJsonTracySegment() throws JsonParseException, JsonMappingException, IOException	{
-    	Tracy.setContext(TASK_ID, PARENT_OPT_ID, COMPONENT_NAME);
+        Tracy.setContext(TASK_ID, PARENT_OPT_ID, COMPONENT_NAME);
         Tracy.before("test1");
         Tracy.after("test1");
         Tracy.before("test2");
         Tracy.after("test2");
         String jsonTracySegment = Tracy.getEventsAsJsonTracySegment();
-       
+
         // using Jackson Tree model to validate (see http://wiki.fasterxml.com/JacksonTreeModel)
         ObjectMapper m = new ObjectMapper();
         JsonNode rootNode = m.readTree(jsonTracySegment);
@@ -461,71 +461,71 @@ public class TracyTest {
         assertEquals("test1", label1);
         assertEquals("test2", label2);
     }
-    
+
     @Test
     public void testGetHttpResponseAnnotation() {
-    	final String L1 = "L1";
-    	final String L2 = "L2";
-    	final String L3 = "L3";
-    	final String KEY_STR = "key_str";
-    	final String KEY_INT = "key_int";
-    	final String KEY_LONG = "key_long";
-    	final String VAL_STR = "str_val";
-    	final int    VAL_INT = Integer.MAX_VALUE;
-    	final long   VAL_LONG = Long.MAX_VALUE;
-    	Tracy.setContext(TASK_ID, PARENT_OPT_ID, COMPONENT_NAME);
+        final String L1 = "L1";
+        final String L2 = "L2";
+        final String L3 = "L3";
+        final String KEY_STR = "key_str";
+        final String KEY_INT = "key_int";
+        final String KEY_LONG = "key_long";
+        final String VAL_STR = "str_val";
+        final int    VAL_INT = Integer.MAX_VALUE;
+        final long   VAL_LONG = Long.MAX_VALUE;
+        Tracy.setContext(TASK_ID, PARENT_OPT_ID, COMPONENT_NAME);
         Tracy.before(L1);
-		Tracy.annotate(KEY_STR, VAL_STR);
-		Tracy.setHttpResponseAnnotation(KEY_STR);
+        Tracy.annotate(KEY_STR, VAL_STR);
+        Tracy.setHttpResponseAnnotation(KEY_STR);
         Tracy.before(L2);
-		Tracy.annotate(KEY_INT, VAL_INT);
-		Tracy.setHttpResponseAnnotation(KEY_INT);
+        Tracy.annotate(KEY_INT, VAL_INT);
+        Tracy.setHttpResponseAnnotation(KEY_INT);
         Tracy.before(L3);
-		Tracy.annotate(KEY_LONG, VAL_LONG);
-		Tracy.setHttpResponseAnnotation(KEY_LONG);
+        Tracy.annotate(KEY_LONG, VAL_LONG);
+        Tracy.setHttpResponseAnnotation(KEY_LONG);
         Tracy.after(L3);
         Tracy.after(L2);
         Tracy.after(L1);
         String expectedString =
-        		"\"key_long\":9223372036854775807,\"key_int\":2147483647,\"key_str\":\"str_val\"";
+                "\"key_long\":9223372036854775807,\"key_int\":2147483647,\"key_str\":\"str_val\"";
         assertEquals(expectedString,Tracy.getHttpResponseAnnotations());
         Tracy.clearContext();
     }
-    
+
     @Test
     public void testGetHttpResponseAnnotation_empty() {
-    	Tracy.setContext(TASK_ID, PARENT_OPT_ID, COMPONENT_NAME);
+        Tracy.setContext(TASK_ID, PARENT_OPT_ID, COMPONENT_NAME);
         Tracy.before("L1");
         Tracy.after("L1");
         assertEquals(null, Tracy.getHttpResponseAnnotations());
         Tracy.clearContext();
     }
-    
+
     @Test
     public void testAnnotateFromHttpRequestAnnotations() {
-    	Tracy.setContext(TASK_ID, PARENT_OPT_ID, COMPONENT_NAME);
-    	String csvAnnotations = "key1,val1,key2,val2";
+        Tracy.setContext(TASK_ID, PARENT_OPT_ID, COMPONENT_NAME);
+        String csvAnnotations = "key1,val1,key2,val2";
         Tracy.before("L1");
-    	Tracy.annotateFromHttpRequestAnnotations(csvAnnotations);
+        Tracy.annotateFromHttpRequestAnnotations(csvAnnotations);
         Tracy.after("L1");
         List<Map<String, Object>> events = Tracy.getEventsAsMaps();
         Map<String, Object> map = events.get(0);
         assertEquals("val1", map.get("key1"));
         assertEquals("val2", map.get("key2"));
         Tracy.clearContext();
-	}
-    
+    }
+
     @Test
     public void testAnnotateFromHttpRequestAnnotations_odd() {
-    	Tracy.setContext(TASK_ID, PARENT_OPT_ID, COMPONENT_NAME);
-    	String csvAnnotations = "key1,val1,key2";
+        Tracy.setContext(TASK_ID, PARENT_OPT_ID, COMPONENT_NAME);
+        String csvAnnotations = "key1,val1,key2";
         Tracy.before("L1");
-    	Tracy.annotateFromHttpRequestAnnotations(csvAnnotations);
+        Tracy.annotateFromHttpRequestAnnotations(csvAnnotations);
         Tracy.after("L1");
         List<Map<String, Object>> events = Tracy.getEventsAsMaps();
         Map<String, Object> map = events.get(0);
         assertEquals(null, map.get("key1"));
         assertEquals(null, map.get("key2"));
         Tracy.clearContext();
-	}
+    }
 }

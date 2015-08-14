@@ -114,21 +114,18 @@ public class Tracy {
 
     /**
     * Facilitate annotating annotations received from the Client in the X-Tracy-Annotations HTTP header <br>
-    * Currently only supporting string annotations in CSV format
-    * @param csvAnnotations contains the annotations in CSV format e.g. key1,val1,key2,val2<br>
-    * 
+    * Currently only supporting string annotations in CSV format. Example usage below:
     * <code><pre>
-    * public void doGet(HttpServletRequest request, HttpServletResponse response)
-    *   throws ServletException, IOException
-    *     {
-    *       ...
-    *       String httpAnnotations = request.getHeader(Tracy.HTTP_HEADER_X_TRACY_ANNOTATIONS);
-    *       if (null != httpAnnotations)	{
-    *       	annotateFromHttpRequestAnnotations(httpAnnotations);
-    *       {
-    *  
+    * public void doGet(HttpServletRequest request, HttpServletResponse response)   {
+    * throws ServletException, IOException
+    *     ...
+    *     String httpResponseAnnotations = getHttpResponseAnnotations();
+    *     if (httpResponseAnnotations)  {
+    *       response.addHeader(Tracy.HTTP_HEADER_X_TRACY_ANNOTATIONS, getHttpResponseAnnotations());
     *     }
+    * }
     * </pre></code>
+    * @param csvAnnotations contains the annotations in CSV format e.g. key1,val1,key2,val2<br>
     *  
     */ 
 	public static void annotateFromHttpRequestAnnotations(String csvAnnotations) {
@@ -168,27 +165,19 @@ public class Tracy {
 
     /**
      * This method is used to capture annotations which should be sent back to the HTTP client 
-     * HttpResponse annotations are created by this method and retrieved using getHttpResponseAnnotations()
+     * HttpResponse annotations are created by this method and retrieved using {@link #getHttpResponseAnnotations}
      * when the HTTP response header is to be returned as shown in example below<br>
      * <code><pre>
-     * public void doGet(HttpServletRequest request, HttpServletResponse response)
-     * throws ServletException, IOException
-     *   {
-     *     ...
-     *     response.addHeader(Tracy.HTTP_HEADER_X_TRACY_ANNOTATIONS, getHttpResponseAnnotations());
-     *   }
+     *   ...
+     *   Tracy.annotate("key1", "val1");
+     *   setHttpResponseAnnotation("key1"); 
      * </pre></code>
      * setHttpResponseAnnotation(key) must be called after a (Tracy frame) Tracy.annotation(key, value) as it will 
      * retrieve the value from the recently created Tracy.annotation.<br>
      * setHttpResponseAnnotation(key) can be called from any point in the Tracy frame stack. Tracy will store them
      * at the topmost level of the thread context to be easily accessible using {@link #getHttpResponseAnnotations} method
      *   
-     * @param key defines the recently annotation (Tracy.annotate(...)) which is to be sent back in the HTTP response header
-     * <code><pre>
-     *   ...
-     *   Tracy.annotate("key1", "val1");
-     *   setHttpResponseAnnotation("key1"); 
-     * </pre></code>
+     * @param key defines the recently used key used in Tracy.annotate(key, val) which is to be sent back in the HTTP response header
      */	
     public static void setHttpResponseAnnotation(String key)	{
         TracyThreadContext ctx = threadContext.get();
