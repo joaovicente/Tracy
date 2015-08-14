@@ -165,48 +165,48 @@ public class Tracy {
 
     /**
      * This method is used to capture annotations which should be sent back to the HTTP client 
-     * HttpResponse annotations are created by this method and retrieved using {@link #getHttpResponseAnnotations}
+     * HttpResponse annotations are created by this method and retrieved using {@link #getHttpResponseBufferAnnotations}
      * when the HTTP response header is to be returned as shown in example below<br>
      * <code><pre>
      *   ...
      *   Tracy.annotate("key1", "val1");
-     *   setHttpResponseAnnotation("key1"); 
+     *   annotateOnHttpResponseBuffer("key1"); 
      * </pre></code>
-     * setHttpResponseAnnotation(key) must be called after a (Tracy frame) Tracy.annotation(key, value) as it will 
+     * annotateOnHttpResponseBuffer(key) must be called after a (Tracy frame) Tracy.annotation(key, value) as it will 
      * retrieve the value from the recently created Tracy.annotation.<br>
-     * setHttpResponseAnnotation(key) can be called from any point in the Tracy frame stack. Tracy will store them
-     * at the topmost level of the thread context to be easily accessible using {@link #getHttpResponseAnnotations} method
+     * annotateOnHttpResponseBuffer(key) can be called from any point in the Tracy frame stack. Tracy will store them
+     * at the topmost level of the thread context to be easily accessible using {@link #getHttpResponseBufferAnnotations} method
      *   
      * @param key defines the recently used key used in Tracy.annotate(key, val) which is to be sent back in the HTTP response header
      */	
-    public static void setHttpResponseAnnotation(String key)	{
+    public static void annotateOnHttpResponseBuffer(String key)	{
         TracyThreadContext ctx = threadContext.get();
         if (isValidContext(ctx)) {
-            ctx.setHttpResponseAnnotation(key);
+            ctx.annotateOnHttpResponseBuffer(key);
         }
     }
     
     /**
-     * Retrieves all annotations previously created with {@link #setHttpResponseAnnotations} 
+     * Retrieves all annotations previously created with {@link #annotateOnHttpResponseBuffers} 
      * to send to Client in the X-Tracy-Annotations header.<br>
      * e.g.
      * <code><pre>
      * public void doGet(HttpServletRequest request, HttpServletResponse response)   {
      * throws ServletException, IOException
      *     ...
-     *     String httpResponseAnnotations = getHttpResponseAnnotations();
+     *     String httpResponseAnnotations = getHttpResponseBufferAnnotations();
      *     if (httpResponseAnnotations)  {
      *       response.addHeader(Tracy.HTTP_HEADER_X_TRACY_ANNOTATIONS, httpResponseAnnotations);
      *     }
      * }
      * </pre></code>
-     * @return a string containing annotations set using setHttpResponseAnnotation() in a JSON format (without {} brackets)
+     * @return a string containing annotations set using annotateOnHttpResponseBuffer() in a JSON format (without {} brackets)
      */	
-    public static String getHttpResponseAnnotations()	{
+    public static String getHttpResponseBufferAnnotations()	{
     	String annotations = null;
         TracyThreadContext ctx = threadContext.get();
         if (isValidContext(ctx)) {
-            annotations = ctx.getHttpResponseAnnotations();
+            annotations = ctx.getHttpResponseBufferAnnotations();
         }
         return annotations;
     }

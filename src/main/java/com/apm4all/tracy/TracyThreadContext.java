@@ -206,7 +206,7 @@ public class TracyThreadContext {
     	}
     }
     
-    public void setHttpResponseAnnotation(String key)	{
+    public void annotateOnHttpResponseBuffer(String key)	{
     	Object annotationValue = null;
         if (stack.isEmpty() == false)   {
         	annotationValue = stack.peek().getAnnotation(key);
@@ -216,7 +216,7 @@ public class TracyThreadContext {
         }
     }
     
-    public String getHttpResponseAnnotations()	{
+    public String getHttpResponseBufferAnnotations()	{
     	return httpResponseAnnotations.asJsonStringWithoutBrackets();
     }
 }

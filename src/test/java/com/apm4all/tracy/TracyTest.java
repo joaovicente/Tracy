@@ -463,7 +463,7 @@ public class TracyTest {
     }
 
     @Test
-    public void testGetHttpResponseAnnotation() {
+    public void testGetHttpResponseBufferAnnotation() {
         final String L1 = "L1";
         final String L2 = "L2";
         final String L3 = "L3";
@@ -476,28 +476,63 @@ public class TracyTest {
         Tracy.setContext(TASK_ID, PARENT_OPT_ID, COMPONENT_NAME);
         Tracy.before(L1);
         Tracy.annotate(KEY_STR, VAL_STR);
-        Tracy.setHttpResponseAnnotation(KEY_STR);
+        Tracy.annotateOnHttpResponseBuffer(KEY_STR);
         Tracy.before(L2);
         Tracy.annotate(KEY_INT, VAL_INT);
-        Tracy.setHttpResponseAnnotation(KEY_INT);
+        Tracy.annotateOnHttpResponseBuffer(KEY_INT);
         Tracy.before(L3);
         Tracy.annotate(KEY_LONG, VAL_LONG);
-        Tracy.setHttpResponseAnnotation(KEY_LONG);
+        Tracy.annotateOnHttpResponseBuffer(KEY_LONG);
         Tracy.after(L3);
         Tracy.after(L2);
         Tracy.after(L1);
         String expectedString =
                 "\"key_long\":9223372036854775807,\"key_int\":2147483647,\"key_str\":\"str_val\"";
-        assertEquals(expectedString,Tracy.getHttpResponseAnnotations());
+        assertEquals(expectedString,Tracy.getHttpResponseBufferAnnotations());
         Tracy.clearContext();
     }
 
     @Test
-    public void testGetHttpResponseAnnotation_empty() {
+    public void testAnnotateOnHttpResponseBuffer_invalidKey() { 
+        final String L1 = "L1";
+        final String KEY_STR = "key_str";
+        Tracy.setContext(TASK_ID, PARENT_OPT_ID, COMPONENT_NAME);
+        Tracy.before(L1);
+        try{
+            // No Tracy.annotate() called
+            Tracy.annotateOnHttpResponseBuffer(KEY_STR);
+         }
+         catch(Exception e){
+            fail("annotateOnHttpResponseBuffer(invalidKey) should not have thrown any exception");
+         }
+        Tracy.after(L1);
+        assertEquals(null,Tracy.getHttpResponseBufferAnnotations());
+        Tracy.clearContext();
+    }
+    
+    
+    @Test
+    public void testAnnotateOnHttpResponseBuffer_nullKey() { 
+        final String L1 = "L1";
+        Tracy.setContext(TASK_ID, PARENT_OPT_ID, COMPONENT_NAME);
+        Tracy.before(L1);
+        try{
+            Tracy.annotateOnHttpResponseBuffer(null);
+         }
+         catch(Exception e){
+            fail("annotateOnHttpResponseBuffer(null) should not have thrown any exception");
+         }
+        Tracy.after(L1);
+        assertEquals(null,Tracy.getHttpResponseBufferAnnotations());
+        Tracy.clearContext();
+    }
+    
+    @Test
+    public void testGetHttpResponseBufferAnnotation_empty() {
         Tracy.setContext(TASK_ID, PARENT_OPT_ID, COMPONENT_NAME);
         Tracy.before("L1");
         Tracy.after("L1");
-        assertEquals(null, Tracy.getHttpResponseAnnotations());
+        assertEquals(null, Tracy.getHttpResponseBufferAnnotations());
         Tracy.clearContext();
     }
 
