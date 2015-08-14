@@ -528,4 +528,19 @@ public class TracyTest {
         assertEquals(null, map.get("key2"));
         Tracy.clearContext();
     }
+    
+    @Test
+    public void testAnnotateFromHttpRequestAnnotations_null() {
+        Tracy.setContext(TASK_ID, PARENT_OPT_ID, COMPONENT_NAME);
+        String csvAnnotations = null;
+        Tracy.before("L1");
+        try{
+            Tracy.annotateFromHttpRequestAnnotations(csvAnnotations);
+         }
+         catch(Exception e){
+            fail("annotateFromHttpRequestAnnotations(null) should not have thrown any exception");
+         }
+        Tracy.after("L1");
+        Tracy.clearContext();
+    }
 }

@@ -111,36 +111,6 @@ public class Tracy {
             ctx.annotate(keyValueSequence);
         }
     }
-
-    /**
-    * Facilitate annotating annotations received from the Client in the X-Tracy-Annotations HTTP header <br>
-    * Currently only supporting string annotations in CSV format. Example usage below:
-    * <code><pre>
-    * public void doGet(HttpServletRequest request, HttpServletResponse response)   {
-    * throws ServletException, IOException
-    *     ...
-    *     String httpResponseAnnotations = getHttpResponseAnnotations();
-    *     if (httpResponseAnnotations)  {
-    *       response.addHeader(Tracy.HTTP_HEADER_X_TRACY_ANNOTATIONS, getHttpResponseAnnotations());
-    *     }
-    * }
-    * </pre></code>
-    * @param csvAnnotations contains the annotations in CSV format e.g. key1,val1,key2,val2<br>
-    *  
-    */ 
-	public static void annotateFromHttpRequestAnnotations(String csvAnnotations) {
-        String[] split = csvAnnotations.split(",");
-        if (split.length % 2 == 0) {
-        	String value = "null";
-        	for (int i=0; i<split.length/2; i++) {
-        		String key = split[2*i].toString();
-        		if (null != split[2*i + 1])	{
-        			value = split[2*i + 1].toString();
-        		}
-        		Tracy.annotate(key, value);
-        	}
-        }
-	}
     
     /**
      * Annotate an integer value
@@ -162,6 +132,36 @@ public class Tracy {
         }
     }
     
+    /**
+    * Facilitate annotating annotations received from the Client in the X-Tracy-Annotations HTTP header <br>
+    * Currently only supporting string annotations in CSV format. Example usage below:
+     * e.g.
+     * <code><pre>
+     * public void doGet(HttpServletRequest request, HttpServletResponse response)   {
+     * throws ServletException, IOException
+     *     ...
+     *     String httpRequestTracyAnnotations = request.getHeader(Tracy.HTTP_HEADER_X_TRACY_ANNOTATIONS);
+     *     Tracy.annotateFromHttpRequestAnnotations(httpRequestTracyAnnotations)
+     * }
+     * </pre></code>
+    * @param csvAnnotations contains the annotations in CSV format e.g. key1,val1,key2,val2<br>
+    *  
+    */ 
+	public static void annotateFromHttpRequestAnnotations(String csvAnnotations) {
+	    if (null != csvAnnotations)  {
+	        String[] split = csvAnnotations.split(",");
+	        if (split.length % 2 == 0) {
+	            String value = "null";
+	            for (int i=0; i<split.length/2; i++) {
+	                String key = split[2*i].toString();
+	                if (null != split[2*i + 1])	{
+	                    value = split[2*i + 1].toString();
+	                }
+	                Tracy.annotate(key, value);
+	            }
+	        }
+	    }
+	}
 
     /**
      * This method is used to capture annotations which should be sent back to the HTTP client 
@@ -187,7 +187,19 @@ public class Tracy {
     }
     
     /**
-     * Retrieves all annotations previously created with {@link #setHttpResponseAnnotations}
+     * Retrieves all annotations previously created with {@link #setHttpResponseAnnotations} 
+     * to send to Client in the X-Tracy-Annotations header.<br>
+     * e.g.
+     * <code><pre>
+     * public void doGet(HttpServletRequest request, HttpServletResponse response)   {
+     * throws ServletException, IOException
+     *     ...
+     *     String httpResponseAnnotations = getHttpResponseAnnotations();
+     *     if (httpResponseAnnotations)  {
+     *       response.addHeader(Tracy.HTTP_HEADER_X_TRACY_ANNOTATIONS, httpResponseAnnotations);
+     *     }
+     * }
+     * </pre></code>
      * @return a string containing annotations set using setHttpResponseAnnotation() in a JSON format (without {} brackets)
      */	
     public static String getHttpResponseAnnotations()	{
