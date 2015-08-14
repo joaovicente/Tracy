@@ -25,12 +25,14 @@ import java.util.Map;
  * @author joao.diogo.vicente@gmail.com
  */
 public class Tracy {
+    // API
+    static public final String HTTP_HEADER_X_TRACY_ANNOTATIONS = "X-Tracy-Annotations";
+    // Internal
     static final String TRACY_DEFAULT_TASK_ID = "NA";
     static final String TRACY_DEFAULT_PARENT_OPT_ID = "NA";
     static final int TRACY_FRAME_ESTIMATED_ANNOTATION_COUNT = 30;
     static final int TRACY_HTTP_HEADER_ESTIMATED_ANNOTATION_COUNT = 10;
     static final int TRACY_ESTIMATED_FRAME_SIZE = 200;
-    static final String HTTP_HEADER_X_TRACY_ANNOTATIONS = "X-Tracy-Annotations";
     static List<String> EMPTY_STRING_LIST = new ArrayList<String>();
     static List<TracyEvent> EMPTY_TRACY_EVENT_LIST = new ArrayList<TracyEvent>(); 
     static List<Map<String, Object>> EMPTY_LIST_OF_MAPS = new ArrayList<Map<String, Object>>();
