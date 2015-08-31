@@ -135,6 +135,17 @@ public class Tracy {
     }
     
     /**
+     * Annotate a boolean value
+     */	
+    public static void annotate(String booleanName, boolean booleanValue) {
+        TracyThreadContext ctx = threadContext.get();
+        if (isValidContext(ctx)) {
+            ctx.annotate(booleanName, booleanValue);
+        }
+    }
+    
+    
+    /**
     * Facilitate annotating annotations received from the Client in the X-Tracy-Annotations HTTP header <br>
     * Currently only supporting string annotations in CSV format. Example usage below:
      * e.g.
@@ -202,7 +213,7 @@ public class Tracy {
      *     }
      * }
      * </pre></code>
-     * @return a string containing annotations set using annotateOnHttpResponseBuffer() in a JSON format (without {} brackets)
+     * @return a string containing annotations set using annotateOnHttpResponseBuffer() in CSV format
      */	
     public static String getHttpResponseBufferAnnotations()	{
     	String annotations = "";

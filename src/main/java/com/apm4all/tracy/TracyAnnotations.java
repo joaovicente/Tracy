@@ -78,6 +78,9 @@ public class TracyAnnotations {
         	else if  (Long.class.isInstance(value)) {
         		JsonFormatter.addJsonLongValue(jsonBuffer, key, ((Long)value).longValue(), false);
         	}
+        	else if  (Boolean.class.isInstance(value)) {
+        		JsonFormatter.addJsonBooleanValue(jsonBuffer, key, ((Boolean)value).booleanValue(), false);
+        	}
         }
 	}
 	
@@ -96,10 +99,32 @@ public class TracyAnnotations {
         	else if  (Long.class.isInstance(value)) {
         		JsonFormatter.addJsonLongValue(jsonBuffer, key, ((Long)value).longValue(), first);
         	}
+        	else if  (Boolean.class.isInstance(value)) {
+        		JsonFormatter.addJsonBooleanValue(jsonBuffer, key, ((Boolean)value).booleanValue(), first);
+        	}
         	first = false;
         }
         if (jsonBuffer.length() > 0)	{
         	output = jsonBuffer.toString();
+        }
+		return output;
+	}
+	
+	
+	public String asCsvString()	{
+		String output = "";
+		StringBuilder csvBuffer = new StringBuilder(Tracy.TRACY_ESTIMATED_FRAME_SIZE);
+		boolean first = true;
+        for (String key : annotations.keySet())	{
+            if (true != first)  {
+        	    csvBuffer.append(",");
+            }
+        	Object value = annotations.get(key);
+        	csvBuffer.append(key).append(",").append(value);
+        	first = false;
+        }
+        if (csvBuffer.length() > 0)	{
+        	output = csvBuffer.toString();
         }
 		return output;
 	}
@@ -115,6 +140,9 @@ public class TracyAnnotations {
 				sb.append(", \"" + key + "\"=" + annotations.get(key).toString());
 			}
 			else if (Long.class.isInstance(value) || Long.class.isInstance(value)) {
+				sb.append(", \"" + key + "\"=" + annotations.get(key).toString());
+			}
+			else if (Boolean.class.isInstance(value) || Boolean.class.isInstance(value)) {
 				sb.append(", \"" + key + "\"=" + annotations.get(key).toString());
 			}
 		}

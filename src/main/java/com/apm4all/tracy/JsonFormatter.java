@@ -21,4 +21,11 @@ public class JsonFormatter {
         }
         sb.append("\""+key+"\":"+value);
     }
+    
+    static public void addJsonBooleanValue(StringBuilder sb, String key, boolean value, boolean first)	{
+       if (false == first)	{
+           sb.append(",");
+        }
+        sb.append("\""+key+"\":"+value);
+    }
 }

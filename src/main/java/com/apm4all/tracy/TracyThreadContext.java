@@ -198,6 +198,12 @@ public class TracyThreadContext {
         }
     }
     
+    public void annotate(String key, boolean value) {
+        if (stack.isEmpty() == false)   {
+            stack.peek().addAnnotation(key, value);
+        }
+    }
+    
     public void mergeChildContext(TracyThreadContext ctx) {
     	if (null != ctx)	{
     		for (TracyEvent event : ctx.getPoppedList())	{
@@ -217,6 +223,6 @@ public class TracyThreadContext {
     }
     
     public String getHttpResponseBufferAnnotations()	{
-    	return httpResponseAnnotations.asJsonStringWithoutBrackets();
+    	return httpResponseAnnotations.asCsvString();
     }
 }

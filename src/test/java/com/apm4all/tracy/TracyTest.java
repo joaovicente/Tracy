@@ -110,7 +110,7 @@ public class TracyTest {
     @Test
     public void testGetEvents_intAnnotation() throws InterruptedException {
         final String INT_NAME = "intName";
-        int intValue = Integer.MAX_VALUE;
+        final int intValue = Integer.MAX_VALUE;
         Tracy.setContext(TASK_ID, PARENT_OPT_ID, COMPONENT_NAME);
         Tracy.before(L1_LABEL_NAME);
         Tracy.annotate(INT_NAME, intValue);
@@ -123,6 +123,8 @@ public class TracyTest {
         assertEquals(L1_LABEL_NAME, event.getLabel());
         assertEquals(event.getAnnotation(INT_NAME), new Integer(intValue));
         assertEquals(new Integer(intValue) , Tracy.getEventsAsMaps().get(0).get(INT_NAME));
+        String jsonEvent = Tracy.getEventsAsJson().get(0);
+        assertTrue(jsonEvent.contains("\"" + INT_NAME + "\":" + Integer.toString(intValue)));
         Tracy.clearContext();
     }
 
@@ -142,9 +144,32 @@ public class TracyTest {
         assertEquals(L1_LABEL_NAME, event.getLabel());
         assertEquals(event.getAnnotation(LONG_NAME), new Long(longValue));
         assertEquals(new Long(longValue), Tracy.getEventsAsMaps().get(0).get(LONG_NAME));
+        String jsonEvent = Tracy.getEventsAsJson().get(0);
+        assertTrue(jsonEvent.contains("\"" + LONG_NAME + "\":" + Long.toString(longValue)));
         Tracy.clearContext();
     }
-
+    
+    @Test
+    public void testGetEvents_boolAnnotation() throws InterruptedException {
+        final String BOOLEAN_NAME = "booleanName";
+        boolean booleanValue = true;
+        Tracy.setContext(TASK_ID, PARENT_OPT_ID, COMPONENT_NAME);
+        Tracy.before(L1_LABEL_NAME);
+        Tracy.annotate(BOOLEAN_NAME, booleanValue);
+        Tracy.after(L1_LABEL_NAME);
+        List<TracyEvent> events = Tracy.getEvents();
+        assertEquals(1, events.size());
+        TracyEvent event = events.get(0);
+        assertEquals(TASK_ID, event.getTaskId());
+        assertEquals(PARENT_OPT_ID, event.getParentOptId());
+        assertEquals(L1_LABEL_NAME, event.getLabel());
+        assertEquals(true, event.getAnnotation(BOOLEAN_NAME));
+        assertEquals(new Boolean(booleanValue), Tracy.getEventsAsMaps().get(0).get(BOOLEAN_NAME));
+        String jsonEvent = Tracy.getEventsAsJson().get(0);
+        assertTrue(jsonEvent.contains("\"" + BOOLEAN_NAME + "\":" + Boolean.toString(booleanValue)));
+        Tracy.clearContext();
+    }
+    
     @Test
     public void testGetEvents_componentAnnotated() throws InterruptedException {
         final String COMPONENT_NAME = "Component X";
@@ -297,7 +322,7 @@ public class TracyTest {
 
     @Test
     public void testGetEventsAsJsonString_withAnnotations() throws InterruptedException {
-        // TODO: This example should have Int and Long annotations but jsonEventWithoutBrackets will need to be fixed
+        // TODO: This example should have Int and Long annotations but jsonEventWithoutBrackets will need to be extended
         Tracy.setContext(TASK_ID, PARENT_OPT_ID, COMPONENT_NAME);
         Tracy.before(L1_LABEL_NAME);
         Tracy.annotate("sizeOut", "10", "sizeIn", "2000");
@@ -487,11 +512,41 @@ public class TracyTest {
         Tracy.after(L2);
         Tracy.after(L1);
         String expectedString =
-                "\"key_long\":9223372036854775807,\"key_int\":2147483647,\"key_str\":\"str_val\"";
+                "key_long,9223372036854775807,key_int,2147483647,key_str,str_val";
         assertEquals(expectedString,Tracy.getHttpResponseBufferAnnotations());
         Tracy.clearContext();
     }
 
+    
+    @Test
+    public void testGetHttpResponseBufferAnnotation_allStrings() {
+        final String L1 = "L1";
+        final String L2 = "L2";
+        final String KEY_STR1 = "key_str1";
+        final String VAL_STR1 = "val_str1";
+        final String KEY_STR2 = "key_str2";
+        final String VAL_STR2 = "val_str2";
+        final String KEY_STR3 = "key_str3";
+        final String VAL_STR3 = "val_str3";
+        Tracy.setContext(TASK_ID, PARENT_OPT_ID, COMPONENT_NAME);
+        Tracy.before(L1);
+        Tracy.annotate(KEY_STR1, VAL_STR1);
+        Tracy.annotateOnHttpResponseBuffer(KEY_STR1);
+        Tracy.annotate(KEY_STR2, VAL_STR2);
+        Tracy.annotateOnHttpResponseBuffer(KEY_STR2);
+        Tracy.before(L2);
+        Tracy.annotate(KEY_STR3, VAL_STR3);
+        Tracy.annotateOnHttpResponseBuffer(KEY_STR3);
+        Tracy.after(L2);
+        Tracy.after(L1);
+        String expectedString =
+              KEY_STR3 +"," + VAL_STR3 +"," 
+              + KEY_STR1 +"," + VAL_STR1 +","
+              + KEY_STR2 +"," + VAL_STR2; 
+        assertEquals(expectedString,Tracy.getHttpResponseBufferAnnotations());
+        Tracy.clearContext();
+    }
+    
     @Test
     public void testAnnotateOnHttpResponseBuffer_invalidKey() { 
         final String L1 = "L1";

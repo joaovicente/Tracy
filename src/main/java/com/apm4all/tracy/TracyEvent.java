@@ -94,6 +94,10 @@ public class TracyEvent {
     	annotations.add(key, value);
     }
     
+    public void addAnnotation(String key, boolean value)	{
+    	annotations.add(key, value);
+    }
+    
     public Object getAnnotation(String key) {
         return annotations.get(key);
     }
