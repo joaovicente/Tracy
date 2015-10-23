@@ -64,12 +64,20 @@ public class TracyThreadContext {
     }
 
     static void resolveHostname() {
-        try {
-            if (hostname == null) {
+        if (hostname == null) {
+            try {
                 hostname = InetAddress.getLocalHost().getHostName();
+            } catch (UnknownHostException e) {
+                // Linux system
+                hostname = System.getenv("HOSTNAME");
+                if (hostname == null) {
+                    // Window system
+                    hostname = System.getenv("COMPUTERNAME");
+                }
+                if (hostname == null) {
+                    hostname = "unknown";
+                }
             }
-        } catch (UnknownHostException e) {
-            hostname = "unknown";
         }
     }
 
