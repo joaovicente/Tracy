@@ -15,6 +15,20 @@ public class JsonFormatter {
         sb.append("\""+key+"\":"+value);
     }
 
+    static public void addJsonFloatValue(StringBuilder sb, String key, float value, boolean first)	{
+       if (false == first)	{
+           sb.append(",");
+        }
+        sb.append("\""+key+"\":"+value);
+    }
+    
+    static public void addJsonDoubleValue(StringBuilder sb, String key, double value, boolean first)	{
+       if (false == first)	{
+           sb.append(",");
+        }
+        sb.append("\""+key+"\":"+value);
+    }
+    
     static public void addJsonIntValue(StringBuilder sb, String key, int value, boolean first)	{
        if (false == first)	{
            sb.append(",");

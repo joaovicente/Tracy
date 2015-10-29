@@ -78,6 +78,12 @@ public class TracyAnnotations {
         	else if  (Long.class.isInstance(value)) {
         		JsonFormatter.addJsonLongValue(jsonBuffer, key, ((Long)value).longValue(), false);
         	}
+        	else if  (Float.class.isInstance(value)) {
+        		JsonFormatter.addJsonFloatValue(jsonBuffer, key, ((Float)value).floatValue(), false);
+        	}
+        	else if  (Double.class.isInstance(value)) {
+        		JsonFormatter.addJsonDoubleValue(jsonBuffer, key, ((Double)value).doubleValue(), false);
+        	}
         	else if  (Boolean.class.isInstance(value)) {
         		JsonFormatter.addJsonBooleanValue(jsonBuffer, key, ((Boolean)value).booleanValue(), false);
         	}
@@ -98,6 +104,12 @@ public class TracyAnnotations {
         	}
         	else if  (Long.class.isInstance(value)) {
         		JsonFormatter.addJsonLongValue(jsonBuffer, key, ((Long)value).longValue(), first);
+        	}
+        	else if  (Float.class.isInstance(value)) {
+        		JsonFormatter.addJsonFloatValue(jsonBuffer, key, ((Float)value).floatValue(), first);
+        	}
+        	else if  (Double.class.isInstance(value)) {
+        		JsonFormatter.addJsonDoubleValue(jsonBuffer, key, ((Double)value).doubleValue(), first);
         	}
         	else if  (Boolean.class.isInstance(value)) {
         		JsonFormatter.addJsonBooleanValue(jsonBuffer, key, ((Boolean)value).booleanValue(), first);
@@ -140,6 +152,12 @@ public class TracyAnnotations {
 				sb.append(", \"" + key + "\"=" + annotations.get(key).toString());
 			}
 			else if (Long.class.isInstance(value) || Long.class.isInstance(value)) {
+				sb.append(", \"" + key + "\"=" + annotations.get(key).toString());
+			}
+			else if (Float.class.isInstance(value) || Float.class.isInstance(value)) {
+				sb.append(", \"" + key + "\"=" + annotations.get(key).toString());
+			}
+			else if (Double.class.isInstance(value) || Double.class.isInstance(value)) {
 				sb.append(", \"" + key + "\"=" + annotations.get(key).toString());
 			}
 			else if (Boolean.class.isInstance(value) || Boolean.class.isInstance(value)) {

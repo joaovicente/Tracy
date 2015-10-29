@@ -206,6 +206,18 @@ public class TracyThreadContext {
         }
     }
     
+    public void annotate(String key, float value) {
+        if (stack.isEmpty() == false)   {
+            stack.peek().addAnnotation(key, value);
+        }
+    }
+    
+    public void annotate(String key, double value) {
+        if (stack.isEmpty() == false)   {
+            stack.peek().addAnnotation(key, value);
+        }
+    }
+    
     public void annotate(String key, boolean value) {
         if (stack.isEmpty() == false)   {
             stack.peek().addAnnotation(key, value);

@@ -150,6 +150,49 @@ public class TracyTest {
     }
     
     @Test
+    public void testGetEvents_floatAnnotation() throws InterruptedException {
+        final String FLOAT_NAME = "floatName";
+        float floatValue = Float.MAX_VALUE;
+        Tracy.setContext(TASK_ID, PARENT_OPT_ID, COMPONENT_NAME);
+        Tracy.before(L1_LABEL_NAME);
+        Tracy.annotate(FLOAT_NAME, floatValue);
+        Tracy.after(L1_LABEL_NAME);
+        List<TracyEvent> events = Tracy.getEvents();
+        assertEquals(1, events.size());
+        TracyEvent event = events.get(0);
+        assertEquals(TASK_ID, event.getTaskId());
+        assertEquals(PARENT_OPT_ID, event.getParentOptId());
+        assertEquals(L1_LABEL_NAME, event.getLabel());
+        assertEquals(event.getAnnotation(FLOAT_NAME), new Float(floatValue));
+        assertEquals(new Float(floatValue), Tracy.getEventsAsMaps().get(0).get(FLOAT_NAME));
+        String jsonEvent = Tracy.getEventsAsJson().get(0);
+        assertTrue(jsonEvent.contains("\"" + FLOAT_NAME + "\":" + Float.toString(floatValue)));
+        Tracy.clearContext();
+    }
+
+    
+    @Test
+    public void testGetEvents_doubleAnnotation() throws InterruptedException {
+        final String DOUBLE_NAME = "doubleName";
+        double doubleValue = Double.MAX_VALUE;
+        Tracy.setContext(TASK_ID, PARENT_OPT_ID, COMPONENT_NAME);
+        Tracy.before(L1_LABEL_NAME);
+        Tracy.annotate(DOUBLE_NAME, doubleValue);
+        Tracy.after(L1_LABEL_NAME);
+        List<TracyEvent> events = Tracy.getEvents();
+        assertEquals(1, events.size());
+        TracyEvent event = events.get(0);
+        assertEquals(TASK_ID, event.getTaskId());
+        assertEquals(PARENT_OPT_ID, event.getParentOptId());
+        assertEquals(L1_LABEL_NAME, event.getLabel());
+        assertEquals(event.getAnnotation(DOUBLE_NAME), new Double(doubleValue));
+        assertEquals(new Double(doubleValue), Tracy.getEventsAsMaps().get(0).get(DOUBLE_NAME));
+        String jsonEvent = Tracy.getEventsAsJson().get(0);
+        assertTrue(jsonEvent.contains("\"" + DOUBLE_NAME + "\":" + Double.toString(doubleValue)));
+        Tracy.clearContext();
+    }
+    
+    @Test
     public void testGetEvents_boolAnnotation() throws InterruptedException {
         final String BOOLEAN_NAME = "booleanName";
         boolean booleanValue = true;

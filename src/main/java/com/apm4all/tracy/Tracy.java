@@ -135,6 +135,27 @@ public class Tracy {
     }
     
     /**
+     * Annotate a float value
+     */	
+    public static void annotate(String floatName, float floatValue) {
+        TracyThreadContext ctx = threadContext.get();
+        if (isValidContext(ctx)) {
+            ctx.annotate(floatName, floatValue);
+        }
+    }
+    
+    
+    /**
+     * Annotate a double value
+     */	
+    public static void annotate(String doubleName, double doubleValue) {
+        TracyThreadContext ctx = threadContext.get();
+        if (isValidContext(ctx)) {
+            ctx.annotate(doubleName, doubleValue);
+        }
+    }
+    
+    /**
      * Annotate a boolean value
      */	
     public static void annotate(String booleanName, boolean booleanValue) {
