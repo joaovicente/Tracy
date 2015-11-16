@@ -77,6 +77,41 @@ public class TracyTest {
         // Clear context when done
         Tracy.clearContext();
     }   
+    
+    
+    @Test
+    public void testSampleUsage() throws InterruptedException {
+        // In the context of a HTTP endpoint TASK_ID and PARENT_OPT_ID would be passed in as HTTP headers
+        // COMPONENT_NAME would be the name you want to give your component (e.g. my-awesome-service)
+        Tracy.setContext(TASK_ID, PARENT_OPT_ID, COMPONENT_NAME);
+
+        Tracy.before("Client handler");
+        Thread.sleep(10);
+        Tracy.before("Service handler");
+        Thread.sleep(10);
+        Tracy.before("Http servlet");
+        Thread.sleep(10);
+        Tracy.before("foo");
+        Thread.sleep(120);
+        Tracy.after("foo");
+        Tracy.before("bar");
+        Thread.sleep(20);
+        Tracy.after("bar");
+        Tracy.after("Http servlet");
+        Thread.sleep(20);
+        Tracy.after("Service handler");
+        Tracy.after("Client handler");
+
+        System.out.println("testSampleUsage output:");
+        // Observe the Tracy frames JSON representation
+        List<String> events = Tracy.getEventsAsJson();
+        for (String event : events) {
+            System.out.println(event);
+        }
+
+        // Clear context when done
+        Tracy.clearContext();
+    }   
 
     @Test
     public void testSetContext_full() {
@@ -423,7 +458,9 @@ public class TracyTest {
         Tracy.before(L1_LABEL_NAME);
         Tracy.before(L11_LABEL_NAME);
         Thread.sleep(100);
+        assertEquals(2, Tracy.frameDepth());
         Tracy.outerError(CUSTOM_ERROR_MESSAGE);
+        assertEquals(0, Tracy.frameDepth());
 
         List<TracyEvent> events = Tracy.getEvents();
         assertEquals(2, events.size());
@@ -452,8 +489,11 @@ public class TracyTest {
         Tracy.before(L1_LABEL_NAME);
         Tracy.before(L11_LABEL_NAME);
         Thread.sleep(100);
+        assertEquals(2, Tracy.frameDepth());
         Tracy.frameError(CUSTOM_ERROR_MESSAGE);
+        assertEquals(1, Tracy.frameDepth());
         Tracy.after(L1_LABEL_NAME);
+        assertEquals(0, Tracy.frameDepth());
 
         List<TracyEvent> events = Tracy.getEvents();
         assertEquals(2, events.size());
@@ -474,6 +514,41 @@ public class TracyTest {
         assertEquals(CUSTOM_ERROR_MESSAGE, l11Event.getError());
         Tracy.clearContext();
     }
+    
+    @Test
+    public void testFrameErrorWithoutPopping_twoLevelStack() throws InterruptedException {
+        final String CUSTOM_ERROR_MESSAGE = "CustomErrorMessage";
+        Tracy.setContext(TASK_ID, PARENT_OPT_ID, COMPONENT_NAME);
+        Tracy.before(L1_LABEL_NAME);
+        Tracy.before(L11_LABEL_NAME);
+        Thread.sleep(100);
+        Tracy.frameErrorWithoutPopping(CUSTOM_ERROR_MESSAGE);
+        assertEquals(2, Tracy.frameDepth());
+        Tracy.after(L11_LABEL_NAME);
+        assertEquals(1, Tracy.frameDepth());
+        Tracy.after(L1_LABEL_NAME);
+        assertEquals(0, Tracy.frameDepth());
+
+        List<TracyEvent> events = Tracy.getEvents();
+        assertEquals(2, events.size());
+
+        // L1 event will be popped last
+        TracyEvent l1Event = events.get(1);
+        assertEquals(TASK_ID, l1Event.getTaskId());
+        assertEquals(PARENT_OPT_ID, l1Event.getParentOptId());
+        assertEquals(L1_LABEL_NAME, l1Event.getLabel());
+        assertEquals(L1_LABEL_NAME, l1Event.getLabel());
+        assertEquals(null, l1Event.getError());
+
+        // L11 event will be popped first
+        TracyEvent l11Event = events.get(0);
+        assertEquals(TASK_ID, l11Event.getTaskId());
+        assertEquals(l1Event.getOptId(), l11Event.getParentOptId());
+        assertEquals(L11_LABEL_NAME, l11Event.getLabel());
+        assertEquals(CUSTOM_ERROR_MESSAGE, l11Event.getError());
+        Tracy.clearContext();
+    }
+    
 
     @Test
     public void testAnnotateBeforeBefore() throws InterruptedException {

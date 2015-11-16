@@ -156,6 +156,20 @@ public class TracyThreadContext {
     public void forcePop() {
         forcePop("unknown");
     }
+   
+    public void annotateFrameError(String error)    {
+        if (stack.isEmpty() == false)   {
+            stack.peek().addAnnotation("error", error);
+        }
+    }
+    
+    public int frameDepth() {
+        int depth = 0;
+        if (stack.isEmpty() == false)   {
+           depth = stack.size();  
+        }
+        return depth;
+    }
     
     public void forcePop(String error) {
         TracyEvent event = stack.pop();

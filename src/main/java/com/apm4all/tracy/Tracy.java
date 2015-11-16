@@ -426,6 +426,15 @@ public class Tracy {
         TracyThreadContext ctx = threadContext.get();
         return(isValidContext(ctx));
     }
+   
+    public static int frameDepth() {
+        int depth = 0;
+        TracyThreadContext ctx = threadContext.get();
+        if (isValidContext(ctx)) {
+            depth = ctx.frameDepth();
+        }
+        return depth;
+    }
     
     public static boolean isEnabled(TracyThreadContext ctx) {
         return(isValidContext(ctx));
@@ -458,5 +467,17 @@ public class Tracy {
             ctx.popFrameWithError(error);
         }
     }
-
+    
+    /**
+     * In case where an error occurs but the user does not want to raise an exception 
+     * and the user takes responsibility of ensuring Tracy.after is guaranteed to 
+     * be called then frameErrorWithoutPoping can be called to simply create an "error"
+     * annotation
+     */
+    public static void frameErrorWithoutPopping(String error) {
+        TracyThreadContext ctx = threadContext.get();
+        if (isValidContext(ctx)) {
+            ctx.annotateFrameError(error);
+        }
+    }
 }
