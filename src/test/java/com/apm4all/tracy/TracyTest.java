@@ -27,6 +27,7 @@ import java.util.Map;
 import org.junit.Test;
 
 import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -142,6 +143,58 @@ public class TracyTest {
         Tracy.clearContext();
     }
 
+    
+    @Test
+    public void testGetEvents_stringAnnotation() throws InterruptedException {
+        final String STR_NAME = "strName";
+        final String strValue = "strValue";
+        Tracy.setContext(TASK_ID, PARENT_OPT_ID, COMPONENT_NAME);
+        Tracy.before(L1_LABEL_NAME);
+        Tracy.annotate(STR_NAME, strValue);
+        Tracy.after(L1_LABEL_NAME);
+        List<TracyEvent> events = Tracy.getEvents();
+        assertEquals(1, events.size());
+        TracyEvent event = events.get(0);
+        assertEquals(TASK_ID, event.getTaskId());
+        assertEquals(PARENT_OPT_ID, event.getParentOptId());
+        assertEquals(L1_LABEL_NAME, event.getLabel());
+        assertEquals(event.getAnnotation(STR_NAME), strValue);
+        assertEquals(strValue, Tracy.getEventsAsMaps().get(0).get(STR_NAME));
+        String jsonEvent = Tracy.getEventsAsJson().get(0);
+        String expectedStr = "\"" + STR_NAME + "\":" + "\"" + strValue + "\"";
+        assertTrue(jsonEvent.contains(expectedStr));
+        Tracy.clearContext();
+    }
+    
+    
+    @Test
+    public void testGetEvents_stringAnnotationContainingDoubleQuotes() throws InterruptedException, JsonProcessingException, IOException {
+        // see @link https://github.com/joaovicente/Tracy/issues/3
+        final String STR_NAME = "strName";
+        final String strValue = "\"strValue";
+        Tracy.setContext(TASK_ID, PARENT_OPT_ID, COMPONENT_NAME);
+        Tracy.before(L1_LABEL_NAME);
+        Tracy.annotate(STR_NAME, strValue);
+        Tracy.after(L1_LABEL_NAME);
+        List<TracyEvent> events = Tracy.getEvents();
+        assertEquals(1, events.size());
+        TracyEvent event = events.get(0);
+        assertEquals(TASK_ID, event.getTaskId());
+        assertEquals(PARENT_OPT_ID, event.getParentOptId());
+        assertEquals(L1_LABEL_NAME, event.getLabel());
+        assertEquals(event.getAnnotation(STR_NAME), strValue);
+        assertEquals(strValue, Tracy.getEventsAsMaps().get(0).get(STR_NAME));
+        String jsonEvent = Tracy.getEventsAsJson().get(0);
+        ObjectMapper m = new ObjectMapper();
+        JsonNode rootNode = m.readTree(jsonEvent);
+        assertNotNull(rootNode);
+        String strValueInJson = rootNode.path("strName").textValue();
+        assertEquals(strValue, strValueInJson);
+        // System.out.println(jsonEvent);
+        Tracy.clearContext();
+    }
+    
+    
     @Test
     public void testGetEvents_intAnnotation() throws InterruptedException {
         final String INT_NAME = "intName";
