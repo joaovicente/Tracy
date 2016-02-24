@@ -1,6 +1,6 @@
 language: java
 install: 
- -mvn install -DskipTests=true -Dgpg.skip=true
+ - mvn install -DskipTests=true -Dgpg.skip=true
 script:
  - mvn test jacoco:report
 after_success:
