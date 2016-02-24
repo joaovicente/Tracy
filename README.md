@@ -1,7 +1,5 @@
 [![Build Status](https://travis-ci.org/joaovicente/Tracy.svg?branch=2.0.1)](https://travis-ci.org/joaovicente/Tracy)
-<!---
 [![Coverage Status](https://img.shields.io/coveralls/joaovicente/Tracy.svg)](https://coveralls.io/r/joaovicente/Tracy)
--->
 # Tracy <img src="https://cloud.githubusercontent.com/assets/3578589/13300175/bad4d3c6-db36-11e5-94a4-aa4a9c3a9dbc.gif" width="50"/> #
 A simple tracing framework inspired by XTrace.  
 This library is designed to capure Java code execution paths by capturing discrete events containing ancestry, timing, host information, along with any additional optional context a developer wants to capture.  
