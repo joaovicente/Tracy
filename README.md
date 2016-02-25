@@ -1,5 +1,8 @@
 [![Build Status](https://travis-ci.org/joaovicente/Tracy.svg)](https://travis-ci.org/joaovicente/Tracy)
 [![Coverage Status](https://coveralls.io/repos/joaovicente/Tracy/badge.svg?branch=develop)](https://coveralls.io/github/joaovicente/Tracy)
+[![][mavenbadge img]][mavenbadge]
+[mavenbadge]:http://search.maven.org/#search|gav|1|g%3A%22com.apm4all.tracy%22%20AND%20a%3A%22Tracy%22
+[mavenbadge img]:https://maven-badges.herokuapp.com/maven-central/com.apm4all.tracy/Tracy/badge.svg
 
 # Tracy <img src="https://cloud.githubusercontent.com/assets/3578589/13300175/bad4d3c6-db36-11e5-94a4-aa4a9c3a9dbc.gif" width="50"/> #
 A simple tracing framework inspired by XTrace.  
