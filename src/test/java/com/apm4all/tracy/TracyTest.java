@@ -168,13 +168,20 @@ public class TracyTest {
     
     
     @Test
-    public void testGetEvents_stringAnnotationContainingDoubleQuotes() throws InterruptedException, JsonProcessingException, IOException {
+    public void testGetEvents_stringAnnotationContainingEscapedChars() throws InterruptedException, JsonProcessingException, IOException {
         // see @link https://github.com/joaovicente/Tracy/issues/3
-        final String STR_NAME = "strName";
-        final String strValue = "\"strValue";
+        final String DOUBLE_QUOTE_NAME = "hasDoubleQuotes";
+        final String DOUBLE_QUOTE_VALUE = "\"hasDoubleQuotes";
+        final String BACKSLASH_NAME = "hasBackslash";
+        final String BACKSLASH_VALUE = "\\hasBackslash";
+        final String MIXED_NAME = "mixed";
+        final String MIXED_VALUE = "q\"q b\\b b\\b q\"q";
+        
         Tracy.setContext(TASK_ID, PARENT_OPT_ID, COMPONENT_NAME);
         Tracy.before(L1_LABEL_NAME);
-        Tracy.annotate(STR_NAME, strValue);
+        Tracy.annotate(DOUBLE_QUOTE_NAME, DOUBLE_QUOTE_VALUE);
+        Tracy.annotate(BACKSLASH_NAME, BACKSLASH_VALUE);
+        Tracy.annotate(MIXED_NAME, MIXED_VALUE);
         Tracy.after(L1_LABEL_NAME);
         List<TracyEvent> events = Tracy.getEvents();
         assertEquals(1, events.size());
@@ -182,15 +189,20 @@ public class TracyTest {
         assertEquals(TASK_ID, event.getTaskId());
         assertEquals(PARENT_OPT_ID, event.getParentOptId());
         assertEquals(L1_LABEL_NAME, event.getLabel());
-        assertEquals(event.getAnnotation(STR_NAME), strValue);
-        assertEquals(strValue, Tracy.getEventsAsMaps().get(0).get(STR_NAME));
+        assertEquals(event.getAnnotation(DOUBLE_QUOTE_NAME), DOUBLE_QUOTE_VALUE);
+        assertEquals(event.getAnnotation(BACKSLASH_NAME), BACKSLASH_VALUE);
+        assertEquals(event.getAnnotation(MIXED_NAME), MIXED_VALUE);
+        assertEquals(DOUBLE_QUOTE_VALUE, Tracy.getEventsAsMaps().get(0).get(DOUBLE_QUOTE_NAME));
+        assertEquals(BACKSLASH_VALUE, Tracy.getEventsAsMaps().get(0).get(BACKSLASH_NAME));
+        assertEquals(MIXED_VALUE, Tracy.getEventsAsMaps().get(0).get(MIXED_NAME));
         String jsonEvent = Tracy.getEventsAsJson().get(0);
         ObjectMapper m = new ObjectMapper();
         JsonNode rootNode = m.readTree(jsonEvent);
         assertNotNull(rootNode);
-        String strValueInJson = rootNode.path("strName").textValue();
-        assertEquals(strValue, strValueInJson);
-        // System.out.println(jsonEvent);
+        assertEquals(DOUBLE_QUOTE_VALUE, rootNode.path(DOUBLE_QUOTE_NAME).textValue());
+        assertEquals(BACKSLASH_VALUE, rootNode.path(BACKSLASH_NAME).textValue());
+        assertEquals(MIXED_VALUE, rootNode.path(MIXED_NAME).textValue());
+//        System.out.println(jsonEvent);
         Tracy.clearContext();
     }
     

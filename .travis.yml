@@ -1,4 +1,7 @@
 language: java
-install: mvn install -DskipTests=true -Dgpg.skip=true
+install: 
+ - mvn install -DskipTests=true -Dgpg.skip=true
+after_success:
+ - mvn clean cobertura:cobertura org.eluder.coveralls:coveralls-maven-plugin:cobertura
 jdk:
  - oraclejdk7
