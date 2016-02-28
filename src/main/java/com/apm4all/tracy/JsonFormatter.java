@@ -5,6 +5,9 @@ public class JsonFormatter {
        if (false == first)	{
            sb.append(",");
         }
+        if (value.contains("\\") )   {
+            value = value.replace("\\", "\\\\");
+        }
         if (value.contains("\""))   {
             value = value.replace("\"", "\\\"");
         }
