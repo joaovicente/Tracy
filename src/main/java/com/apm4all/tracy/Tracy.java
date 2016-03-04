@@ -28,8 +28,8 @@ public class Tracy {
     // API
     static public final String HTTP_HEADER_X_TRACY_ANNOTATIONS = "X-Tracy-Annotations";
     // Internal
-    static final String TRACY_DEFAULT_TASK_ID = "NA";
-    static final String TRACY_DEFAULT_PARENT_OPT_ID = "NA";
+    static final String TRACY_DEFAULT_PARENT_OPT_ID = "null";
+    static final String TRACY_DEFAULT_COMPONENT_NAME = "null";
     static final int TRACY_FRAME_ESTIMATED_ANNOTATION_COUNT = 30;
     static final int TRACY_HTTP_HEADER_ESTIMATED_ANNOTATION_COUNT = 10;
     static final int TRACY_ESTIMATED_FRAME_SIZE = 200;
@@ -48,8 +48,14 @@ public class Tracy {
      * @param componentName is a string identifying the name of the component the tracy belongs to
      */
     public static void setContext(String taskId, String parentOptId, String componentName) {
-        if (taskId == null) {
+        if (null == taskId) {
             taskId = TracyThreadContext.generateRandomTaskId();
+        }
+        if (null == parentOptId)    {
+            parentOptId = TRACY_DEFAULT_PARENT_OPT_ID;
+        }
+        if (null == componentName)  {
+            componentName = TRACY_DEFAULT_COMPONENT_NAME;
         }
         threadContext.set(new TracyThreadContext(taskId, parentOptId, componentName));
     }    
