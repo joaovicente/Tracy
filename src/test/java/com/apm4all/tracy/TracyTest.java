@@ -75,6 +75,7 @@ public class TracyTest {
         List<String> events = Tracy.getEventsAsJson();
         for (String event : events)	{
             System.out.println(event);
+            assertFalse(event.contains("error"));
         }
         assertEquals(2, events.size());
 
@@ -856,9 +857,12 @@ public class TracyTest {
         Tracy.after(L3);
         Tracy.after(L2);
         Tracy.after(L1);
-        String expectedString =
-                "key_long,9223372036854775807,key_int,2147483647,key_str,str_val";
-        assertEquals(expectedString,Tracy.getHttpResponseBufferAnnotations());
+        
+        String httpResponseBufferAnnotations = Tracy.getHttpResponseBufferAnnotations();
+        assertTrue(httpResponseBufferAnnotations.contains("key_long,9223372036854775807"));
+        assertTrue(httpResponseBufferAnnotations.contains("key_int,2147483647"));
+        assertTrue(httpResponseBufferAnnotations.contains("key_str,str_val"));
+
         Tracy.clearContext();
     }
 
