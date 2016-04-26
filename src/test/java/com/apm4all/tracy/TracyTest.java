@@ -374,13 +374,65 @@ public class TracyTest {
         assertEquals(TASK_ID_VALUE, event.getTaskId());
         assertEquals(PARENT_OPT_ID_VALUE, event.getParentOptId());
         assertEquals(L1_LABEL_NAME, event.getLabel());
-        assertEquals(true, event.getAnnotation(BOOLEAN_NAME));
+        assertEquals(booleanValue, event.getAnnotation(BOOLEAN_NAME));
         assertEquals(new Boolean(booleanValue), Tracy.getEventsAsMaps().get(0).get(BOOLEAN_NAME));
         String jsonEvent = Tracy.getEventsAsJson().get(0);
         assertTrue(jsonEvent.contains("\"" + BOOLEAN_NAME + "\":" + Boolean.toString(booleanValue)));
         Tracy.clearContext();
     }
-    
+
+    @Test
+    public void testAnnotateRoot() throws InterruptedException {
+        final String STRING_NAME = "stringName";
+        final String stringValue = "stringValue";
+        final String INT_NAME = "intName";
+        final int intValue = Integer.MAX_VALUE;
+        final String LONG_NAME = "longName";
+        long longValue = Long.MAX_VALUE;
+        final String FLOAT_NAME = "floatName";
+        float floatValue = Float.MAX_VALUE;
+        final String DOUBLE_NAME = "doubleName";
+        double doubleValue = Double.MAX_VALUE;
+        final String BOOLEAN_NAME = "booleanName";
+        boolean booleanValue = true;
+
+        Tracy.setContext(TASK_ID_VALUE, PARENT_OPT_ID_VALUE, COMPONENT_VALUE);
+        Tracy.before(L1_LABEL_NAME);
+        Tracy.before(L11_LABEL_NAME);
+        Tracy.annotateRoot(STRING_NAME, stringValue);
+        Tracy.annotateRoot(INT_NAME, intValue);
+        Tracy.annotateRoot(LONG_NAME, longValue);
+        Tracy.annotateRoot(FLOAT_NAME, floatValue);
+        Tracy.annotateRoot(DOUBLE_NAME, doubleValue);
+        Tracy.annotateRoot(BOOLEAN_NAME, booleanValue);
+        Tracy.after(L11_LABEL_NAME);
+        Tracy.after(L1_LABEL_NAME);
+        List<TracyEvent> events = Tracy.getEvents();
+        assertEquals(2, events.size());
+        for (TracyEvent event : events)    {
+            if (event.getLabel().equals(L1_LABEL_NAME)) {
+                // Verify all annotations are present in root frame
+                assertEquals(stringValue, event.getAnnotation(STRING_NAME));
+                assertEquals(intValue, event.getAnnotation(INT_NAME));
+                assertEquals(longValue, event.getAnnotation(LONG_NAME));
+                assertEquals(floatValue, event.getAnnotation(FLOAT_NAME));
+                assertEquals(doubleValue, event.getAnnotation(DOUBLE_NAME));
+                assertEquals(booleanValue, event.getAnnotation(BOOLEAN_NAME));
+            }
+            if (event.getLabel().equals(L11_LABEL_NAME)) {
+                // Verify all annotations are NOT present in root frame
+                assertEquals(null, event.getAnnotation(STRING_NAME));
+                assertEquals(null, event.getAnnotation(INT_NAME));
+                assertEquals(null, event.getAnnotation(LONG_NAME));
+                assertEquals(null, event.getAnnotation(FLOAT_NAME));
+                assertEquals(null, event.getAnnotation(DOUBLE_NAME));
+                assertEquals(null, event.getAnnotation(BOOLEAN_NAME));
+            }
+        }
+        Tracy.clearContext();
+    }
+
+
     @Test
     public void testGetEvents_componentAnnotated() throws InterruptedException {
         final String COMPONENT_NAME = "Component X";
