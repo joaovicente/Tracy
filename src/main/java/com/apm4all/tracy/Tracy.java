@@ -25,8 +25,6 @@ import java.util.Map;
  * @author joao.diogo.vicente@gmail.com
  */
 public class Tracy {
-    // API
-    static public final String HTTP_HEADER_X_TRACY_ANNOTATIONS = "X-Tracy-Annotations";
     // Internal
     static final String TRACY_DEFAULT_PARENT_OPT_ID = "null";
     static final String TRACY_DEFAULT_COMPONENT_NAME = "null";
