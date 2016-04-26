@@ -1,9 +1,9 @@
 package com.apm4all.tracy.extensions;
+
 /**
  * The family of headers used by Tracy to help with request profiling.
  *
  * @author Jakub Stas
- * @since 1.0
  */
 public enum XTracyHeader {
 
