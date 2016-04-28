@@ -39,5 +39,6 @@ public class TracyTestPerf {
                 logger.info(event.toString());
             }
         }
+        Tracy.clearContext();
     }
 }

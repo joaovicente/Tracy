@@ -3,10 +3,15 @@
 target/
 logs/
 
-#Eclipse
+# Eclipse
 .classpath
 .project
 .settings/
+
+# IDEA
+*.iml
+.idea
+out*
 
 # Package Files #
 *.jar

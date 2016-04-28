@@ -25,8 +25,6 @@ import java.util.Map;
  * @author joao.diogo.vicente@gmail.com
  */
 public class Tracy {
-    // API
-    static public final String HTTP_HEADER_X_TRACY_ANNOTATIONS = "X-Tracy-Annotations";
     // Internal
     static final String TRACY_DEFAULT_PARENT_OPT_ID = "null";
     static final String TRACY_DEFAULT_COMPONENT_NAME = "null";
@@ -170,8 +168,68 @@ public class Tracy {
             ctx.annotate(booleanName, booleanValue);
         }
     }
-    
-    
+
+    /**
+     * Annotate String values at the root Tracy frame
+     */
+    public static void annotateRoot(String... keyValueSequence) {
+        TracyThreadContext ctx = threadContext.get();
+        if (isValidContext(ctx)) {
+            ctx.annotateRoot(keyValueSequence);
+        }
+    }
+
+    /**
+     * Annotate an integer value at the root Tracy frame
+     */
+    public static void annotateRoot(String intName, int intValue) {
+        TracyThreadContext ctx = threadContext.get();
+        if (isValidContext(ctx)) {
+            ctx.annotateRoot(intName, intValue);
+        }
+    }
+
+    /**
+     * Annotate a long value at the root Tracy frame
+     */
+    public static void annotateRoot(String longName, long longValue) {
+        TracyThreadContext ctx = threadContext.get();
+        if (isValidContext(ctx)) {
+            ctx.annotateRoot(longName, longValue);
+        }
+    }
+
+    /**
+     * Annotate a float value at the root Tracy frame
+     */
+    public static void annotateRoot(String floatName, float floatValue) {
+        TracyThreadContext ctx = threadContext.get();
+        if (isValidContext(ctx)) {
+            ctx.annotateRoot(floatName, floatValue);
+        }
+    }
+
+
+    /**
+     * Annotate a double value at the root Tracy frame
+     */
+    public static void annotateRoot(String doubleName, double doubleValue) {
+        TracyThreadContext ctx = threadContext.get();
+        if (isValidContext(ctx)) {
+            ctx.annotateRoot(doubleName, doubleValue);
+        }
+    }
+
+    /**
+     * Annotate a boolean value at the root Tracy frame
+     */
+    public static void annotateRoot(String booleanName, boolean booleanValue) {
+        TracyThreadContext ctx = threadContext.get();
+        if (isValidContext(ctx)) {
+            ctx.annotateRoot(booleanName, booleanValue);
+        }
+    }
+
     /**
     * Facilitate annotating annotations received from the Client in the X-Tracy-Annotations HTTP header <br>
     * Currently only supporting string annotations in CSV format. Example usage below:
