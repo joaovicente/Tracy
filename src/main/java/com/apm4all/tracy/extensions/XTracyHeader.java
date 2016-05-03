@@ -8,6 +8,11 @@ package com.apm4all.tracy.extensions;
 public enum XTracyHeader {
 
     /**
+     * The Tracy {@code X-Tracy-Parent-Task-Id} header field name. This header stores the ID of the ancestor Tracy task in a Tracy graph.
+     */
+    X_TRACY_PARENT_TASK_ID("X-Tracy-Parent-Task-Id"),
+
+    /**
      * The Tracy {@code X-Tracy-Task-Id} header field name. This header stores the task ID used by Tracy to bind log frames together.
      */
     X_TRACY_TASK_ID("X-Tracy-Task-Id"),
