@@ -5,6 +5,7 @@ package com.apm4all.tracy.extensions.annotations;
  *
  * @author Jakub Stas
  * @see RequestProfiling
+ * @since 4.0.0
  */
 public enum Resolution {
 
@@ -19,6 +20,7 @@ public enum Resolution {
      * @see RequestProfiling#taskId()
      */
     HEADER,
+
     /**
      * Constant that indicates the use of literal string value provided in taskId attribute of @RequestProfiling annotation
      * as a task ID.
@@ -28,10 +30,11 @@ public enum Resolution {
      * @see RequestProfiling#taskId()
      */
     STRING,
+
     /**
      * Constant that indicates the use of randomly generated task id by Tracy itself as a task ID.
      *
      * @see RequestProfiling#taskId()
      */
-    RANDOM;
+    RANDOM
 }

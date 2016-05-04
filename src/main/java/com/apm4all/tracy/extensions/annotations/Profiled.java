@@ -86,7 +86,7 @@ import java.lang.annotation.*;
  *     }</pre>
  *
  * @author Jakub Stas
- * @since 1.0
+ * @since 4.0.0
  */
 @Documented
 @Target(ElementType.METHOD)
