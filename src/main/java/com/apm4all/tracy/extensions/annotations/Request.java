@@ -10,6 +10,7 @@ import java.lang.annotation.*;
  *
  * @author Jakub Stas
  * @see RequestProfiling
+ * @since 4.0.1
  */
 @Documented
 @Target(ElementType.PARAMETER)

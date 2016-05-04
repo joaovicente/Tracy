@@ -5,6 +5,7 @@ package com.apm4all.tracy.extensions.annotations;
  *
  * @author Jakub Stas
  * @see Profiled
+ * @since 4.0.0
  */
 public enum Qualify {
 
@@ -12,12 +13,14 @@ public enum Qualify {
      * Constant that indicates no qualification at all.
      */
     NO,
+
     /**
      * Constant that indicates qualification using simple class name.
      */
     CLASS,
+
     /**
      * Constant that indicates qualification using canonical class name.
      */
-    PACKAGE;
+    PACKAGE
 }

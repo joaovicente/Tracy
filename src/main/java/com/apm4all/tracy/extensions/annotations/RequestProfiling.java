@@ -4,7 +4,7 @@ import java.lang.annotation.*;
 
 /**
  * {@code @RequestProfiling} decorates {@code @Profiled} with features specific to the Tracy context management.
- * <p>
+ *
  * <b>API note:</b> This annotation must be used together with {@code @Profiled} to take effect.
  *
  * <h3>Tracy context initialization</h3>
@@ -18,8 +18,8 @@ import java.lang.annotation.*;
  *
  * <pre class="code">
  * &#064;GET
- * &#064;Produces(MediaType.APPLICATION_JSON)
  * &#064;Profiled
+ * &#064;Produces(MediaType.APPLICATION_JSON)
  * &#064;RequestProfiling(parentOptId = "1", component = "eshop")
  * public Response listProducts(@Context @Request HttpServletRequest request) {
  *      return Response.ok().build();
@@ -33,21 +33,21 @@ import java.lang.annotation.*;
  *
  * <pre class="code">
  * &#064;GET
- * &#064;Produces(MediaType.APPLICATION_JSON)
  * &#064;Profiled
+ * &#064;Produces(MediaType.APPLICATION_JSON)
  * &#064;RequestProfiling(taskId="X-Tracy-Task-Id", parentOptId = "1", component = "eshop")
  * public Response listProducts(@Context @Request HttpServletRequest request) {
  *      return Response.ok().build();
  * }</pre>
- * <p>
+ *
  * Note that if you don't want to tie the API call to a larger process view, you can use different task ID resolution strategies
  * by using the {@link #resolution() resolution} attribute. Combining the {@link #taskId()} and {@link #resolution()} attributes
  * allows you to specify the task ID by hand or instruct Tracy to generate it for you.
  *
  * <pre class="code">
  * &#064;GET
- * &#064;Produces(MediaType.APPLICATION_JSON)
  * &#064;Profiled
+ * &#064;Produces(MediaType.APPLICATION_JSON)
  * &#064;RequestProfiling(taskId="listProductsAPI", resolution=Resolution.STRING, parentOptId = "1", component = "eshop")
  * public Response listProducts(@Context @Request HttpServletRequest request) {
  *      return Response.ok().build();
@@ -69,9 +69,9 @@ import java.lang.annotation.*;
  *
  * <pre class="code">
  * &#064;POST
+ * &#064;Profiled
  * &#064;Produces(MediaType.APPLICATION_JSON)
  * &#064;Consumes(MediaType.APPLICATION_JSON)
- * &#064;Profiled
  * &#064;RequestProfiling(taskId="createProductAPI", resolution=Resolution.STRING, parentOptId = "1", component = "eshop")
  * public Response createProduct(@Context @Request HttpServletRequest request, @RequestBody Product product) {
  *      return Response.ok(product).build();
@@ -79,6 +79,7 @@ import java.lang.annotation.*;
  *
  * @author Jakub Stas
  * @see Profiled
+ * @since 4.0.0
  */
 @Documented
 @Target(ElementType.METHOD)
@@ -96,10 +97,11 @@ public @interface RequestProfiling {
     /**
      * Strategy for task ID resolution describing where to get the task ID from and how to process it.
      * <p>
-     * <b>API note:</b> If left unspecified the headers of the request linked using {@code forRequest} attribute will
+     * <b>API note:</b> If left unspecified the headers of the request linked using {@link Request} annotation will
      * be inspected according to the specification of {@link Resolution#HEADER} strategy.
      *
      * @see Resolution
+     * @see Request
      */
     Resolution resolution() default Resolution.HEADER;
 
