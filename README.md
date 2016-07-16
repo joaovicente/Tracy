@@ -6,7 +6,11 @@
 
 # Tracy <img src="https://cloud.githubusercontent.com/assets/3578589/13300175/bad4d3c6-db36-11e5-94a4-aa4a9c3a9dbc.gif" width="50"/> #
 A simple tracing framework inspired by XTrace.  
-This library is designed to capure Java code execution paths by capturing discrete events containing ancestry, timing, host information, along with any additional optional context a developer wants to capture.  
+This library is designed to capure Java code execution paths by capturing discrete events containing ancestry, timing, host information, along with any additional optional context a developer wants to capture.
+
+Peer Open Source projects [tracy-web-services](https://github.com/joaovicente/tracy-web-services) and [tracy-ui](https://github.com/joaovicente/tracy-ui) (screenshot below) then provide backend and visualisation from Tracy events, including application performance statistics and drilldowns.
+<br><br>
+<img src="https://cloud.githubusercontent.com/assets/3578589/16894054/00a37962-4b43-11e6-9839-296e41d4e635.png" width="800"/>
 
 ## Terminology
 * `taskId` is the correlation identifier of a trace (possibly spanning multiple runtimes)
