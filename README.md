@@ -12,6 +12,8 @@ Peer Open Source projects [tracy-web-services](https://github.com/joaovicente/tr
 <br><br>
 <img src="https://cloud.githubusercontent.com/assets/3578589/16894054/00a37962-4b43-11e6-9839-296e41d4e635.png" width="800"/>
 
+For more information on how it all comes together in your development environment using Docker see https://github.com/joaovicente/tracy-demo
+
 ## Terminology
 * `taskId` is the correlation identifier of a trace (possibly spanning multiple runtimes)
 * `parentOptId` is the id of the ancestor Tracy event in a Tracy graph
