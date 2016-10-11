@@ -8,6 +8,7 @@ package com.apm4all.tracy.extensions.annotations;
  * @author Jakub Stas
  * @see RequestProfiling
  * @see RequestBody
+ * @since 4.0.1
  */
 public interface RequestBodyParser<T> {
 
