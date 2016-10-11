@@ -59,13 +59,6 @@ _Context initialisation code:_
 ```java
 public void servletInitialisationMethod() {
     Tracy.setContext("T-1234", "0000", "Gateway");
-    Tracy.before("gwServerMethod");
-    // Do work
-    Tracy.after("gwServerMethod");
-    for (String event : Tracy.getEventsAsJson())  {
-      bh.consume(event);
-    }
-    Tracy.clearContext();
 }
 ```
 
