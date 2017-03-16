@@ -21,7 +21,6 @@ Consider a system made up of:
 * Service 1
 * Service 2
 
-#### System flow
 The diagram below depicts a Task (distinct user interaction with the system) being executed in the system.
 A Task is defined by a discrete user interaction with the system with the intent to produce a result. In a HTTP context, it starts with a user Request and ends with a Response, including all of its inter-system interactions executed in the context of the request.
 
