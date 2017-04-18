@@ -16,4 +16,19 @@ public final class Constants {
      * The name of the attribute annotated for method returns.
      */
     public static final String METHOD_RESULT = "returned";
+
+    /**
+     * The name of the attribute annotated for an HTTP code returned by a profiled endpoint.
+     */
+    public static final String HTTP_CODE = "httpCode";
+
+    /**
+     * The name of the attribute annotated for an error code in case of an exception being thrown.
+     */
+    public static final String ERROR_CODE = "errorCode";
+
+    /**
+     * The name of the attribute annotated for an error message in case of an exception being thrown.
+     */
+    public static final String ERROR_MESSAGE = "errorMessage";
 }
